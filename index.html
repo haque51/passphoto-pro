@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$4.99 Passport Photos in 5 Minutes | Passphoto Pro</title>
+    <meta name="description" content="AI-powered passport photos for 30+ countries. $4.99 one-time. Instant download. ICAO compliant. Money-back guarantee. Perfect photos in under 5 minutes.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            transition: background-color 0.5s ease;
+        }
+        .step-active .step-circle {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .step-active .step-text {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        .step-inactive .step-circle {
+            background-color: transparent;
+            color: #9ca3af;
+            border-color: #4b5563;
+        }
+        .step-inactive .step-text {
+            color: #9ca3af;
+        }
+        .step-line {
+            height: 2px;
+            flex-grow: 1;
+            background-color: #374151;
+            margin: 0 1rem;
+        }
+        .compliance-pass {
+            color: #10b981;
+        }
+        .compliance-fail {
+            color: #ef4444;
+        }
+        .canvas-container {
+            position: relative;
+            touch-action: none;
+        }
+        #editorCanvas {
+            cursor: grab;
+        }
+        #editorCanvas:active {
+            cursor: grabbing;
+        }
+        .overlay-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        .overlay-mask line, .overlay-mask ellipse {
+            transition: stroke 0.3s ease-in-out;
+        }
+        .loader {
+            border: 4px solid #374151;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hero-gradient-text {
+            background: -webkit-linear-gradient(45deg, #4ade80, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        .fade-out {
+            animation: fadeOut 0.5s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        details summary {
+            list-style: none;
+        }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+
+    <div id="landing-page">
+        <header class="bg-slate-900 text-white p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="#" class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-green-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.25 2.75C5.25 2.19772 5.69772 1.75 6.25 1.75H17.75C18.3023 1.75 18.75 2.19772 18.75 2.75V21.25C18.75 21.8023 18.3023 22.25 17.75 22.25H6.25C5.69772 22.25 5.25 21.8023 5.25 21.25V2.75Z" stroke="currentColor" stroke-width="1.5"></path><path d="M9.75 6C9.75 5.58579 10.0858 5.25 10.5 5.25H13.5C13.9142 5.25 14.25 5.58579 14.25 6V6C14.25 6.41421 13.9142 6.75 13.5 6.75H10.5C10.0858 6.75 9.75 6.41421 9.75 6V6Z" fill="currentColor"></path><circle cx="12" cy="12" r="3.25" stroke="currentColor" stroke-width="1.5"></circle></svg>
+                    <span class="text-2xl font-bold">Passphoto Pro</span>
+                </a>
+                <button id="start-app-btn-header" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-5 rounded-lg transition-colors">Get Started</button>
+            </div>
+        </header>
+
+        <section class="bg-slate-900 text-white text-center py-20 px-4">
+            <div class="container mx-auto">
+                <div class="inline-flex items-center space-x-2 bg-slate-800 border border-slate-700 rounded-full px-4 py-1 mb-6">
+                    <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 22.5l-.648-1.938a3.375 3.375 0 00-2.672-2.672L11.25 18l1.938-.648a3.375 3.375 0 002.672-2.672L16.25 13.5l.648 1.938a3.375 3.375 0 002.672 2.672L21.5 18l-1.938.648a3.375 3.375 0 00-2.672 2.672z"></path></svg>
+                    <span class="font-medium text-sm">Smart Alignment Tool</span>
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold mb-4">Perfect Passport Photos</h1>
+                <h2 class="text-5xl md:text-7xl font-extrabold mb-6 hero-gradient-text">Made Simple</h2>
+                <p class="max-w-3xl mx-auto text-lg text-slate-400 mb-10">Upload your photo, use our alignment tool to position it perfectly according to 30+ country requirements, and get compliant passport photos ready for print.</p>
+                <button id="start-app-btn-hero" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors">Get Your Photo in 5 Minutes - $4.99</button>
+                <div class="mt-10 flex flex-wrap justify-center items-center gap-x-8 gap-y-4 text-slate-400">
+                    <span class="flex items-center"><svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Biometric Alignment</span>
+                    <span class="flex items-center"><svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Compliance Checks</span>
+                    <span class="flex items-center"><svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Visual Guidelines</span>
+                    <span class="flex items-center"><svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>30+ Countries</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-slate-800 py-8 px-4">
+            <div class="container mx-auto">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div>
+                        <div class="text-4xl font-bold text-blue-400">30+</div>
+                        <div class="text-slate-300 text-sm mt-1">Countries Supported</div>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-bold text-green-400">$4.99</div>
+                        <div class="text-slate-300 text-sm mt-1">One-Time Payment</div>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-bold text-blue-400">&lt;5min</div>
+                        <div class="text-slate-300 text-sm mt-1">Average Time</div>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-bold text-green-400">ICAO</div>
+                        <div class="text-slate-300 text-sm mt-1">Compliant</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white py-20 px-4">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl font-bold mb-4">How It Works</h2>
+                <p class="text-lg text-gray-600 mb-12">Get perfect passport photos in three simple steps</p>
+                <div class="grid md:grid-cols-3 gap-10">
+                    <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200">
+                        <div class="relative inline-block">
+                            <span class="absolute -top-4 -left-4 bg-green-500 text-white w-8 h-8 rounded-xl flex items-center justify-center font-bold text-lg">1</span>
+                            <div class="inline-block bg-blue-100 p-4 rounded-2xl mb-6">
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Upload Your Photo</h3>
+                        <p class="text-gray-600">Take or upload a clear portrait photo with good lighting and a plain background.</p>
+                    </div>
+                    <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200">
+                         <div class="relative inline-block">
+                            <span class="absolute -top-4 -left-4 bg-green-500 text-white w-8 h-8 rounded-xl flex items-center justify-center font-bold text-lg">2</span>
+                             <div class="inline-block bg-blue-100 p-4 rounded-2xl mb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Align with Guidelines</h3>
+                        <p class="text-gray-600">Use our visual overlay to position your face correctly, adjust size, crop, and ensure compliance.</p>
+                    </div>
+                    <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200">
+                         <div class="relative inline-block">
+                            <span class="absolute -top-4 -left-4 bg-green-500 text-white w-8 h-8 rounded-xl flex items-center justify-center font-bold text-lg">3</span>
+                             <div class="inline-block bg-blue-100 p-4 rounded-2xl mb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Download & Print</h3>
+                        <p class="text-gray-600">Get instant compliance feedback, download high-resolution print-ready files.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-slate-50 py-20 px-4">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl font-bold mb-4">Why Choose Passphoto Pro?</h2>
+                <p class="text-lg text-gray-600 mb-12">Professional tools to create compliant passport photos yourself</p>
+                <div class="grid md:grid-cols-3 gap-10">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm">
+                        <div class="inline-block bg-green-100 p-4 rounded-xl mb-4">
+                            <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Visual Alignment Tool</h3>
+                        <p class="text-gray-600">Overlay biometric masks show exactly where to position your face for perfect compliance.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-sm">
+                        <div class="inline-block bg-green-100 p-4 rounded-xl mb-4">
+                            <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.432 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Real-Time Checks</h3>
+                        <p class="text-gray-600">Instant feedback on face size, position, brightness, and other ICAO requirements.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-sm">
+                         <div class="inline-block bg-green-100 p-4 rounded-xl mb-4">
+                            <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Smart Guidelines</h3>
+                        <p class="text-gray-600">Country-specific overlays and instructions ensure you meet exact specifications.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white py-20 px-4">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+                <p class="text-lg text-gray-600 mb-12">One-time payment. No subscriptions. No hidden fees.</p>
+                
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-gradient-to-br from-blue-50 to-green-50 border-2 border-blue-200 rounded-2xl p-8 md:p-10 relative shadow-lg">
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                            <span class="bg-green-500 text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-md">LAUNCH SPECIAL</span>
+                        </div>
+                        
+                        <div class="flex items-baseline justify-center mb-4">
+                            <span class="text-6xl font-extrabold text-gray-900">$4.99</span>
+                            <span class="text-gray-600 ml-2 text-lg">one-time</span>
+                        </div>
+                        
+                        <p class="text-gray-600 text-lg mb-8">Professional passport photos, ready in minutes</p>
+                        
+                        <ul class="text-left space-y-4 mb-8 max-w-lg mx-auto">
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span class="text-gray-700">AI-powered background removal & lighting adjustment</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span class="text-gray-700">High-resolution files (300 DPI print quality)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span class="text-gray-700">Single photo + 4x6 printable sheet included</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span class="text-gray-700">Compliant with 30+ country requirements</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span class="text-gray-700">Instant download - no waiting, no watermarks</span>
+                            </li>
+                        </ul>
+                        
+                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-xl transition-all transform hover:scale-105 mb-4 shadow-lg" onclick="document.getElementById('start-app-btn-hero').click()">
+                            Get Your Photo Now - Only $4.99
+                        </button>
+                        
+                        <p class="text-sm text-gray-600">💳 Secure payment via Stripe • Instant access</p>
+                    </div>
+                    
+                    <div class="mt-12 bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <h3 class="font-bold text-lg mb-6 text-gray-800">Compare with alternatives:</h3>
+                        <div class="grid md:grid-cols-3 gap-6 text-sm">
+                            <div class="text-center">
+                                <p class="font-semibold text-gray-800 text-base mb-2">Photo Booth</p>
+                                <p class="text-gray-600 text-2xl font-bold mb-2">$15-20</p>
+                                <p class="text-red-600 text-xs">❌ Travel required</p>
+                                <p class="text-red-600 text-xs">❌ Wait in line</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="font-semibold text-gray-800 text-base mb-2">Photo Studio</p>
+                                <p class="text-gray-600 text-2xl font-bold mb-2">$20-35</p>
+                                <p class="text-red-600 text-xs">❌ Appointment needed</p>
+                                <p class="text-red-600 text-xs">❌ Business hours only</p>
+                            </div>
+                            <div class="bg-blue-100 border-2 border-blue-400 rounded-lg p-4">
+                                <p class="font-semibold text-blue-900 text-base mb-2">Passphoto Pro</p>
+                                <p class="text-blue-600 font-bold text-2xl mb-2">$4.99</p>
+                                <p class="text-green-600 text-xs font-medium">✅ Instant, at home</p>
+                                <p class="text-green-600 text-xs font-medium">✅ 24/7 available</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white py-16 px-4">
+            <div class="container mx-auto">
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-8 mb-10 text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-green-500 rounded-full mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl md:text-3xl font-bold mb-3">100% Satisfaction Guarantee</h3>
+                        <p class="text-gray-700 text-lg max-w-2xl mx-auto">If your photo is rejected by authorities due to our compliance check failure, we'll refund you 100%. No questions asked.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-start text-center">
+                        <div>
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-3">
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            </div>
+                            <p class="text-sm font-semibold text-gray-800">Secure Payment</p>
+                            <p class="text-xs text-gray-500 mt-1">Stripe Protected</p>
+                        </div>
+                        <div>
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-3">
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            </div>
+                            <p class="text-sm font-semibold text-gray-800">ICAO Compliant</p>
+                            <p class="text-xs text-gray-500 mt-1">Official Standards</p>
+                        </div>
+                        <div>
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-3">
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <p class="text-sm font-semibold text-gray-800">Instant Delivery</p>
+                            <p class="text-xs text-gray-500 mt-1">Download Right Away</p>
+                        </div>
+                        <div>
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-3">
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <p class="text-sm font-semibold text-gray-800">Email Support</p>
+                            <p class="text-xs text-gray-500 mt-1">We're Here to Help</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-slate-50 py-20 px-4">
+            <div class="container mx-auto max-w-4xl">
+                <h2 class="text-4xl font-bold text-center mb-4">Frequently Asked Questions</h2>
+                <p class="text-center text-gray-600 mb-12">Everything you need to know about creating your passport photo</p>
+                
+                <div class="space-y-4">
+                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <summary class="font-semibold text-lg text-gray-800">Will my photo be accepted by immigration authorities?</summary>
+                        <p class="mt-4 text-gray-600 leading-relaxed">Yes! Our tool follows official ICAO (International Civil Aviation Organization) standards used by 30+ countries. We provide real-time compliance checks to ensure your photo meets all requirements. Plus, we offer a 100% money-back guarantee if your photo is rejected due to our error.</p>
+                    </details>
+                    
+                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <summary class="font-semibold text-lg text-gray-800">How does the AI adjustment work?</summary>
+                        <p class="mt-4 text-gray-600 leading-relaxed">Our AI automatically removes your background and replaces it with the required color (white or light grey), adjusts lighting to meet standards, and ensures your pose is correct. You can also manually adjust zoom, position, brightness, and rotation for perfect results.</p>
+                    </details>
+                    
+                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <summary class="font-semibold text-lg text-gray-800">What do I get for $4.99?</summary>
+                        <p class="mt-4 text-gray-600 leading-relaxed">You get a high-resolution digital photo (300 DPI) ready for printing, plus a 4x6 inch sheet with multiple copies for your convenience. Both files are instant download with no watermarks and no subscriptions required.</p>
+                    </details>
+                    
+                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <summary class="font-semibold text-lg text-gray-800">Can I use a photo from my phone?</summary>
+                        <p class="mt-4 text-gray-600 leading-relaxed">Absolutely! Just make sure the photo is clear, well-lit, and at least 600x600 pixels. Our app works perfectly on all devices - phone, tablet, or computer. Take a selfie or ask someone to take your photo.</p>
+                    </details>
+                    
+                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <summary class="font-semibold text-lg text-gray-800">Which countries are supported?</summary>
+                        <p class="mt-4 text-gray-600 leading-relaxed">We support 30+ countries including US, UK, Canada, Australia, all Schengen countries (Germany, France, Spain, Italy, Netherlands, etc.), India, China, Japan, Brazil, Mexico, and many more. Select your country in the app to see specific requirements for passports and visas.</p>
+                    </details>
+                    
+                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <summary class="font-semibold text-lg text-gray-800">How long does it take?</summary>
+                        <p class="mt-4 text-gray-600 leading-relaxed">Most users complete the entire process in under 5 minutes: upload your photo (30 seconds), AI adjustment (1 minute), manual fine-tuning if needed (2 minutes), payment and instant download (1 minute). That's it!</p>
+                    </details>
+                    
+                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <summary class="font-semibold text-lg text-gray-800">Is my payment secure?</summary>
+                        <p class="mt-4 text-gray-600 leading-relaxed">Yes! All payments are processed through Stripe, the same secure payment system used by Amazon, Google, and millions of businesses worldwide. We never see or store your payment information. Your transaction is fully encrypted and secure.</p>
+                    </details>
+                    
+                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <summary class="font-semibold text-lg text-gray-800">Why is the price so low?</summary>
+                        <p class="mt-4 text-gray-600 leading-relaxed">We're offering a special launch price of $4.99 to help people discover our service. Traditional photo booths charge $15-20 and studios charge $20-35. We want passport photos to be affordable and accessible to everyone. This price may increase in the future.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-slate-900 text-slate-400 py-12 px-4">
+            <div class="container mx-auto grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-2">
+                         <svg class="w-7 h-7 text-green-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.25 2.75C5.25 2.19772 5.69772 1.75 6.25 1.75H17.75C18.3023 1.75 18.75 2.19772 18.75 2.75V21.25C18.75 21.8023 18.3023 22.25 17.75 22.25H6.25C5.69772 22.25 5.25 21.8023 5.25 21.25V2.75Z" stroke="#4ade80" stroke-width="1.5"></path><path d="M9.75 6C9.75 5.58579 10.0858 5.25 10.5 5.25H13.5C13.9142 5.25 14.25 5.58579 14.25 6V6C14.25 6.41421 13.9142 6.75 13.5 6.75H10.5C10.0858 6.75 9.75 6.41421 9.75 6V6Z" fill="#4ade80"></path><circle cx="12" cy="12" r="3.25" stroke="#4ade80" stroke-width="1.5"></circle></svg>
+                        <span class="text-xl font-bold text-white">Passphoto Pro</span>
+                    </div>
+                    <p class="text-sm">Professional passport photos for 30+ countries, ready in minutes.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-3">Features</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li>Manual Alignment Tool</li>
+                        <li>ICAO Compliant</li>
+                        <li>30+ Countries Supported</li>
+                        <li>Instant Download</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-3">Support</h4>
+                    <p class="text-sm">Need help? Contact us at:</p>
+                    <a href="mailto:support@passphoto.pro" class="text-blue-400 hover:text-blue-300 text-sm">support@passphoto.pro</a>
+                </div>
+            </div>
+            <div class="container mx-auto mt-8 pt-8 border-t border-slate-800 text-center text-sm">
+                <p>&copy; 2024 Passphoto Pro. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <div id="app-container" class="hidden">
+        <header class="bg-gray-900 text-white p-4">
+            <div class="container mx-auto">
+                <span class="text-2xl font-bold">Passphoto Pro</span>
+            </div>
+        </header>
+        <main class="p-8 text-center text-white">
+            <h1 class="text-4xl font-bold mb-4">Editor Coming Soon</h1>
+            <p>Full photo editing functionality will be implemented in the backend setup phase.</p>
+        </main>
+    </div>
+
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-gray-900 bg-opacity-80 flex flex-col items-center justify-center z-50">
+        <div class="loader"></div>
+        <p id="loading-text" class="mt-4 text-lg font-semibold text-white">Loading...</p>
+    </div>
+
+    <script>
+        const landingPage = document.getElementById('landing-page');
+        const appContainer = document.getElementById('app-container');
+        const startAppBtnHeader = document.getElementById('start-app-btn-header');
+        const startAppBtnHero = document.getElementById('start-app-btn-hero');
+        
+        function startApp() {
+            document.body.style.backgroundColor = '#111827';
+            landingPage.classList.add('fade-out');
+            
+            setTimeout(() => {
+                landingPage.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+                appContainer.classList.add('fade-in');
+            }, 500);
+        }
+        
+        startAppBtnHeader.addEventListener('click', startApp);
+        startAppBtnHero.addEventListener('click', startApp);
+    </script>
+</body>
+</html>
