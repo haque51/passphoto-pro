@@ -104,10 +104,12 @@
 </head>
 <body class="bg-white text-gray-800">
 
+    <!-- Landing Page Container -->
     <div id="landing-page">
+        <!-- Header -->
         <header class="bg-slate-900 text-white p-4">
             <div class="container mx-auto flex justify-between items-center">
-                <a href="#" class="flex items-center space-x-2">
+                <a href="" class="flex items-center space-x-2 cursor-pointer">
                     <svg class="w-8 h-8 text-green-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.25 2.75C5.25 2.19772 5.69772 1.75 6.25 1.75H17.75C18.3023 1.75 18.75 2.19772 18.75 2.75V21.25C18.75 21.8023 18.3023 22.25 17.75 22.25H6.25C5.69772 22.25 5.25 21.8023 5.25 21.25V2.75Z" stroke="currentColor" stroke-width="1.5"></path><path d="M9.75 6C9.75 5.58579 10.0858 5.25 10.5 5.25H13.5C13.9142 5.25 14.25 5.58579 14.25 6V6C14.25 6.41421 13.9142 6.75 13.5 6.75H10.5C10.0858 6.75 9.75 6.41421 9.75 6V6Z" fill="currentColor"></path><circle cx="12" cy="12" r="3.25" stroke="currentColor" stroke-width="1.5"></circle></svg>
                     <span class="text-2xl font-bold">Passphoto Pro</span>
                 </a>
@@ -115,6 +117,7 @@
             </div>
         </header>
 
+        <!-- Hero Section -->
         <section class="bg-slate-900 text-white text-center py-20 px-4">
             <div class="container mx-auto">
                 <div class="inline-flex items-center space-x-2 bg-slate-800 border border-slate-700 rounded-full px-4 py-1 mb-6">
@@ -134,6 +137,7 @@
             </div>
         </section>
 
+        <!-- Stats Bar -->
         <section class="bg-slate-800 py-8 px-4">
             <div class="container mx-auto">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
@@ -157,6 +161,7 @@
             </div>
         </section>
 
+        <!-- How It Works Section -->
         <section class="bg-white py-20 px-4">
             <div class="container mx-auto text-center">
                 <h2 class="text-4xl font-bold mb-4">How It Works</h2>
@@ -202,6 +207,7 @@
             </div>
         </section>
 
+        <!-- Why Choose Us Section -->
         <section class="bg-slate-50 py-20 px-4">
             <div class="container mx-auto text-center">
                 <h2 class="text-4xl font-bold mb-4">Why Choose Passphoto Pro?</h2>
@@ -232,6 +238,7 @@
             </div>
         </section>
 
+        <!-- Pricing Section -->
         <section class="bg-white py-20 px-4">
             <div class="container mx-auto text-center">
                 <h2 class="text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
@@ -307,6 +314,7 @@
             </div>
         </section>
 
+        <!-- Trust Section -->
         <section class="bg-white py-16 px-4">
             <div class="container mx-auto">
                 <div class="max-w-4xl mx-auto">
@@ -352,6 +360,7 @@
             </div>
         </section>
 
+        <!-- FAQ Section -->
         <section class="bg-slate-50 py-20 px-4">
             <div class="container mx-auto max-w-4xl">
                 <h2 class="text-4xl font-bold text-center mb-4">Frequently Asked Questions</h2>
@@ -401,6 +410,7 @@
             </div>
         </section>
 
+        <!-- Footer -->
         <footer class="bg-slate-900 text-slate-400 py-12 px-4">
             <div class="container mx-auto grid md:grid-cols-4 gap-8">
                 <div>
@@ -430,43 +440,1047 @@
             </div>
         </footer>
     </div>
-
-    <div id="app-container" class="hidden">
-        <header class="bg-gray-900 text-white p-4">
-            <div class="container mx-auto">
-                <span class="text-2xl font-bold">Passphoto Pro</span>
+    
+    <!-- Main Application Container -->
+    <div id="app-container" class="hidden flex-grow flex-col">
+        <!-- Header -->
+        <header class="bg-gray-900/80 backdrop-blur-sm text-white p-4 border-b border-gray-700 sticky top-0 z-20">
+            <div class="container mx-auto flex justify-between items-center">
+                 <a href="" class="flex items-center space-x-3 cursor-pointer">
+                    <svg class="w-8 h-8 text-blue-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.25 2.75C5.25 2.19772 5.69772 1.75 6.25 1.75H17.75C18.3023 1.75 18.75 2.19772 18.75 2.75V21.25C18.75 21.8023 18.3023 22.25 17.75 22.25H6.25C5.69772 22.25 5.25 21.8023 5.25 21.25V2.75Z" stroke="currentColor" stroke-width="1.5"></path><path d="M9.75 6C9.75 5.58579 10.0858 5.25 10.5 5.25H13.5C13.9142 5.25 14.25 5.58579 14.25 6V6C14.25 6.41421 13.9142 6.75 13.5 6.75H10.5C10.0858 6.75 9.75 6.41421 9.75 6V6Z" fill="currentColor"></path><circle cx="12" cy="12" r="3.25" stroke="currentColor" stroke-width="1.5"></circle></svg>
+                    <span class="text-2xl font-bold">Passphoto Pro</span>
+                </a>
             </div>
         </header>
-        <main class="p-8 text-center text-white">
-            <h1 class="text-4xl font-bold mb-4">Editor Coming Soon</h1>
-            <p>Full photo editing functionality will be implemented in the backend setup phase.</p>
-        </main>
-    </div>
-
-    <div id="loading-overlay" class="hidden fixed inset-0 bg-gray-900 bg-opacity-80 flex flex-col items-center justify-center z-50">
-        <div class="loader"></div>
-        <p id="loading-text" class="mt-4 text-lg font-semibold text-white">Loading...</p>
-    </div>
-
-    <script>
-        const landingPage = document.getElementById('landing-page');
-        const appContainer = document.getElementById('app-container');
-        const startAppBtnHeader = document.getElementById('start-app-btn-header');
-        const startAppBtnHero = document.getElementById('start-app-btn-hero');
         
-        function startApp() {
-            document.body.style.backgroundColor = '#111827';
-            landingPage.classList.add('fade-out');
+        <main class="flex-grow flex flex-col items-center justify-center p-4">
+            <div id="app-content-wrapper" class="w-full max-w-7xl mx-auto flex-grow flex flex-col">
+
+                <!-- Screen: UPLOAD -->
+                <div id="upload-screen" class="hidden flex-grow flex-col items-center justify-center text-center">
+                     <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Create Your Perfect Passport Photo</h1>
+                     <p class="text-lg text-gray-400 mb-10 max-w-2xl">Start by uploading a photo. Our tools will guide you the rest of the way.</p>
+                    <div class="w-full max-w-2xl text-center p-8 border-2 border-dashed border-gray-600 rounded-xl bg-gray-900 hover:border-blue-500 transition-colors" id="drop-zone">
+                        <svg class="mx-auto h-16 w-16 text-gray-500" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                        <h2 class="mt-4 text-xl font-semibold text-gray-300">Drag & drop your photo here</h2>
+                        <p class="mt-1 text-gray-500">or</p>
+                        <label for="image-upload" class="mt-4 inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 cursor-pointer transition-all">
+                            Browse Files
+                        </label>
+                        <input type="file" id="image-upload" class="hidden" accept="image/jpeg, image/png">
+                        <p class="mt-4 text-sm text-gray-500">Supports JPEG, PNG. Minimum size 600x600 px.</p>
+                    </div>
+                </div>
+
+                <!-- Screen: EDITOR, PAYMENT, DOWNLOAD (wrapper) -->
+                <div id="app-flow-wrapper" class="hidden flex-grow flex-col">
+                     <!-- Step Indicator -->
+                    <div id="steps-indicator" class="flex justify-center items-center p-6 border-b border-gray-800">
+                        <div id="step-1" class="step-inactive flex items-center">
+                            <div class="step-circle w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">1</div>
+                            <span class="step-text hidden md:inline ml-3">Upload</span>
+                        </div>
+                        <div class="step-line"></div>
+                        <div id="step-2" class="step-inactive flex items-center">
+                            <div class="step-circle w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">2</div>
+                            <span class="step-text hidden md:inline ml-3">Adjust & Verify</span>
+                        </div>
+                         <div class="step-line"></div>
+                        <div id="step-3" class="step-inactive flex items-center">
+                            <div class="step-circle w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">3</div>
+                            <span class="step-text hidden md:inline ml-3">Download</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow p-4 md:p-8 relative">
+                        <!-- Screen: EDITOR -->
+                        <div id="editor-screen" class="hidden">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                 <!-- Center Panel: Canvas Editor -->
+                                <div class="lg:col-span-2 flex flex-col items-center">
+                                    <div id="canvas-wrapper" class="w-full max-w-2xl aspect-square bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-700">
+                                        <div class="canvas-container" id="canvas-container">
+                                            <canvas id="editorCanvas"></canvas>
+                                            <svg id="overlay-mask" class="overlay-mask" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                                <line id="center-line" x1="50" y1="10" x2="50" y2="90" stroke="rgba(255,255,255,0.7)" stroke-width="0.5" stroke-dasharray="2 2" />
+                                                <line id="eye-line" x1="25" y1="50" x2="75" y2="50" stroke="rgba(255,255,255,0.7)" stroke-width="0.75" />
+                                                <ellipse id="head-oval" cx="50" cy="50" rx="25" ry="35" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="0.75" stroke-dasharray="2 2" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mt-2">Click and drag to position your photo.</p>
+                                </div>
+
+                                <!-- Right Panel: Controls -->
+                                <div class="lg:col-span-1 space-y-6 bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-700">
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-3 text-white">Document Type</h3>
+                                        <div class="space-y-4">
+                                            <div>
+                                                <label for="country-select" class="block text-sm font-medium text-gray-400 mb-1">Country</label>
+                                                <select id="country-select" class="bg-gray-800 border-gray-600 text-white block w-full pl-3 pr-10 py-2 text-base focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                                    <option>Loading...</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label for="doc-type-select" class="block text-sm font-medium text-gray-400 mb-1">Document</label>
+                                                <select id="doc-type-select" class="bg-gray-800 border-gray-600 text-white block w-full pl-3 pr-10 py-2 text-base focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                                    <option>Loading...</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <hr class="border-gray-700"/>
+                                     <div>
+                                        <h3 class="text-lg font-semibold mb-3 text-white">AI Assistant</h3>
+                                        <button id="ai-adjust-btn" class="w-full bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-purple-700 transition-all flex items-center justify-center space-x-2">
+                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 22.5l-.648-1.938a3.375 3.375 0 00-2.672-2.672L11.25 18l1.938-.648a3.375 3.375 0 002.672-2.672L16.25 13.5l.648 1.938a3.375 3.375 0 002.672 2.672L21.5 18l-1.938.648a3.375 3.375 0 00-2.672 2.672z"></path></svg>
+                                            <span>Auto-Adjust Photo</span>
+                                        </button>
+                                        <p class="text-xs text-center text-gray-500 mt-2">Uses AI to fix background & lighting.</p>
+                                    </div>
+                                    <hr class="border-gray-700"/>
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-3 text-white">Manual Adjustments</h3>
+                                        <div class="space-y-4">
+                                            <div>
+                                                <label for="zoom-slider" class="block text-sm font-medium text-gray-400">Zoom</label>
+                                                <div class="flex items-center">
+                                                    <input type="range" id="zoom-slider" min="0.25" max="4" step="0.01" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                                                    <span id="zoom-value" class="ml-3 font-mono text-sm w-14 text-center text-gray-300">100%</span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label for="brightness-slider" class="block text-sm font-medium text-gray-400">Brightness</label>
+                                                <div class="flex items-center">
+                                                    <input type="range" id="brightness-slider" min="0" max="200" step="1" value="100" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                                                    <span id="brightness-value" class="ml-3 font-mono text-sm w-14 text-center text-gray-300">100%</span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label for="contrast-slider" class="block text-sm font-medium text-gray-400">Contrast</label>
+                                                <div class="flex items-center">
+                                                    <input type="range" id="contrast-slider" min="0" max="200" step="1" value="100" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                                                    <span id="contrast-value" class="ml-3 font-mono text-sm w-14 text-center text-gray-300">100%</span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label for="rotation-slider" class="block text-sm font-medium text-gray-400">Rotate</label>
+                                                <div class="flex items-center">
+                                                    <input type="range" id="rotation-slider" min="-15" max="15" step="0.1" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                                                    <span id="rotation-value" class="ml-3 font-mono text-sm w-14 text-center text-gray-300">0.0°</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <hr class="border-gray-700"/>
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-3 text-white">Compliance Check</h3>
+                                        <ul id="compliance-checklist" class="space-y-3"></ul>
+                                    </div>
+                                     <button id="next-to-payment-btn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-green-700 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
+                                        <span>Proceed to Payment</span>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Screen: PAYMENT -->
+                         <div id="payment-screen" class="hidden flex flex-col items-center justify-center text-center p-4 sm:p-8">
+                            <div class="w-full max-w-2xl">
+                                <h2 class="text-3xl sm:text-4xl font-bold mb-2 text-white">Almost There!</h2>
+                                <p class="text-gray-400 mb-8 mx-auto">Your photo is compliant. Get your high-resolution files for just $4.99.</p>
+                            </div>
             
-            setTimeout(() => {
-                landingPage.classList.add('hidden');
-                appContainer.classList.remove('hidden');
-                appContainer.classList.add('fade-in');
-            }, 500);
+                            <div class="flex-shrink-0 mb-8">
+                                <div class="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 border-4 border-gray-700 rounded-lg shadow-lg bg-gray-900">
+                                    <canvas id="preview-canvas" class="w-full h-full rounded-md"></canvas>
+                                    <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 pointer-events-none rounded-md">
+                                        <span class="text-white text-3xl sm:text-4xl font-bold opacity-50 transform -rotate-12">WATERMARK</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="w-full max-w-sm">
+                                <div class="space-y-4">
+                                    <button id="pay-btn" class="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all text-lg sm:text-xl">
+                                        Pay $4.99 & Get Photo
+                                    </button>
+                                    <p class="text-xs text-gray-500">Simulated payment for demonstration purposes.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Screen: DOWNLOAD -->
+                        <div id="download-screen" class="hidden text-center p-8">
+                            <div class="w-24 h-24 mx-auto bg-green-900/50 border-2 border-green-600 rounded-full flex items-center justify-center">
+                                <svg class="w-16 h-16 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <h2 class="text-3xl font-bold mt-6 mb-2 text-white">Payment Successful!</h2>
+                            <p class="text-gray-400 mb-8">Your high-resolution, watermark-free photos are ready for download.</p>
+                            <div class="flex flex-col md:flex-row gap-6 justify-center max-w-3xl mx-auto">
+                                <div class="flex-1 bg-gray-900 p-6 rounded-lg border border-gray-700">
+                                    <h3 class="text-xl font-semibold text-white">Single Photo</h3>
+                                    <p class="text-gray-500 mt-1 mb-4 text-sm">Single photo (JPG/PNG, high-res, no watermark).</p>
+                                    <button id="download-single-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all">Download Single Photo</button>
+                                </div>
+                                <div class="flex-1 bg-gray-900 p-6 rounded-lg border border-gray-700">
+                                    <h3 class="text-xl font-semibold text-white">Printable Package</h3>
+                                    <p class="text-gray-500 mt-1 mb-4 text-sm">Package: multiple copies (e.g., 6x passport photos in 4x6 sheet).</p>
+                                    <button id="download-sheet-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all">Download 4x6 Sheet</button>
+                                </div>
+                            </div>
+                             <div class="mt-8">
+                                <button id="home-btn" class="text-blue-400 hover:text-blue-300 transition-colors">← Create Another Photo</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+         <!-- Loading Overlay -->
+        <div id="loading-overlay" class="hidden fixed inset-0 bg-gray-900 bg-opacity-80 flex flex-col items-center justify-center z-50">
+            <div class="loader"></div>
+            <p id="loading-text" class="mt-4 text-lg font-semibold text-white">Loading AI models...</p>
+        </div>
+    </div>
+    
+    <script>
+    // ========== CONFIGURATION ==========
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:8888/.netlify/functions'
+      : '/.netlify/functions';
+
+    // ⚠️ REPLACE WITH YOUR STRIPE PUBLISHABLE KEY ⚠️
+    // Get your key from: https://dashboard.stripe.com/test/apikeys
+    // It should look like: pk_test_51Abc...xyz
+    const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SGlcmIfW10O63OstDGfSqeGNjjRzQw03y2FvWVQpFn79l6yCvYBzvmacrvPu5WKhk9ucLcJCzeZ57GGy68LXajB00ZHbH0Xgi';
+    const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+
+    // ========== DOM ELEMENTS ==========
+    const landingPage = document.getElementById('landing-page');
+    const appContainer = document.getElementById('app-container');
+    const startAppBtnHeader = document.getElementById('start-app-btn-header');
+    const startAppBtnHero = document.getElementById('start-app-btn-hero');
+    const appContentWrapper = document.getElementById('app-content-wrapper');
+    const appFlowWrapper = document.getElementById('app-flow-wrapper');
+
+    const screens = {
+        upload: document.getElementById('upload-screen'),
+        editor: document.getElementById('editor-screen'),
+        payment: document.getElementById('payment-screen'),
+        download: document.getElementById('download-screen'),
+    };
+    const steps = {
+        1: document.getElementById('step-1'),
+        2: document.getElementById('step-2'),
+        3: document.getElementById('step-3'),
+    };
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const loadingText = document.getElementById('loading-text');
+    
+    const dropZone = document.getElementById('drop-zone');
+    const imageUploadInput = document.getElementById('image-upload');
+    
+    const countrySelect = document.getElementById('country-select');
+    const docTypeSelect = document.getElementById('doc-type-select');
+    const aiAdjustBtn = document.getElementById('ai-adjust-btn');
+    
+    const canvasContainer = document.getElementById('canvas-container');
+    const canvas = document.getElementById('editorCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    const complianceChecklist = document.getElementById('compliance-checklist');
+    const nextToPaymentBtn = document.getElementById('next-to-payment-btn');
+    const payBtn = document.getElementById('pay-btn');
+    const previewCanvas = document.getElementById('preview-canvas');
+
+    const downloadSingleBtn = document.getElementById('download-single-btn');
+    const downloadSheetBtn = document.getElementById('download-sheet-btn');
+    const homeBtn = document.getElementById('home-btn');
+
+    // ========== APPLICATION STATE ==========
+    let state = {
+        image: null,
+        faceData: null,
+        baseScale: 1, 
+        transform: {
+            scaleMultiplier: 1, 
+            offsetX: 0,
+            offsetY: 0,
+            rotation: 0,
+        },
+        filters: {
+            brightness: 100,
+            contrast: 100,
+        },
+        currentCountry: 'US',
+        currentDoc: 'passport',
+        complianceResults: {},
+        isDragging: false,
+        dragStart: { x: 0, y: 0 },
+    };
+
+    // ========== REQUIREMENTS (LOADED FROM API) ==========
+    let requirementsData = {};
+
+    // ========== HELPER FUNCTIONS ==========
+    function getCurrentRequirements() {
+        return requirementsData?.[state.currentCountry]?.[state.currentDoc];
+    }
+
+    function startApp() {
+        document.body.style.backgroundColor = '#111827';
+        landingPage.classList.add('fade-out');
+        
+        setTimeout(() => {
+            landingPage.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            appContainer.classList.add('fade-in');
+            
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            appFlowWrapper.classList.add('hidden');
+            screens.upload.classList.remove('hidden');
+            screens.upload.classList.add('flex');
+            
+            showLoading('Loading AI models...');
+            Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights')
+            ]).then(() => {
+                populateDropdowns();
+                updateOverlayMask();
+                hideLoading();
+            }).catch(err => {
+                loadingText.textContent = "Error loading models. Please refresh.";
+                console.error("Model loading error:", err);
+            });
+        }, 500);
+    }
+
+    function navigateTo(screenName) {
+        Object.values(screens).forEach(s => s.classList.add('hidden'));
+        
+        screens.upload.classList.remove('flex');
+        screens.upload.classList.add('hidden');
+
+        appFlowWrapper.classList.remove('hidden');
+        appFlowWrapper.classList.add('flex');
+
+        if(screens[screenName]) {
+            screens[screenName].classList.remove('hidden');
+            if(screenName === 'payment') {
+                screens[screenName].classList.add('flex');
+            }
         }
         
+        updateStepIndicator(screenName);
+    }
+
+    function updateStepIndicator(screenName) {
+        Object.values(steps).forEach(s => s.classList.replace('step-active', 'step-inactive'));
+        if (screenName === 'editor' || screenName === 'payment' || screenName === 'download') {
+            steps[1].classList.replace('step-inactive', 'step-active');
+        }
+        if (screenName === 'editor') {
+            steps[2].classList.replace('step-inactive', 'step-active');
+        }
+        if (screenName === 'payment' || screenName === 'download') {
+             steps[2].classList.replace('step-inactive', 'step-active');
+        }
+        if (screenName === 'payment') {
+            steps[3].classList.replace('step-inactive', 'step-active');
+        }
+        if (screenName === 'download') {
+             steps[3].classList.replace('step-inactive', 'step-active');
+        }
+    }
+
+    function showLoading(text) {
+        loadingText.textContent = text;
+        loadingOverlay.classList.remove('hidden');
+        loadingOverlay.classList.add('flex');
+    }
+
+    function hideLoading() {
+        loadingOverlay.classList.add('hidden');
+        loadingOverlay.classList.remove('flex');
+    }
+
+    // ========== IMAGE HANDLING ==========
+    function handleImageUpload(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = async () => {
+                if (img.width < 600 || img.height < 600) {
+                    alert('Image too small. Please upload an image with minimum dimensions of 600x600 pixels.');
+                    return;
+                }
+                state.image = img;
+                resetStateForNewImage();
+                navigateTo('editor');
+                setTimeout(() => {
+                    setupEditorCanvas();
+                    showLoading('Analyzing photo...');
+                    detectFaceAndRunChecks().then(hideLoading);
+                }, 100);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    function resetStateForNewImage() {
+        state.faceData = null;
+        state.baseScale = 1;
+        state.transform = { scaleMultiplier: 1, offsetX: 0, offsetY: 0, rotation: 0 };
+        state.filters = { brightness: 100, contrast: 100 };
+        document.getElementById('zoom-slider').value = 1;
+        document.getElementById('zoom-value').textContent = '100%';
+        document.getElementById('brightness-slider').value = 100;
+        document.getElementById('brightness-value').textContent = '100%';
+        document.getElementById('contrast-slider').value = 100;
+        document.getElementById('contrast-value').textContent = '100%';
+        document.getElementById('rotation-slider').value = 0;
+        document.getElementById('rotation-value').textContent = '0.0°';
+    }
+
+    function setupEditorCanvas() {
+        const wrapperSize = canvasContainer.clientWidth;
+        canvas.width = wrapperSize;
+        canvas.height = wrapperSize;
+        
+        const hRatio = canvas.width / (state.image.naturalWidth || state.image.width);
+        const vRatio = canvas.height / (state.image.naturalHeight || state.image.height);
+        state.baseScale = Math.min(hRatio, vRatio) * 0.9;
+        
+        state.transform.scaleMultiplier = 1;
+        document.getElementById('zoom-slider').value = 1;
+        document.getElementById('zoom-value').textContent = '100%';
+
+        state.transform.offsetX = (canvas.width - (state.image.naturalWidth || state.image.width) * state.baseScale) / 2;
+        state.transform.offsetY = (canvas.height - (state.image.naturalHeight || state.image.height) * state.baseScale) / 2;
+        
+        drawCanvas();
+    }
+    
+    function drawCanvas() {
+        if (!state.image) return;
+        const imageIsReady = (state.image instanceof HTMLImageElement && state.image.complete && state.image.naturalHeight !== 0) || (state.image instanceof ImageBitmap);
+        if(!imageIsReady){
+            console.error("drawCanvas called with an invalid or unloaded image.");
+            return;
+        }
+
+        const finalScale = state.baseScale * state.transform.scaleMultiplier;
+        const imageWidth = state.image.naturalWidth || state.image.width;
+        const imageHeight = state.image.naturalHeight || state.image.height;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
+        
+        ctx.save();
+
+        const imgCenterX = state.transform.offsetX + (imageWidth * finalScale) / 2;
+        const imgCenterY = state.transform.offsetY + (imageHeight * finalScale) / 2;
+
+        ctx.translate(imgCenterX, imgCenterY);
+        ctx.rotate(state.transform.rotation * Math.PI / 180);
+        ctx.translate(-imgCenterX, -imgCenterY);
+        
+        ctx.translate(state.transform.offsetX, state.transform.offsetY);
+        ctx.scale(finalScale, finalScale);
+        ctx.drawImage(state.image, 0, 0);
+        
+        ctx.restore();
+        ctx.filter = 'none';
+    }
+    
+    async function detectFaceAndRunChecks() {
+        if (!state.image) return;
+        const detection = await faceapi.detectSingleFace(state.image, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
+        state.faceData = detection;
+        runComplianceChecks();
+    }
+
+    // ========== AI ADJUSTMENT ==========
+    async function handleAiAdjust() {
+        if (!state.image) {
+            alert('Please upload an image first.');
+            return;
+        }
+
+        showLoading('AI is adjusting your photo...');
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = state.image.naturalWidth || state.image.width;
+        tempCanvas.height = state.image.naturalHeight || state.image.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(state.image, 0, 0);
+        
+        let base64ImageData;
+        try {
+            base64ImageData = tempCanvas.toDataURL('image/jpeg').split(',')[1];
+            if (!base64ImageData) throw new Error("Generated base64 data is empty.");
+        } catch (e) {
+            console.error("Error converting canvas to data URL:", e);
+            alert("Could not process the current image. Please try uploading the original photo again.");
+            hideLoading();
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/adjust-photo`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    imageBase64: base64ImageData,
+                    country: state.currentCountry,
+                    docType: state.currentDoc
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'API request failed');
+            }
+
+            const result = await response.json();
+            const base64Data = result.adjustedImageBase64;
+
+            if (!base64Data) {
+                throw new Error("No image data returned from the API.");
+            }
+
+            const newImg = new Image();
+            
+            newImg.onload = async () => {
+                state.image = newImg;
+                resetStateForNewImage(); 
+                setupEditorCanvas();
+                showLoading('Re-analyzing adjusted photo...');
+                await detectFaceAndRunChecks();
+                hideLoading();
+            };
+            
+            newImg.onerror = () => {
+                throw new Error("Failed to load the AI-generated image.");
+            }
+            
+            newImg.src = `data:image/png;base64,${base64Data}`;
+
+        } catch (error) {
+            console.error("Error during AI adjustment:", error);
+            alert(`Sorry, the AI adjustment failed. ${error.message}`);
+            hideLoading();
+        }
+    }
+    
+    // ========== COMPLIANCE CHECKS ==========
+    function runComplianceChecks() {
+        const req = getCurrentRequirements();
+        
+        if (!req) {
+            console.error('Compliance check called with invalid state:', state.currentCountry, state.currentDoc);
+            complianceChecklist.innerHTML = `<li class="text-center text-red-500">An error occurred. Please re-select your document.</li>`;
+            return;
+        }
+
+        if (!state.faceData || !state.faceData.landmarks) {
+            state.complianceResults = { 'face': { pass: false, message: 'Could not detect facial features. Try a clearer, front-facing photo.' } };
+            updateComplianceUI();
+            updateGuideColors();
+            return;
+        }
+
+        const results = {};
+        const finalScale = state.baseScale * state.transform.scaleMultiplier;
+
+        const landmarks = state.faceData.landmarks;
+        const getPoint = (index) => {
+            const pt = landmarks.positions[index];
+            const scale = finalScale;
+            const rotation = state.transform.rotation * Math.PI / 180;
+
+            let x = pt.x * scale;
+            let y = pt.y * scale;
+
+            if (rotation !== 0) {
+                const centerX = (state.image.naturalWidth * scale) / 2;
+                const centerY = (state.image.naturalHeight * scale) / 2;
+                const cosR = Math.cos(rotation);
+                const sinR = Math.sin(rotation);
+                
+                const rotatedX = centerX + (x - centerX) * cosR - (y - centerY) * sinR;
+                const rotatedY = centerY + (x - centerX) * sinR + (y - centerY) * cosR;
+                x = rotatedX;
+                y = rotatedY;
+            }
+
+            return {
+                x: x + state.transform.offsetX,
+                y: y + state.transform.offsetY
+            };
+        };
+
+        const chin = getPoint(8);
+        const nose = getPoint(30);
+        const leftEye = getPoint(39);
+        const rightEye = getPoint(42);
+        const eyeCenterY = (leftEye.y + rightEye.y) / 2;
+        
+        const chinToEyeHeight = chin.y - eyeCenterY;
+        const headHeightPx = chinToEyeHeight * 2;
+        const headHeightPercent = (headHeightPx / canvas.height) * 100;
+        
+        if (headHeightPercent >= req.headHeightMinPercent && headHeightPercent <= req.headHeightMaxPercent) {
+            results.headSize = { pass: true, message: `Head size is ${headHeightPercent.toFixed(0)}% (within ${req.headHeightMinPercent}-${req.headHeightMaxPercent}%)` };
+        } else {
+            results.headSize = { pass: false, message: `Head size is ${headHeightPercent.toFixed(0)}%. Should be ${req.headHeightMinPercent}-${req.headHeightMaxPercent}%. Use zoom.` };
+        }
+
+        if (req.eyeToBottomMinPercent) {
+             const eyeLevelPercent = ((canvas.height - eyeCenterY) / canvas.height) * 100;
+
+             if (eyeLevelPercent >= req.eyeToBottomMinPercent && eyeLevelPercent <= req.eyeToBottomMaxPercent) {
+                results.eyePosition = { pass: true, message: `Eye-level is correct.` };
+             } else {
+                results.eyePosition = { pass: false, message: `Eye-level is incorrect. Drag photo to align eyes with the guide.` };
+             }
+        }
+
+        const faceCenterX = nose.x;
+        const canvasCenterX = canvas.width / 2;
+        const deviation = Math.abs(faceCenterX - canvasCenterX) / canvas.width * 100;
+        if(deviation < 10) {
+            results.centering = { pass: true, message: 'Face is well-centered.' };
+        } else {
+            results.centering = { pass: false, message: 'Face is off-center. Drag photo to center it.' };
+        }
+
+        results.background = { pass: true, message: `Background will be replaced with ${req.backgroundName}.` };
+        
+        const mouthOpen = (getPoint(66).y - getPoint(62).y) > 5;
+        if (!mouthOpen) {
+            results.expression = { pass: true, message: 'Neutral expression, mouth closed.' };
+        } else {
+            results.expression = { pass: false, message: 'Mouth appears to be open. A neutral expression is required.' };
+        }
+
+        state.complianceResults = results;
+        updateComplianceUI();
+        updateGuideColors();
+    }
+
+    function updateComplianceUI() {
+        complianceChecklist.innerHTML = '';
+        let allPass = true;
+        
+        if (Object.keys(state.complianceResults).length === 0) {
+             complianceChecklist.innerHTML = `<li class="text-center text-gray-500">Analyzing...</li>`;
+             nextToPaymentBtn.disabled = true;
+             return;
+        }
+
+        for (const [key, result] of Object.entries(state.complianceResults)) {
+            const li = document.createElement('li');
+            li.className = 'flex items-start space-x-3';
+            const iconClass = result.pass ? 'compliance-pass' : 'compliance-fail';
+            const iconPath = result.pass 
+                ? 'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' 
+                : 'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z';
+            
+            const titles = {
+                face: 'Face Detection', headSize: 'Head Size', eyePosition: 'Eye Position', centering: 'Centering', background: 'Background', expression: 'Expression'
+            };
+            const title = titles[key] || 'Check';
+
+            li.innerHTML = `
+                <div class="w-5 h-5 pt-1 flex-shrink-0"><svg class="w-full h-full ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="${iconPath}" clip-rule="evenodd"></path></svg></div>
+                <div>
+                    <h4 class="font-medium text-gray-200">${title}</h4>
+                    <p class="text-sm text-gray-400">${result.message}</p>
+                </div>
+            `;
+            complianceChecklist.appendChild(li);
+
+            if (!result.pass) allPass = false;
+        }
+        
+        nextToPaymentBtn.disabled = !allPass;
+    }
+    
+    function updateGuideColors() {
+        const headSizeResult = state.complianceResults.headSize;
+        const eyePositionResult = state.complianceResults.eyePosition;
+        const centeringResult = state.complianceResults.centering;
+
+        const passColor = '#10b981';
+        const failColor = '#ef4444';
+        const defaultColor = 'rgba(255, 255, 255, 0.7)';
+
+        const headOval = document.getElementById('head-oval');
+        const eyeLine = document.getElementById('eye-line');
+        const centerLine = document.getElementById('center-line');
+
+        headOval.style.stroke = headSizeResult ? (headSizeResult.pass ? passColor : failColor) : defaultColor;
+        eyeLine.style.stroke = eyePositionResult ? (eyePositionResult.pass ? passColor : failColor) : defaultColor;
+        centerLine.style.stroke = centeringResult ? (centeringResult.pass ? passColor : failColor) : defaultColor;
+    }
+
+    function updateOverlayMask() {
+        const req = getCurrentRequirements();
+        if (!req) return;
+        
+        const eyeLineEl = document.getElementById('eye-line');
+        const headOvalEl = document.getElementById('head-oval');
+        const centerLineEl = document.getElementById('center-line');
+
+        const headHeightIdeal = (req.headHeightMinPercent + req.headHeightMaxPercent) / 2;
+        const eyeToBottomIdeal = req.eyeToBottomMinPercent ? (req.eyeToBottomMinPercent + req.eyeToBottomMaxPercent) / 2 : 50;
+
+        const eyeLineY = 100 - eyeToBottomIdeal;
+        const headCenterY = eyeLineY + (headHeightIdeal * 0.05);
+        
+        const ovalRy = headHeightIdeal / 2;
+        const ovalRx = ovalRy * 0.75;
+
+        eyeLineEl.setAttribute('y1', eyeLineY);
+        eyeLineEl.setAttribute('y2', eyeLineY);
+        headOvalEl.setAttribute('cy', headCenterY);
+        headOvalEl.setAttribute('ry', ovalRy);
+        headOvalEl.setAttribute('rx', ovalRx);
+        
+        const defaultColor = 'rgba(255, 255, 255, 0.7)';
+        centerLineEl.style.stroke = defaultColor;
+        eyeLineEl.style.stroke = defaultColor;
+        headOvalEl.style.stroke = defaultColor;
+    }
+
+    // ========== DOWNLOAD/FINAL GENERATION ==========
+    async function generateFinalImage(format, withWatermark = false) {
+        const req = getCurrentRequirements();
+        if (!req) {
+            alert('Requirements not loaded. Please refresh and try again.');
+            return;
+        }
+        
+        const finalWidth = format === 'sheet' ? 1800 : req.widthPx;
+        const finalHeight = format === 'sheet' ? 1200 : req.heightPx;
+        const finalScale = state.baseScale * state.transform.scaleMultiplier;
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = finalWidth;
+        tempCanvas.height = finalHeight;
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        tempCtx.fillStyle = req.background;
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        
+        const editorAspect = canvas.width / canvas.height;
+        const reqAspect = req.widthPx / req.heightPx;
+        
+        let sx, sy, sWidth, sHeight;
+        if (reqAspect > editorAspect) { 
+            sWidth = canvas.width;
+            sHeight = canvas.width / reqAspect;
+            sx = 0;
+            sy = (canvas.height - sHeight) / 2;
+        } else {
+            sHeight = canvas.height;
+            sWidth = canvas.height * reqAspect;
+            sy = 0;
+            sx = (canvas.width - sWidth) / 2;
+        }
+        
+        const photoDataCanvas = document.createElement('canvas');
+        photoDataCanvas.width = canvas.width;
+        photoDataCanvas.height = canvas.height;
+        const photoCtx = photoDataCanvas.getContext('2d');
+        photoCtx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
+        
+        const imgCenterX = state.transform.offsetX + (state.image.naturalWidth * finalScale) / 2;
+        const imgCenterY = state.transform.offsetY + (state.image.naturalHeight * finalScale) / 2;
+        photoCtx.translate(imgCenterX, imgCenterY);
+        photoCtx.rotate(state.transform.rotation * Math.PI / 180);
+        photoCtx.translate(-imgCenterX, -imgCenterY);
+
+        photoCtx.translate(state.transform.offsetX, state.transform.offsetY);
+        photoCtx.scale(finalScale, finalScale);
+        photoCtx.drawImage(state.image, 0, 0);
+
+        if (format === 'single' || format === 'preview') {
+             tempCtx.drawImage(photoDataCanvas, sx, sy, sWidth, sHeight, 0, 0, req.widthPx, req.heightPx);
+        } else if (format === 'sheet') {
+            const photoW = req.widthPx;
+            const photoH = req.heightPx;
+
+            const cols = Math.floor(finalWidth / photoW);
+            const rows = Math.floor(finalHeight / photoH);
+
+            if (cols > 0 && rows > 0) {
+                const usedWidth = cols * photoW;
+                const usedHeight = rows * photoH;
+
+                const paddingX = (finalWidth - usedWidth) / (cols + 1);
+                const paddingY = (finalHeight - usedHeight) / (rows + 1);
+
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        const x = paddingX + j * (photoW + paddingX);
+                        const y = paddingY + i * (photoH + paddingY);
+                        tempCtx.drawImage(photoDataCanvas, sx, sy, sWidth, sHeight, x, y, photoW, photoH);
+                    }
+                }
+            }
+        }
+       
+        if (withWatermark) {
+            tempCtx.save();
+            tempCtx.translate(tempCanvas.width/2, tempCanvas.height/2);
+            tempCtx.rotate(-0.2);
+            tempCtx.font = 'bold 60px Arial';
+            tempCtx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            tempCtx.textAlign = 'center';
+            tempCtx.fillText('WATERMARK', 0, 0);
+            tempCtx.restore();
+        }
+
+        if (format === 'preview') {
+            const previewCtx = previewCanvas.getContext('2d');
+            previewCtx.drawImage(tempCanvas, 0, 0, previewCanvas.width, previewCanvas.height);
+        } else {
+            const dataUrl = tempCanvas.toDataURL(format === 'sheet' ? 'image/jpeg' : 'image/jpeg', 0.95);
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = `passphoto_pro_${state.currentCountry}_${state.currentDoc}.jpg`;
+            a.click();
+        }
+    }
+
+    // ========== INITIALIZATION ==========
+    function populateDropdowns() {
+        countrySelect.innerHTML = '<option>Loading countries...</option>';
+        docTypeSelect.innerHTML = '<option>Loading...</option>';
+        
+        fetch(`${API_BASE_URL}/get-requirements`)
+            .then(response => response.json())
+            .then(data => {
+                requirementsData = data.countries;
+                
+                countrySelect.innerHTML = '';
+                for (const countryCode of Object.keys(requirementsData)) {
+                    const option = new Option(countryCode, countryCode);
+                    countrySelect.add(option);
+                }
+                
+                countrySelect.value = state.currentCountry;
+                populateDocTypes();
+            })
+            .catch(error => {
+                console.error('Failed to load requirements:', error);
+                countrySelect.innerHTML = '<option>Error loading countries</option>';
+                alert('Failed to load country requirements. Please refresh the page.');
+            });
+    }
+    
+    function populateDocTypes() {
+        docTypeSelect.innerHTML = '';
+        const docs = requirementsData?.[state.currentCountry];
+        
+        if (!docs) {
+            docTypeSelect.innerHTML = '<option>No documents available</option>';
+            return;
+        }
+        
+        for (const docCode of Object.keys(docs)) {
+            const docData = docs[docCode];
+            const option = new Option(docData.name, docCode);
+            docTypeSelect.add(option);
+        }
+        
+        const firstDocType = Object.keys(docs)[0];
+        if (firstDocType) {
+            state.currentDoc = firstDocType;
+            docTypeSelect.value = firstDocType;
+        }
+    }
+
+    function init() {
         startAppBtnHeader.addEventListener('click', startApp);
         startAppBtnHero.addEventListener('click', startApp);
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-blue-500');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-blue-500');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500');
+            if (e.dataTransfer.files.length) {
+                handleImageUpload(e.dataTransfer.files[0]);
+            }
+        });
+        imageUploadInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleImageUpload(e.target.files[0]);
+            }
+        });
+
+        aiAdjustBtn.addEventListener('click', handleAiAdjust);
+
+        countrySelect.addEventListener('change', (e) => {
+            state.currentCountry = e.target.value;
+            populateDocTypes();
+            const firstValidDoc = Object.keys(requirementsData[state.currentCountry])[0];
+            state.currentDoc = firstValidDoc;
+            docTypeSelect.value = firstValidDoc;
+            updateOverlayMask();
+            if (state.image) { 
+                runComplianceChecks();
+            }
+        });
+        
+        docTypeSelect.addEventListener('change', (e) => {
+            state.currentDoc = e.target.value;
+            updateOverlayMask();
+            if (state.image) {
+                runComplianceChecks();
+            }
+        });
+
+        const canvasInteraction = (e) => {
+             e.preventDefault();
+            if (e.type === 'mousedown' || e.type === 'touchstart') {
+                state.isDragging = true;
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                state.dragStart.x = clientX - rect.left - state.transform.offsetX;
+                state.dragStart.y = clientY - rect.top - state.transform.offsetY;
+            } else if (e.type === 'mouseup' || e.type === 'touchend') {
+                state.isDragging = false;
+                runComplianceChecks(); 
+            } else if ((e.type === 'mousemove' || e.type === 'touchmove') && state.isDragging) {
+                const rect = canvas.getBoundingClientRect();
+                 const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                state.transform.offsetX = clientX - rect.left - state.dragStart.x;
+                state.transform.offsetY = clientY - rect.top - state.dragStart.y;
+                drawCanvas();
+            }
+        };
+
+        canvas.addEventListener('mousedown', canvasInteraction);
+        canvas.addEventListener('mousemove', canvasInteraction);
+        canvas.addEventListener('mouseup', canvasInteraction);
+        canvas.addEventListener('mouseleave', () => {
+            if (state.isDragging) {
+                state.isDragging = false;
+                runComplianceChecks();
+            }
+        });
+        canvas.addEventListener('touchstart', canvasInteraction, { passive: false });
+        canvas.addEventListener('touchmove', canvasInteraction, { passive: false });
+        canvas.addEventListener('touchend', canvasInteraction);
+
+        const zoomSlider = document.getElementById('zoom-slider');
+        const brightnessSlider = document.getElementById('brightness-slider');
+        const contrastSlider = document.getElementById('contrast-slider');
+        const rotationSlider = document.getElementById('rotation-slider');
+        const zoomValue = document.getElementById('zoom-value');
+        const brightnessValue = document.getElementById('brightness-value');
+        const contrastValue = document.getElementById('contrast-value');
+        const rotationValue = document.getElementById('rotation-value');
+
+        zoomSlider.addEventListener('input', (e) => {
+            const oldMultiplier = state.transform.scaleMultiplier;
+            const newMultiplier = parseFloat(e.target.value);
+            
+            if (oldMultiplier === newMultiplier) return;
+
+            const oldScale = state.baseScale * oldMultiplier;
+            const newScale = state.baseScale * newMultiplier;
+
+            const canvasCenterX = canvas.width / 2;
+            const canvasCenterY = canvas.height / 2;
+
+            const imageXUnderCenter = (canvasCenterX - state.transform.offsetX) / oldScale;
+            const imageYUnderCenter = (canvasCenterY - state.transform.offsetY) / oldScale;
+            
+            state.transform.offsetX = canvasCenterX - (imageXUnderCenter * newScale);
+            state.transform.offsetY = canvasCenterY - (imageYUnderCenter * newScale);
+
+            state.transform.scaleMultiplier = newMultiplier;
+            zoomValue.textContent = `${Math.round(state.transform.scaleMultiplier * 100)}%`;
+            drawCanvas();
+        });
+        zoomSlider.addEventListener('change', runComplianceChecks); 
+        
+        brightnessSlider.addEventListener('input', (e) => {
+            state.filters.brightness = parseInt(e.target.value);
+            brightnessValue.textContent = `${state.filters.brightness}%`;
+            drawCanvas();
+        });
+        contrastSlider.addEventListener('input', (e) => {
+            state.filters.contrast = parseInt(e.target.value);
+            contrastValue.textContent = `${state.filters.contrast}%`;
+            drawCanvas();
+        });
+        rotationSlider.addEventListener('input', (e) => {
+            state.transform.rotation = parseFloat(e.target.value);
+            rotationValue.textContent = `${state.transform.rotation.toFixed(1)}°`;
+            drawCanvas();
+        });
+        rotationSlider.addEventListener('change', runComplianceChecks);
+
+        nextToPaymentBtn.addEventListener('click', () => {
+            navigateTo('payment');
+            generateFinalImage('preview', true);
+        });
+
+        payBtn.addEventListener('click', async () => {
+            showLoading('Creating payment...');
+            
+            try {
+                // Simulated payment for demo
+                setTimeout(() => {
+                    hideLoading();
+                    state.paymentVerified = true;
+                    navigateTo('download');
+                }, 1500);
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Payment error:', error);
+                alert('Payment failed. Please try again.');
+            }
+        });
+        
+        downloadSingleBtn.addEventListener('click', () => generateFinalImage('single'));
+        downloadSheetBtn.addEventListener('click', () => generateFinalImage('sheet'));
+        homeBtn.addEventListener('click', () => {
+            window.location.reload();
+        });
+
+        window.addEventListener('resize', () => {
+            if(state.image) {
+                setupEditorCanvas();
+                runComplianceChecks();
+            }
+        });
+    }
+
+    init();
     </script>
 </body>
 </html>
