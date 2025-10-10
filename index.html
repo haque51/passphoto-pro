@@ -1562,64 +1562,87 @@ const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
           //  }
        // });
 
-        payBtn.addEventListener('click', async () => {
-            showLoading('Processing payment...', 50);
-            
-            try {
-                // Create Payment Intent
-                const response = await fetch(`${API_BASE_URL}/create-payment`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: 499 }) // $4.99 in cents
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Payment creation failed: ${response.status}`);
-                }
-
-                const { clientSecret, paymentIntentId } = await response.json();
-                
-                // Confirm payment with Stripe Card Element
-                const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-                    payment_method: {
-                        card: {
-                            // Using a test card number
-                            number: '4242424242424242',
-                            exp_month: 12,
-                            exp_year: 2034,
-                            cvc: '123'
-                        }
-                    }
-                });
-
-                if (error) {
-                    throw new Error(error.message);
-                }
-
-                // Verify payment on backend
-                const verifyResponse = await fetch(`${API_BASE_URL}/verify-payment`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ paymentIntentId: paymentIntent.id })
-                });
-
-                const { verified } = await verifyResponse.json();
-                
-                hideLoading();
-                
-                if (verified) {
-                    state.paymentVerified = true;
-                    navigateTo('download');
-                } else {
-                    throw new Error('Payment verification failed');
-                }
-
-            } catch (error) {
-                hideLoading();
-                console.error('Payment error:', error);
-                alert(`Payment failed: ${error.message}\n\nFor testing, use card: 4242 4242 4242 4242`);
-            }
+  payBtn.addEventListener('click', async () => {
+    showLoading('Creating payment session...', 30);
+    
+    try {
+        // Create Stripe Checkout Session
+        const response = await fetch(`${API_BASE_URL}/create-payment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                country: state.currentCountry,
+                docType: state.currentDoc
+            })
         });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+            throw new Error(errorData.error || 'Failed to create payment session');
+        }
+
+        const { sessionId } = await response.json();
+        
+        updateProgress(60);
+        hideLoading();
+
+        // Redirect to Stripe Checkout
+        const { error } = await stripe.redirectToCheckout({
+            sessionId: sessionId
+        });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+    } catch (error) {
+        hideLoading();
+        console.error('Payment error:', error);
+        alert(`Payment failed: ${error.message}\n\n⚠️ For testing, you'll be redirected to Stripe Checkout page.`);
+    }
+});
+        // Handle payment success redirect
+function checkPaymentSuccess() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    
+    if (sessionId) {
+        // User just returned from Stripe
+        showLoading('Verifying payment...', 50);
+        
+        fetch(`${API_BASE_URL}/verify-payment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId: sessionId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'complete') {
+                updateProgress(100);
+                setTimeout(() => {
+                    hideLoading();
+                    state.paymentVerified = true;
+                    
+                    // Start the app and go directly to download screen
+                    startApp();
+                    setTimeout(() => {
+                        navigateTo('download');
+                    }, 500);
+                    
+                    // Clean up URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }, 1000);
+            } else {
+                throw new Error('Payment not completed');
+            }
+        })
+        .catch(error => {
+            hideLoading();
+            console.error('Verification error:', error);
+            alert('Payment verification failed. Please contact support with your order details.');
+        });
+    }
+}
 
         
         downloadSingleBtn.addEventListener('click', () => generateFinalImage('single'));
@@ -1634,6 +1657,7 @@ const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
                 runComplianceChecks();
             }
         });
+        checkPaymentSuccess();
     }
 
     init();
