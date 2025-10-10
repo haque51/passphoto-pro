@@ -1,1 +1,36 @@
+# netlify.toml
 
+[build]
+  # Directory with serverless functions
+  functions = "netlify/functions"
+  
+  # Directory to publish (your static files)
+  publish = "."
+  
+  # Build command (not needed for static site)
+  command = "echo 'No build step required'"
+
+[functions]
+  # Use esbuild for faster builds
+  node_bundler = "esbuild"
+
+# Redirect API calls to functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# Custom headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+# Cache static assets
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
