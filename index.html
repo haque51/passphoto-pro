@@ -3,664 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$4.99 Passport Photos in 5 Minutes | Passphoto Pro</title>
-    <meta name="description" content="AI-powered passport photos for 30+ countries. $4.99 one-time. Instant download. ICAO compliant. Money-back guarantee. Perfect photos in under 5 minutes.">
+    <title>Passphoto Pro - AI-Powered Passport Photos in 5 Minutes</title>
+    <meta name="description" content="Create professional passport photos online. ICAO compliant. 30+ countries. AI-powered. Just $4.99. Instant download.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
-            transition: background-color 0.5s ease;
-        }
-        .step-active .step-circle {
-            background-color: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-        }
-        .step-active .step-text {
-            color: #3b82f6;
-            font-weight: 600;
-        }
-        .step-inactive .step-circle {
-            background-color: transparent;
-            color: #9ca3af;
-            border-color: #4b5563;
-        }
-        .step-inactive .step-text {
-            color: #9ca3af;
-        }
-        .step-line {
-            height: 2px;
-            flex-grow: 1;
-            background-color: #374151;
-            margin: 0 1rem;
-        }
-        .compliance-pass {
-            color: #10b981;
-        }
-        .compliance-fail {
-            color: #ef4444;
-        }
-        .canvas-container {
-            position: relative;
-            touch-action: none;
-        }
-        #editorCanvas {
-            cursor: grab;
-        }
-        #editorCanvas:active {
-            cursor: grabbing;
-        }
-        .overlay-mask {
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
-        .overlay-mask line, .overlay-mask ellipse {
-            transition: stroke 0.3s ease-in-out;
-        }
         .loader {
-            border: 4px solid #374151;
-            border-top: 4px solid #3b82f6;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-left-color: #3b82f6;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .hero-gradient-text {
-            background: -webkit-linear-gradient(45deg, #4ade80, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out forwards;
-        }
-        .fade-out {
-            animation: fadeOut 0.5s ease-in-out forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        details summary {
-            list-style: none;
-        }
-        details summary::-webkit-details-marker {
-            display: none;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .progress-bar {
-            width: 0%;
-            height: 4px;
-            background: linear-gradient(90deg, #3b82f6, #10b981);
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            animation: progress 2s ease-in-out infinite;
+        }
+        @keyframes progress {
+            0%, 100% { width: 0%; }
+            50% { width: 100%; }
         }
     </style>
 </head>
-<body class="bg-white text-gray-800">
+<body class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white font-sans min-h-screen">
+    <div id="app-root">
+        <!-- LANDING PAGE -->
+        <div id="landing-page">
+            <!-- Header -->
+            <header class="container mx-auto px-4 py-6 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="white" viewBox="0 0 24 24"><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+                    </div>
+                    <h1 class="text-2xl font-bold">Passphoto Pro</h1>
+                </div>
+                <button id="start-app-btn-header" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold transition-all">Get Started</button>
+            </header>
 
-    <!-- Landing Page Container -->
-    <div id="landing-page">
-        <!-- Header -->
-        <header class="bg-slate-900 text-white p-4">
-            <div class="container mx-auto flex justify-between items-center">
-                <a href="" class="flex items-center space-x-2 cursor-pointer">
-                    <svg class="w-8 h-8 text-green-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.25 2.75C5.25 2.19772 5.69772 1.75 6.25 1.75H17.75C18.3023 1.75 18.75 2.19772 18.75 2.75V21.25C18.75 21.8023 18.3023 22.25 17.75 22.25H6.25C5.69772 22.25 5.25 21.8023 5.25 21.25V2.75Z" stroke="currentColor" stroke-width="1.5"></path><path d="M9.75 6C9.75 5.58579 10.0858 5.25 10.5 5.25H13.5C13.9142 5.25 14.25 5.58579 14.25 6V6C14.25 6.41421 13.9142 6.75 13.5 6.75H10.5C10.0858 6.75 9.75 6.41421 9.75 6V6Z" fill="currentColor"></path><circle cx="12" cy="12" r="3.25" stroke="currentColor" stroke-width="1.5"></circle></svg>
-                    <span class="text-2xl font-bold">Passphoto Pro</span>
-                </a>
-                <button id="start-app-btn-header" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-5 rounded-lg transition-colors">Get Started</button>
-            </div>
-        </header>
-
-        <!-- Hero Section -->
-        <section class="bg-slate-900 text-white text-center py-20 px-4">
-            <div class="container mx-auto">
-                <div class="inline-flex items-center space-x-2 bg-slate-800 border border-slate-700 rounded-full px-4 py-1 mb-6">
-                    <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 22.5l-.648-1.938a3.375 3.375 0 00-2.672-2.672L11.25 18l1.938-.648a3.375 3.375 0 002.672-2.672L16.25 13.5l.648 1.938a3.375 3.375 0 002.672 2.672L21.5 18l-1.938.648a3.375 3.375 0 00-2.672 2.672z"></path></svg>
-                    <span class="font-medium text-sm">Smart Alignment Tool</span>
-                </div>
-                <h1 class="text-5xl md:text-7xl font-extrabold mb-4">Perfect Passport Photos</h1>
-                <h2 class="text-5xl md:text-7xl font-extrabold mb-6 hero-gradient-text">Made Simple</h2>
-                <p class="max-w-3xl mx-auto text-lg text-slate-400 mb-10">Upload your photo, use our alignment tool to position it perfectly according to 30+ country requirements, and get compliant passport photos ready for print.</p>
-                <button id="start-app-btn-hero" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors">Get Your Photo in 5 Minutes - $4.99</button>
-                <div class="mt-10 flex flex-wrap justify-center items-center gap-x-8 gap-y-4 text-slate-400">
-                    <span class="flex items-center"><svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Biometric Alignment</span>
-                    <span class="flex items-center"><svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Compliance Checks</span>
-                    <span class="flex items-center"><svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Visual Guidelines</span>
-                    <span class="flex items-center"><svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>30+ Countries</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stats Bar -->
-        <section class="bg-slate-800 py-8 px-4">
-            <div class="container mx-auto">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                    <div>
-                        <div class="text-4xl font-bold text-blue-400">30+</div>
-                        <div class="text-slate-300 text-sm mt-1">Countries Supported</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold text-green-400">$4.99</div>
-                        <div class="text-slate-300 text-sm mt-1">One-Time Payment</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold text-blue-400">&lt;5min</div>
-                        <div class="text-slate-300 text-sm mt-1">Average Time</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold text-green-400">ICAO</div>
-                        <div class="text-slate-300 text-sm mt-1">Compliant</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- How It Works Section -->
-        <section class="bg-white py-20 px-4">
-            <div class="container mx-auto text-center">
-                <h2 class="text-4xl font-bold mb-4">How It Works</h2>
-                <p class="text-lg text-gray-600 mb-12">Get perfect passport photos in three simple steps</p>
-                <div class="grid md:grid-cols-3 gap-10">
-                    <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200">
-                        <div class="relative inline-block">
-                            <span class="absolute -top-4 -left-4 bg-green-500 text-white w-8 h-8 rounded-xl flex items-center justify-center font-bold text-lg">1</span>
-                            <div class="inline-block bg-blue-100 p-4 rounded-2xl mb-6">
-                               <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-2">Upload Your Photo</h3>
-                        <p class="text-gray-600">Take or upload a clear portrait photo with good lighting and a plain background.</p>
-                    </div>
-                    <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200">
-                         <div class="relative inline-block">
-                            <span class="absolute -top-4 -left-4 bg-green-500 text-white w-8 h-8 rounded-xl flex items-center justify-center font-bold text-lg">2</span>
-                             <div class="inline-block bg-blue-100 p-4 rounded-2xl mb-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-2">Align with Guidelines</h3>
-                        <p class="text-gray-600">Use our visual overlay to position your face correctly, adjust size, crop, and ensure compliance.</p>
-                    </div>
-                    <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200">
-                         <div class="relative inline-block">
-                            <span class="absolute -top-4 -left-4 bg-green-500 text-white w-8 h-8 rounded-xl flex items-center justify-center font-bold text-lg">3</span>
-                             <div class="inline-block bg-blue-100 p-4 rounded-2xl mb-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-2">Download & Print</h3>
-                        <p class="text-gray-600">Get instant compliance feedback, download high-resolution print-ready files.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Why Choose Us Section -->
-        <section class="bg-slate-50 py-20 px-4">
-            <div class="container mx-auto text-center">
-                <h2 class="text-4xl font-bold mb-4">Why Choose Passphoto Pro?</h2>
-                <p class="text-lg text-gray-600 mb-12">Professional tools to create compliant passport photos yourself</p>
-                <div class="grid md:grid-cols-3 gap-10">
-                    <div class="bg-white p-8 rounded-2xl shadow-sm">
-                        <div class="inline-block bg-green-100 p-4 rounded-xl mb-4">
-                            <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-2">Visual Alignment Tool</h3>
-                        <p class="text-gray-600">Overlay biometric masks show exactly where to position your face for perfect compliance.</p>
-                    </div>
-                    <div class="bg-white p-8 rounded-2xl shadow-sm">
-                        <div class="inline-block bg-green-100 p-4 rounded-xl mb-4">
-                            <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.432 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-2">Real-Time Checks</h3>
-                        <p class="text-gray-600">Instant feedback on face size, position, brightness, and other ICAO requirements.</p>
-                    </div>
-                    <div class="bg-white p-8 rounded-2xl shadow-sm">
-                         <div class="inline-block bg-green-100 p-4 rounded-xl mb-4">
-                            <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-2">Smart Guidelines</h3>
-                        <p class="text-gray-600">Country-specific overlays and instructions ensure you meet exact specifications.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Pricing Section -->
-        <section class="bg-white py-20 px-4">
-            <div class="container mx-auto text-center">
-                <h2 class="text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
-                <p class="text-lg text-gray-600 mb-12">One-time payment. No subscriptions. No hidden fees.</p>
-                
-                <div class="max-w-2xl mx-auto">
-                    <div class="bg-gradient-to-br from-blue-50 to-green-50 border-2 border-blue-200 rounded-2xl p-8 md:p-10 relative shadow-lg">
-                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                            <span class="bg-green-500 text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-md">LAUNCH SPECIAL</span>
-                        </div>
-                        
-                        <div class="flex items-baseline justify-center mb-4">
-                            <span class="text-6xl font-extrabold text-gray-900">$4.99</span>
-                            <span class="text-gray-600 ml-2 text-lg">one-time</span>
-                        </div>
-                        
-                        <p class="text-gray-600 text-lg mb-8">Professional passport photos, ready in minutes</p>
-                        
-                        <ul class="text-left space-y-4 mb-8 max-w-lg mx-auto">
-                            <li class="flex items-start">
-                                <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span class="text-gray-700">AI-powered background removal & lighting adjustment</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span class="text-gray-700">High-resolution files (300 DPI print quality)</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span class="text-gray-700">Single photo + 4x6 printable sheet included</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span class="text-gray-700">Compliant with 30+ country requirements</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span class="text-gray-700">Instant download - no waiting, no watermarks</span>
-                            </li>
-                        </ul>
-                        
-                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-xl transition-all transform hover:scale-105 mb-4 shadow-lg" onclick="document.getElementById('start-app-btn-hero').click()">
-                            Get Your Photo Now - Only $4.99
-                        </button>
-                        
-                        <p class="text-sm text-gray-600">💳 Secure payment via Stripe • Instant access</p>
-                    </div>
-                    
-                    <div class="mt-12 bg-slate-50 rounded-xl p-6 border border-slate-200">
-                        <h3 class="font-bold text-lg mb-6 text-gray-800">Compare with alternatives:</h3>
-                        <div class="grid md:grid-cols-3 gap-6 text-sm">
-                            <div class="text-center">
-                                <p class="font-semibold text-gray-800 text-base mb-2">Photo Booth</p>
-                                <p class="text-gray-600 text-2xl font-bold mb-2">$15-20</p>
-                                <p class="text-red-600 text-xs">❌ Travel required</p>
-                                <p class="text-red-600 text-xs">❌ Wait in line</p>
-                            </div>
-                            <div class="text-center">
-                                <p class="font-semibold text-gray-800 text-base mb-2">Photo Studio</p>
-                                <p class="text-gray-600 text-2xl font-bold mb-2">$20-35</p>
-                                <p class="text-red-600 text-xs">❌ Appointment needed</p>
-                                <p class="text-red-600 text-xs">❌ Business hours only</p>
-                            </div>
-                            <div class="bg-blue-100 border-2 border-blue-400 rounded-lg p-4">
-                                <p class="font-semibold text-blue-900 text-base mb-2">Passphoto Pro</p>
-                                <p class="text-blue-600 font-bold text-2xl mb-2">$4.99</p>
-                                <p class="text-green-600 text-xs font-medium">✅ Instant, at home</p>
-                                <p class="text-green-600 text-xs font-medium">✅ 24/7 available</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Trust Section -->
-        <section class="bg-white py-16 px-4">
-            <div class="container mx-auto">
-                <div class="max-w-4xl mx-auto">
-                    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-8 mb-10 text-center">
-                        <div class="inline-flex items-center justify-center w-16 h-16 bg-green-500 rounded-full mb-4">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl md:text-3xl font-bold mb-3">100% Satisfaction Guarantee</h3>
-                        <p class="text-gray-700 text-lg max-w-2xl mx-auto">If your photo is rejected by authorities due to our compliance check failure, we'll refund you 100%. No questions asked.</p>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-start text-center">
-                        <div>
-                            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-3">
-                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                            </div>
-                            <p class="text-sm font-semibold text-gray-800">Secure Payment</p>
-                            <p class="text-xs text-gray-500 mt-1">Stripe Protected</p>
-                        </div>
-                        <div>
-                            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-3">
-                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                            </div>
-                            <p class="text-sm font-semibold text-gray-800">ICAO Compliant</p>
-                            <p class="text-xs text-gray-500 mt-1">Official Standards</p>
-                        </div>
-                        <div>
-                            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-3">
-                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            </div>
-                            <p class="text-sm font-semibold text-gray-800">Instant Delivery</p>
-                            <p class="text-xs text-gray-500 mt-1">Download Right Away</p>
-                        </div>
-                        <div>
-                            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-3">
-                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                            </div>
-                            <p class="text-sm font-semibold text-gray-800">Email Support</p>
-                            <p class="text-xs text-gray-500 mt-1">We're Here to Help</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- FAQ Section -->
-        <section class="bg-slate-50 py-20 px-4">
-            <div class="container mx-auto max-w-4xl">
-                <h2 class="text-4xl font-bold text-center mb-4">Frequently Asked Questions</h2>
-                <p class="text-center text-gray-600 mb-12">Everything you need to know about creating your passport photo</p>
-                
-                <div class="space-y-4">
-                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                        <summary class="font-semibold text-lg text-gray-800">Will my photo be accepted by immigration authorities?</summary>
-                        <p class="mt-4 text-gray-600 leading-relaxed">Yes! Our tool follows official ICAO (International Civil Aviation Organization) standards used by 30+ countries. We provide real-time compliance checks to ensure your photo meets all requirements. Plus, we offer a 100% money-back guarantee if your photo is rejected due to our error.</p>
-                    </details>
-                    
-                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                        <summary class="font-semibold text-lg text-gray-800">How does the AI adjustment work?</summary>
-                        <p class="mt-4 text-gray-600 leading-relaxed">Our AI automatically removes your background and replaces it with the required color (white or light grey), adjusts lighting to meet standards, and ensures your pose is correct. You can also manually adjust zoom, position, brightness, and rotation for perfect results.</p>
-                    </details>
-                    
-                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                        <summary class="font-semibold text-lg text-gray-800">What do I get for $4.99?</summary>
-                        <p class="mt-4 text-gray-600 leading-relaxed">You get a high-resolution digital photo (300 DPI) ready for printing, plus a 4x6 inch sheet with multiple copies for your convenience. Both files are instant download with no watermarks and no subscriptions required.</p>
-                    </details>
-                    
-                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                        <summary class="font-semibold text-lg text-gray-800">Can I use a photo from my phone?</summary>
-                        <p class="mt-4 text-gray-600 leading-relaxed">Absolutely! Just make sure the photo is clear, well-lit, and at least 600x600 pixels. Our app works perfectly on all devices - phone, tablet, or computer. Take a selfie or ask someone to take your photo.</p>
-                    </details>
-                    
-                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                        <summary class="font-semibold text-lg text-gray-800">Which countries are supported?</summary>
-                        <p class="mt-4 text-gray-600 leading-relaxed">We support 30+ countries including US, UK, Canada, Australia, all Schengen countries (Germany, France, Spain, Italy, Netherlands, etc.), India, China, Japan, Brazil, Mexico, and many more. Select your country in the app to see specific requirements for passports and visas.</p>
-                    </details>
-                    
-                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                        <summary class="font-semibold text-lg text-gray-800">How long does it take?</summary>
-                        <p class="mt-4 text-gray-600 leading-relaxed">Most users complete the entire process in under 5 minutes: upload your photo (30 seconds), AI adjustment (1 minute), manual fine-tuning if needed (2 minutes), payment and instant download (1 minute). That's it!</p>
-                    </details>
-                    
-                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                        <summary class="font-semibold text-lg text-gray-800">Is my payment secure?</summary>
-                        <p class="mt-4 text-gray-600 leading-relaxed">Yes! All payments are processed through Stripe, the same secure payment system used by Amazon, Google, and millions of businesses worldwide. We never see or store your payment information. Your transaction is fully encrypted and secure.</p>
-                    </details>
-                    
-                    <details class="bg-white rounded-lg p-6 cursor-pointer shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                        <summary class="font-semibold text-lg text-gray-800">Why is the price so low?</summary>
-                        <p class="mt-4 text-gray-600 leading-relaxed">We're offering a special launch price of $4.99 to help people discover our service. Traditional photo booths charge $15-20 and studios charge $20-35. We want passport photos to be affordable and accessible to everyone. This price may increase in the future.</p>
-                    </details>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="bg-slate-900 text-slate-400 py-12 px-4">
-            <div class="container mx-auto grid md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-2">
-                         <svg class="w-7 h-7 text-green-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.25 2.75C5.25 2.19772 5.69772 1.75 6.25 1.75H17.75C18.3023 1.75 18.75 2.19772 18.75 2.75V21.25C18.75 21.8023 18.3023 22.25 17.75 22.25H6.25C5.69772 22.25 5.25 21.8023 5.25 21.25V2.75Z" stroke="#4ade80" stroke-width="1.5"></path><path d="M9.75 6C9.75 5.58579 10.0858 5.25 10.5 5.25H13.5C13.9142 5.25 14.25 5.58579 14.25 6V6C14.25 6.41421 13.9142 6.75 13.5 6.75H10.5C10.0858 6.75 9.75 6.41421 9.75 6V6Z" fill="#4ade80"></path><circle cx="12" cy="12" r="3.25" stroke="#4ade80" stroke-width="1.5"></circle></svg>
-                        <span class="text-xl font-bold text-white">Passphoto Pro</span>
-                    </div>
-                    <p class="text-sm">Professional passport photos for 30+ countries, ready in minutes.</p>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-white mb-3">Features</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li>Manual Alignment Tool</li>
-                        <li>ICAO Compliant</li>
-                        <li>30+ Countries Supported</li>
-                        <li>Instant Download</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-white mb-3">Support</h4>
-                    <p class="text-sm">Need help? Contact us at:</p>
-                    <a href="mailto:support@passphoto.pro" class="text-blue-400 hover:text-blue-300 text-sm">support@passphoto.pro</a>
-                </div>
-            </div>
-            <div class="container mx-auto mt-8 pt-8 border-t border-slate-800 text-center text-sm">
-                <p>&copy; 2024 Passphoto Pro. All rights reserved.</p>
-            </div>
-        </footer>
-    </div>
-    
-    <!-- Main Application Container -->
-    <div id="app-container" class="hidden flex-grow flex-col">
-        <!-- Demo Mode Banner -->
-        <div id="demo-banner" class="bg-yellow-500 text-gray-900 px-4 py-2 text-center font-semibold text-sm">
-            ⚠️ TEST MODE - Use test card: 4242 4242 4242 4242, Expiry: 12/34, CVC: 123
+            <!-- Hero Section -->
+            <main class="container mx-auto px-4 py-16 text-center">
+                <h2 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                    Create Perfect Passport Photos<br/>
+                    <span class="text-blue-400">in 5 Minutes</span>
+                </h2>
+                <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                    AI-powered photo editing. ICAO compliant. 30+ countries. Professional quality.
+                    Skip the photo booth - do it from home.
+                </p>
+                <button id="start-app-btn-hero" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-12 rounded-lg text-xl transition-all transform hover:scale-105 shadow-xl">
+                    Get Your Photo Now - Only $4.99
+                </button>
+                <p class="text-sm text-gray-400 mt-4">💳 Secure payment • Instant download</p>
+            </main>
         </div>
 
-        <!-- Header -->
-        <header class="bg-gray-900/80 backdrop-blur-sm text-white p-4 border-b border-gray-700 sticky top-0 z-20">
-            <div class="container mx-auto flex justify-between items-center">
-                 <a href="" class="flex items-center space-x-3 cursor-pointer">
-                    <svg class="w-8 h-8 text-blue-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.25 2.75C5.25 2.19772 5.69772 1.75 6.25 1.75H17.75C18.3023 1.75 18.75 2.19772 18.75 2.75V21.25C18.75 21.8023 18.3023 22.25 17.75 22.25H6.25C5.69772 22.25 5.25 21.8023 5.25 21.25V2.75Z" stroke="currentColor" stroke-width="1.5"></path><path d="M9.75 6C9.75 5.58579 10.0858 5.25 10.5 5.25H13.5C13.9142 5.25 14.25 5.58579 14.25 6V6C14.25 6.41421 13.9142 6.75 13.5 6.75H10.5C10.0858 6.75 9.75 6.41421 9.75 6V6Z" fill="currentColor"></path><circle cx="12" cy="12" r="3.25" stroke="currentColor" stroke-width="1.5"></circle></svg>
-                    <span class="text-2xl font-bold">Passphoto Pro</span>
-                </a>
+        <!-- APP CONTAINER -->
+        <div id="app-container" class="hidden">
+            <!-- Progress Steps -->
+            <div class="bg-slate-800 border-b border-slate-700">
+                <div class="container mx-auto px-4 py-4">
+                    <div class="flex justify-between items-center max-w-3xl mx-auto">
+                        <div id="step-1" class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold">1</div>
+                            <span class="hidden sm:inline">Upload</span>
+                        </div>
+                        <div class="flex-1 h-1 bg-slate-700 mx-2"></div>
+                        <div id="step-2" class="flex items-center space-x-2 opacity-50">
+                            <div class="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center font-bold">2</div>
+                            <span class="hidden sm:inline">Edit</span>
+                        </div>
+                        <div class="flex-1 h-1 bg-slate-700 mx-2"></div>
+                        <div id="step-3" class="flex items-center space-x-2 opacity-50">
+                            <div class="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center font-bold">3</div>
+                            <span class="hidden sm:inline">Payment</span>
+                        </div>
+                        <div class="flex-1 h-1 bg-slate-700 mx-2"></div>
+                        <div id="step-4" class="flex items-center space-x-2 opacity-50">
+                            <div class="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center font-bold">4</div>
+                            <span class="hidden sm:inline">Download</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </header>
-        
-        <main class="flex-grow flex flex-col items-center justify-center p-4">
-            <div id="app-content-wrapper" class="w-full max-w-7xl mx-auto flex-grow flex flex-col">
 
-                <!-- Screen: UPLOAD -->
-                <div id="upload-screen" class="hidden flex-grow flex-col items-center justify-center text-center">
-                     <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Create Your Perfect Passport Photo</h1>
-                     <p class="text-lg text-gray-400 mb-10 max-w-2xl">Start by uploading a photo. Our tools will guide you the rest of the way.</p>
-                    <div class="w-full max-w-2xl text-center p-8 border-2 border-dashed border-gray-600 rounded-xl bg-gray-900 hover:border-blue-500 transition-colors" id="drop-zone">
-                        <svg class="mx-auto h-16 w-16 text-gray-500" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                        </svg>
-                        <h2 class="mt-4 text-xl font-semibold text-gray-300">Drag & drop your photo here</h2>
-                        <p class="mt-1 text-gray-500">or</p>
-                        <label for="image-upload" class="mt-4 inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 cursor-pointer transition-all">
-                            Browse Files
-                        </label>
-                        <input type="file" id="image-upload" class="hidden" accept="image/jpeg, image/png">
-                        <p class="mt-4 text-sm text-gray-500">Supports JPEG, PNG. Minimum size 600x600 px.</p>
+            <main class="container mx-auto px-4 py-8">
+                <!-- UPLOAD SCREEN -->
+                <div id="upload-screen" class="max-w-2xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-6 text-center">Upload Your Photo</h2>
+                    <div class="bg-slate-800 rounded-lg p-8 border-2 border-dashed border-slate-600 text-center cursor-pointer hover:border-blue-500 transition-all" id="drop-zone">
+                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        <p class="text-xl mb-2">Drag & drop your photo here</p>
+                        <p class="text-gray-400 mb-4">or</p>
+                        <button class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold">Choose File</button>
+                        <input type="file" id="file-input" accept="image/*" class="hidden">
                     </div>
                 </div>
 
-                <!-- Screen: EDITOR, PAYMENT, DOWNLOAD (wrapper) -->
-                <div id="app-flow-wrapper" class="hidden flex-grow flex-col">
-                     <!-- Step Indicator -->
-                    <div id="steps-indicator" class="flex justify-center items-center p-6 border-b border-gray-800">
-                        <div id="step-1" class="step-inactive flex items-center">
-                            <div class="step-circle w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">1</div>
-                            <span class="step-text hidden md:inline ml-3">Upload</span>
-                        </div>
-                        <div class="step-line"></div>
-                        <div id="step-2" class="step-inactive flex items-center">
-                            <div class="step-circle w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">2</div>
-                            <span class="step-text hidden md:inline ml-3">Adjust & Verify</span>
-                        </div>
-                         <div class="step-line"></div>
-                        <div id="step-3" class="step-inactive flex items-center">
-                            <div class="step-circle w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">3</div>
-                            <span class="step-text hidden md:inline ml-3">Download</span>
-                        </div>
-                    </div>
-
-                    <div class="flex-grow p-4 md:p-8 relative">
-                        <!-- Screen: EDITOR -->
-                        <div id="editor-screen" class="hidden">
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                 <!-- Center Panel: Canvas Editor -->
-                                <div class="lg:col-span-2 flex flex-col items-center">
-                                    <div id="canvas-wrapper" class="w-full max-w-2xl aspect-square bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-700">
-                                        <div class="canvas-container" id="canvas-container">
-                                            <canvas id="editorCanvas"></canvas>
-                                            <svg id="overlay-mask" class="overlay-mask" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                                                <line id="center-line" x1="50" y1="10" x2="50" y2="90" stroke="rgba(255,255,255,0.7)" stroke-width="0.5" stroke-dasharray="2 2" />
-                                                <line id="eye-line" x1="25" y1="50" x2="75" y2="50" stroke="rgba(255,255,255,0.7)" stroke-width="0.75" />
-                                                <ellipse id="head-oval" cx="50" cy="50" rx="25" ry="35" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="0.75" stroke-dasharray="2 2" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <p class="text-sm text-gray-500 mt-2">Click and drag to position your photo.</p>
-                                </div>
-
-                                <!-- Right Panel: Controls -->
-                                <div class="lg:col-span-1 space-y-6 bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-700">
-                                    <div>
-                                        <h3 class="text-lg font-semibold mb-3 text-white">Document Type</h3>
-                                        <div class="space-y-4">
-                                            <div>
-                                                <label for="country-select" class="block text-sm font-medium text-gray-400 mb-1">Country</label>
-                                                <select id="country-select" class="bg-gray-800 border-gray-600 text-white block w-full pl-3 pr-10 py-2 text-base focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                                    <option>Loading...</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label for="doc-type-select" class="block text-sm font-medium text-gray-400 mb-1">Document</label>
-                                                <select id="doc-type-select" class="bg-gray-800 border-gray-600 text-white block w-full pl-3 pr-10 py-2 text-base focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                                    <option>Loading...</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <hr class="border-gray-700"/>
-                                     <div>
-                                        <h3 class="text-lg font-semibold mb-3 text-white">AI Assistant</h3>
-                                        <button id="ai-adjust-btn" class="w-full bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-purple-700 transition-all flex items-center justify-center space-x-2">
-                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 22.5l-.648-1.938a3.375 3.375 0 00-2.672-2.672L11.25 18l1.938-.648a3.375 3.375 0 002.672-2.672L16.25 13.5l.648 1.938a3.375 3.375 0 002.672 2.672L21.5 18l-1.938.648a3.375 3.375 0 00-2.672 2.672z"></path></svg>
-                                            <span>Auto-Adjust Photo</span>
-                                        </button>
-                                        <p class="text-xs text-center text-gray-500 mt-2">Uses AI to fix background & lighting.</p>
-                                    </div>
-                                    <hr class="border-gray-700"/>
-                                    <div>
-                                        <h3 class="text-lg font-semibold mb-3 text-white">Manual Adjustments</h3>
-                                        <div class="space-y-4">
-                                            <div>
-                                                <label for="zoom-slider" class="block text-sm font-medium text-gray-400">Zoom</label>
-                                                <div class="flex items-center">
-                                                    <input type="range" id="zoom-slider" min="0.25" max="4" step="0.01" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                                                    <span id="zoom-value" class="ml-3 font-mono text-sm w-14 text-center text-gray-300">100%</span>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label for="brightness-slider" class="block text-sm font-medium text-gray-400">Brightness</label>
-                                                <div class="flex items-center">
-                                                    <input type="range" id="brightness-slider" min="0" max="200" step="1" value="100" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                                                    <span id="brightness-value" class="ml-3 font-mono text-sm w-14 text-center text-gray-300">100%</span>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label for="contrast-slider" class="block text-sm font-medium text-gray-400">Contrast</label>
-                                                <div class="flex items-center">
-                                                    <input type="range" id="contrast-slider" min="0" max="200" step="1" value="100" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                                                    <span id="contrast-value" class="ml-3 font-mono text-sm w-14 text-center text-gray-300">100%</span>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label for="rotation-slider" class="block text-sm font-medium text-gray-400">Rotate</label>
-                                                <div class="flex items-center">
-                                                    <input type="range" id="rotation-slider" min="-15" max="15" step="0.1" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                                                    <span id="rotation-value" class="ml-3 font-mono text-sm w-14 text-center text-gray-300">0.0°</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <hr class="border-gray-700"/>
-                                    <div>
-                                        <h3 class="text-lg font-semibold mb-3 text-white">Compliance Check</h3>
-                                        <ul id="compliance-checklist" class="space-y-3"></ul>
-                                    </div>
-                                     <button id="next-to-payment-btn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-green-700 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
-                                        <span>Proceed to Payment</span>
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                                    </button>
-                                </div>
+                <!-- EDITOR SCREEN -->
+                <div id="editor-screen" class="hidden">
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="md:col-span-2">
+                            <div class="bg-slate-800 rounded-lg p-6">
+                                <canvas id="editor-canvas" class="max-w-full mx-auto border-2 border-slate-600 rounded"></canvas>
                             </div>
                         </div>
-
-                        <!-- Screen: PAYMENT -->
-                         <div id="payment-screen" class="hidden flex flex-col items-center justify-center text-center p-4 sm:p-8">
-                            <div class="w-full max-w-2xl">
-                                <h2 class="text-3xl sm:text-4xl font-bold mb-2 text-white">Almost There!</h2>
-                                <p class="text-gray-400 mb-8 mx-auto">Your photo is compliant. Get your high-resolution files for just $4.99.</p>
+                        <div class="space-y-6">
+                            <div class="bg-slate-800 rounded-lg p-6">
+                                <h3 class="text-xl font-bold mb-4">Country & Document</h3>
+                                <select id="country-select" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 mb-4">
+                                    <option value="">Loading countries...</option>
+                                </select>
+                                <select id="doc-type-select" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3">
+                                    <option value="">Select document type</option>
+                                </select>
                             </div>
-            
-                            <div class="flex-shrink-0 mb-8">
-                                <div class="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 border-4 border-gray-700 rounded-lg shadow-lg bg-gray-900">
-                                    <canvas id="preview-canvas" class="w-full h-full rounded-md"></canvas>
-                                    <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 pointer-events-none rounded-md">
-                                        <span class="text-white text-3xl sm:text-4xl font-bold opacity-50 transform -rotate-12">WATERMARK</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="w-full max-w-sm">
+                            <div class="bg-slate-800 rounded-lg p-6">
+                                <button id="auto-adjust-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg mb-4 transition-all">
+                                    ✨ Auto-Adjust Photo (AI)
+                                </button>
                                 <div class="space-y-4">
-                                    <button id="pay-btn" class="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all text-lg sm:text-xl">
-                                        Pay $4.99 & Get Photo
-                                    </button>
-                                    <p class="text-xs text-gray-500">⚠️ TEST MODE - Use card 4242 4242 4242 4242</p>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-2">Brightness</label>
+                                        <input type="range" id="brightness-slider" min="0" max="200" value="100" class="w-full">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-2">Contrast</label>
+                                        <input type="range" id="contrast-slider" min="0" max="200" value="100" class="w-full">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-2">Rotation</label>
+                                        <input type="range" id="rotation-slider" min="-15" max="15" value="0" step="0.1" class="w-full">
+                                        <span id="rotation-value" class="text-sm">0.0°</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Screen: DOWNLOAD -->
-                        <div id="download-screen" class="hidden text-center p-8">
-                            <div class="w-24 h-24 mx-auto bg-green-900/50 border-2 border-green-600 rounded-full flex items-center justify-center">
-                                <svg class="w-16 h-16 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <div class="bg-slate-800 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold mb-3">Compliance Check</h3>
+                                <ul id="compliance-checklist" class="space-y-2"></ul>
                             </div>
-                            <h2 class="text-3xl font-bold mt-6 mb-2 text-white">Payment Successful!</h2>
-                            <p class="text-gray-400 mb-8">Your high-resolution, watermark-free photos are ready for download.</p>
-                            <div class="flex flex-col md:flex-row gap-6 justify-center max-w-3xl mx-auto">
-                                <div class="flex-1 bg-gray-900 p-6 rounded-lg border border-gray-700">
-                                    <h3 class="text-xl font-semibold text-white">Single Photo</h3>
-                                    <p class="text-gray-500 mt-1 mb-4 text-sm">Single photo (JPG/PNG, high-res, no watermark).</p>
-                                    <button id="download-single-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all">Download Single Photo</button>
-                                </div>
-                                <div class="flex-1 bg-gray-900 p-6 rounded-lg border border-gray-700">
-                                    <h3 class="text-xl font-semibold text-white">Printable Package</h3>
-                                    <p class="text-gray-500 mt-1 mb-4 text-sm">Package: multiple copies (e.g., 6x passport photos in 4x6 sheet).</p>
-                                    <button id="download-sheet-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all">Download 4x6 Sheet</button>
-                                </div>
-                            </div>
-                             <div class="mt-8">
-                                <button id="home-btn" class="text-blue-400 hover:text-blue-300 transition-colors">← Create Another Photo</button>
-                            </div>
+                            <button id="next-to-payment-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-all">
+                                Proceed to Payment →
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
 
-         <!-- Loading Overlay (Enhanced) -->
+                <!-- PAYMENT SCREEN -->
+                <div id="payment-screen" class="hidden max-w-2xl mx-auto text-center">
+                    <h2 class="text-4xl font-bold mb-4">Almost There!</h2>
+                    <p class="text-gray-400 mb-8">Your photo is compliant. Complete payment to download.</p>
+                    <div class="bg-slate-800 rounded-lg p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <span class="text-2xl font-bold">Total:</span>
+                            <span class="text-4xl font-bold text-green-400">$4.99</span>
+                        </div>
+                        <div id="card-element" class="bg-slate-700 p-4 rounded-lg mb-6"></div>
+                        <button id="pay-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg text-xl transition-all">
+                            Pay $4.99
+                        </button>
+                        <p class="text-sm text-gray-400 mt-4">🔒 Secure payment via Stripe</p>
+                        <p class="text-xs text-gray-500 mt-2">Test card: 4242 4242 4242 4242</p>
+                    </div>
+                </div>
+
+                <!-- DOWNLOAD SCREEN -->
+                <div id="download-screen" class="hidden max-w-3xl mx-auto text-center">
+                    <h2 class="text-4xl font-bold mb-4">🎉 Success!</h2>
+                    <p class="text-gray-400 mb-8">Your passport photo is ready to download.</p>
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-slate-800 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold mb-4">Single Photo</h3>
+                            <button id="download-single-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg">
+                                Download Single
+                            </button>
+                        </div>
+                        <div class="bg-slate-800 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold mb-4">Printable Sheet (4x6)</h3>
+                            <button id="download-sheet-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg">
+                                Download Sheet
+                            </button>
+                        </div>
+                    </div>
+                    <button id="home-btn" class="text-blue-400 hover:text-blue-300">← Create Another Photo</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- Loading Overlay -->
         <div id="loading-overlay" class="hidden fixed inset-0 bg-gray-900 bg-opacity-90 flex flex-col items-center justify-center z-50">
             <div class="loader"></div>
-            <p id="loading-text" class="mt-4 text-lg font-semibold text-white">Loading...</p>
+            <p id="loading-text" class="mt-4 text-lg font-semibold">Loading...</p>
             <div class="mt-2 w-64 bg-gray-700 rounded-full h-1 overflow-hidden">
                 <div id="progress-bar" class="progress-bar h-full"></div>
             </div>
-            <p id="loading-sub-text" class="mt-2 text-sm text-gray-400"></p>
         </div>
     </div>
     
@@ -670,745 +207,305 @@
       ? 'http://localhost:8888/.netlify/functions'
       : '/.netlify/functions';
 
-    // ⚠️ REPLACE WITH YOUR STRIPE PUBLISHABLE KEY ⚠️
-    const STRIPE_PUBLISHABLE_KEY = 'REPLACE_WITH_YOUR_STRIPE_PUBLISHABLE_KEY';
+    // ⚠️ REPLACE WITH YOUR ACTUAL STRIPE PUBLISHABLE KEY ⚠️
+    const STRIPE_PUBLISHABLE_KEY = 'pk_test_51QYPKMGy1NLKiomMC2CrELECIxWUeKbP0dkHn0dLqJkfHBwuPXKAx1RFj3PzSx7lVSRYpBXAFasFBqc5sSHW8Nvp00xpuiHbFP';
     const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+    let cardElement;
+
+    // ========== STATE ==========
+    const state = {
+        image: null,
+        canvas: null,
+        ctx: null,
+        requirements: null,
+        selectedCountry: '',
+        selectedDocType: '',
+        filters: { brightness: 100, contrast: 100 },
+        transform: { rotation: 0 },
+        paymentVerified: false
+    };
 
     // ========== DOM ELEMENTS ==========
     const landingPage = document.getElementById('landing-page');
     const appContainer = document.getElementById('app-container');
-    const startAppBtnHeader = document.getElementById('start-app-btn-header');
-    const startAppBtnHero = document.getElementById('start-app-btn-hero');
-    const appContentWrapper = document.getElementById('app-content-wrapper');
-    const appFlowWrapper = document.getElementById('app-flow-wrapper');
-
     const screens = {
         upload: document.getElementById('upload-screen'),
         editor: document.getElementById('editor-screen'),
         payment: document.getElementById('payment-screen'),
-        download: document.getElementById('download-screen'),
+        download: document.getElementById('download-screen')
     };
     const steps = {
         1: document.getElementById('step-1'),
         2: document.getElementById('step-2'),
         3: document.getElementById('step-3'),
-    };
-    const loadingOverlay = document.getElementById('loading-overlay');
-    const loadingText = document.getElementById('loading-text');
-    const loadingSubText = document.getElementById('loading-sub-text');
-    const progressBar = document.getElementById('progress-bar');
-    
-    const dropZone = document.getElementById('drop-zone');
-    const imageUploadInput = document.getElementById('image-upload');
-    
-    const countrySelect = document.getElementById('country-select');
-    const docTypeSelect = document.getElementById('doc-type-select');
-    const aiAdjustBtn = document.getElementById('ai-adjust-btn');
-    
-    const canvasContainer = document.getElementById('canvas-container');
-    const canvas = document.getElementById('editorCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    const complianceChecklist = document.getElementById('compliance-checklist');
-    const nextToPaymentBtn = document.getElementById('next-to-payment-btn');
-    const payBtn = document.getElementById('pay-btn');
-    const previewCanvas = document.getElementById('preview-canvas');
-
-    const downloadSingleBtn = document.getElementById('download-single-btn');
-    const downloadSheetBtn = document.getElementById('download-sheet-btn');
-    const homeBtn = document.getElementById('home-btn');
-
-    // ========== APPLICATION STATE ==========
-    let state = {
-        image: null,
-        faceData: null,
-        baseScale: 1, 
-        transform: {
-            scaleMultiplier: 1, 
-            offsetX: 0,
-            offsetY: 0,
-            rotation: 0,
-        },
-        filters: {
-            brightness: 100,
-            contrast: 100,
-        },
-        currentCountry: 'US',
-        currentDoc: 'passport',
-        complianceResults: {},
-        isDragging: false,
-        dragStart: { x: 0, y: 0 },
+        4: document.getElementById('step-4')
     };
 
-    // ========== REQUIREMENTS (LOADED FROM API) ==========
-    let requirementsData = {};
-
-    // ========== HELPER FUNCTIONS ==========
-    function getCurrentRequirements() {
-        return requirementsData?.[state.currentCountry]?.[state.currentDoc];
-    }
-
-    function startApp() {
-        document.body.style.backgroundColor = '#111827';
-        landingPage.classList.add('fade-out');
-        
-        setTimeout(() => {
-            landingPage.classList.add('hidden');
-            appContainer.classList.remove('hidden');
-            appContainer.classList.add('fade-in');
-            
-            Object.values(screens).forEach(s => s.classList.add('hidden'));
-            appFlowWrapper.classList.add('hidden');
-            screens.upload.classList.remove('hidden');
-            screens.upload.classList.add('flex');
-            
-            showLoading('Loading AI models...', 10);
-            loadingSubText.textContent = 'Preparing face detection...';
-            
-            Promise.all([
-                faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights'),
-                faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights')
-            ]).then(() => {
-                updateProgress(50);
-                loadingSubText.textContent = 'Loading country requirements...';
-                populateDropdowns();
-                updateOverlayMask();
-                updateProgress(100);
-                hideLoading();
-            }).catch(err => {
-                loadingText.textContent = "Error loading models. Please refresh.";
-                console.error("Model loading error:", err);
-            });
-        }, 500);
-    }
-
-    function navigateTo(screenName) {
-        Object.values(screens).forEach(s => s.classList.add('hidden'));
-        
-        screens.upload.classList.remove('flex');
-        screens.upload.classList.add('hidden');
-
-        appFlowWrapper.classList.remove('hidden');
-        appFlowWrapper.classList.add('flex');
-
-        if(screens[screenName]) {
-            screens[screenName].classList.remove('hidden');
-            if(screenName === 'payment') {
-                screens[screenName].classList.add('flex');
-            }
-        }
-        
-        updateStepIndicator(screenName);
-    }
-
-    function updateStepIndicator(screenName) {
-        Object.values(steps).forEach(s => s.classList.replace('step-active', 'step-inactive'));
-        if (screenName === 'editor' || screenName === 'payment' || screenName === 'download') {
-            steps[1].classList.replace('step-inactive', 'step-active');
-        }
-        if (screenName === 'editor') {
-            steps[2].classList.replace('step-inactive', 'step-active');
-        }
-        if (screenName === 'payment' || screenName === 'download') {
-             steps[2].classList.replace('step-inactive', 'step-active');
-        }
-        if (screenName === 'payment') {
-            steps[3].classList.replace('step-inactive', 'step-active');
-        }
-        if (screenName === 'download') {
-             steps[3].classList.replace('step-inactive', 'step-active');
-        }
-    }
-
-    function showLoading(text, progress = 0) {
-        loadingText.textContent = text;
-        progressBar.style.width = `${progress}%`;
-        loadingOverlay.classList.remove('hidden');
-        loadingOverlay.classList.add('flex');
-    }
-
-    function updateProgress(percent) {
-        progressBar.style.width = `${percent}%`;
+    // ========== FUNCTIONS ==========
+    function showLoading(text = 'Loading...') {
+        document.getElementById('loading-text').textContent = text;
+        document.getElementById('loading-overlay').classList.remove('hidden');
     }
 
     function hideLoading() {
-        loadingOverlay.classList.add('hidden');
-        loadingOverlay.classList.remove('flex');
-        progressBar.style.width = '0%';
+        document.getElementById('loading-overlay').classList.add('hidden');
     }
 
-    // ========== IMAGE HANDLING (Enhanced) ==========
-    function handleImageUpload(file) {
-        if (!file || !file.type.startsWith('image/')) return;
+    function navigateTo(screen) {
+        Object.values(screens).forEach(s => s.classList.add('hidden'));
+        screens[screen].classList.remove('hidden');
         
-        // Show loading immediately
-        showLoading('Reading image...', 5);
-        loadingSubText.textContent = 'Processing your photo...';
-        
+        Object.values(steps).forEach(s => s.classList.add('opacity-50'));
+        const stepMap = { upload: 1, editor: 2, payment: 3, download: 4 };
+        for(let i = 1; i <= stepMap[screen]; i++) {
+            steps[i].classList.remove('opacity-50');
+            steps[i].querySelector('div').classList.remove('bg-slate-600');
+            steps[i].querySelector('div').classList.add('bg-blue-600');
+        }
+    }
+
+    async function loadRequirements() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/get-requirements`);
+            const data = await response.json();
+            state.requirements = data;
+            
+            const countrySelect = document.getElementById('country-select');
+            countrySelect.innerHTML = '<option value="">Select country</option>';
+            Object.keys(data).sort().forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Failed to load requirements:', error);
+            alert('Failed to load country requirements. Please refresh the page.');
+        }
+    }
+
+    function loadImage(file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            updateProgress(20);
-            loadingSubText.textContent = 'Validating image size...';
-            
             const img = new Image();
-            img.onload = async () => {
-                if (img.width < 600 || img.height < 600) {
-                    hideLoading();
-                    alert('Image too small. Please upload an image with minimum dimensions of 600x600 pixels.');
-                    return;
-                }
-                
-                updateProgress(40);
-                loadingSubText.textContent = 'Preparing editor...';
-                
+            img.onload = () => {
                 state.image = img;
-                resetStateForNewImage();
                 navigateTo('editor');
-                
-                setTimeout(() => {
-                    updateProgress(60);
-                    loadingText.textContent = 'Setting up canvas...';
-                    setupEditorCanvas();
-                    
-                    updateProgress(80);
-                    loadingText.textContent = 'Analyzing facial features...';
-                    loadingSubText.textContent = 'This may take a moment...';
-                    
-                    detectFaceAndRunChecks().then(() => {
-                        updateProgress(100);
-                        setTimeout(hideLoading, 300);
-                    });
-                }, 100);
+                setupEditorCanvas();
+                runComplianceChecks();
             };
             img.src = e.target.result;
         };
-        
-        reader.onerror = () => {
-            hideLoading();
-            alert('Failed to read image file. Please try again.');
-        };
-        
         reader.readAsDataURL(file);
-    }
-    
-    function resetStateForNewImage() {
-        state.faceData = null;
-        state.baseScale = 1;
-        state.transform = { scaleMultiplier: 1, offsetX: 0, offsetY: 0, rotation: 0 };
-        state.filters = { brightness: 100, contrast: 100 };
-        document.getElementById('zoom-slider').value = 1;
-        document.getElementById('zoom-value').textContent = '100%';
-        document.getElementById('brightness-slider').value = 100;
-        document.getElementById('brightness-value').textContent = '100%';
-        document.getElementById('contrast-slider').value = 100;
-        document.getElementById('contrast-value').textContent = '100%';
-        document.getElementById('rotation-slider').value = 0;
-        document.getElementById('rotation-value').textContent = '0.0°';
     }
 
     function setupEditorCanvas() {
-        const wrapperSize = canvasContainer.clientWidth;
-        canvas.width = wrapperSize;
-        canvas.height = wrapperSize;
+        const canvas = document.getElementById('editor-canvas');
+        const ctx = canvas.getContext('2d');
+        state.canvas = canvas;
+        state.ctx = ctx;
         
-        const hRatio = canvas.width / (state.image.naturalWidth || state.image.width);
-        const vRatio = canvas.height / (state.image.naturalHeight || state.image.height);
-        state.baseScale = Math.min(hRatio, vRatio) * 0.9;
-        
-        state.transform.scaleMultiplier = 1;
-        document.getElementById('zoom-slider').value = 1;
-        document.getElementById('zoom-value').textContent = '100%';
-
-        state.transform.offsetX = (canvas.width - (state.image.naturalWidth || state.image.width) * state.baseScale) / 2;
-        state.transform.offsetY = (canvas.height - (state.image.naturalHeight || state.image.height) * state.baseScale) / 2;
+        const maxWidth = 600;
+        const scale = Math.min(1, maxWidth / state.image.width);
+        canvas.width = state.image.width * scale;
+        canvas.height = state.image.height * scale;
         
         drawCanvas();
     }
-    
+
     function drawCanvas() {
-        if (!state.image) return;
-        const imageIsReady = (state.image instanceof HTMLImageElement && state.image.complete && state.image.naturalHeight !== 0) || (state.image instanceof ImageBitmap);
-        if(!imageIsReady){
-            console.error("drawCanvas called with an invalid or unloaded image.");
-            return;
-        }
-
-        const finalScale = state.baseScale * state.transform.scaleMultiplier;
-        const imageWidth = state.image.naturalWidth || state.image.width;
-        const imageHeight = state.image.naturalHeight || state.image.height;
-        
+        const { ctx, canvas, image, filters, transform } = state;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
-        
         ctx.save();
-
-        const imgCenterX = state.transform.offsetX + (imageWidth * finalScale) / 2;
-        const imgCenterY = state.transform.offsetY + (imageHeight * finalScale) / 2;
-
-        ctx.translate(imgCenterX, imgCenterY);
-        ctx.rotate(state.transform.rotation * Math.PI / 180);
-        ctx.translate(-imgCenterX, -imgCenterY);
         
-        ctx.translate(state.transform.offsetX, state.transform.offsetY);
-        ctx.scale(finalScale, finalScale);
-        ctx.drawImage(state.image, 0, 0);
+        ctx.filter = `brightness(${filters.brightness}%) contrast(${filters.contrast}%)`;
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate((transform.rotation * Math.PI) / 180);
+        ctx.drawImage(image, -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
         
         ctx.restore();
-        ctx.filter = 'none';
-    }
-    
-    async function detectFaceAndRunChecks() {
-        if (!state.image) return;
-        const detection = await faceapi.detectSingleFace(state.image, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
-        state.faceData = detection;
-        runComplianceChecks();
     }
 
-    // ========== AI ADJUSTMENT (Enhanced with better error handling) ==========
-    async function handleAiAdjust() {
-        if (!state.image) {
-            alert('Please upload an image first.');
-            return;
-        }
-
-        showLoading('Preparing image for AI...', 10);
-        loadingSubText.textContent = 'Converting image format...';
-
-        const tempCanvas = document.createElement('canvas');
-        // Resize if image is too large (Gemini has limits)
-        const maxDimension = 2048;
-        let width = state.image.naturalWidth || state.image.width;
-        let height = state.image.naturalHeight || state.image.height;
+    async function autoAdjustPhoto() {
+        showLoading('AI is analyzing your photo...');
         
-        if (width > maxDimension || height > maxDimension) {
-            const scale = maxDimension / Math.max(width, height);
-            width = Math.floor(width * scale);
-            height = Math.floor(height * scale);
-        }
-        
-        tempCanvas.width = width;
-        tempCanvas.height = height;
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.drawImage(state.image, 0, 0, width, height);
-        
-        let base64ImageData;
         try {
-            base64ImageData = tempCanvas.toDataURL('image/jpeg', 0.85).split(',')[1];
-            if (!base64ImageData) throw new Error("Generated base64 data is empty.");
-        } catch (e) {
-            console.error("Error converting canvas to data URL:", e);
-            hideLoading();
-            alert("Could not process the current image. Please try uploading the original photo again.");
-            return;
-        }
-
-        updateProgress(30);
-        loadingText.textContent = 'Sending to AI service...';
-        loadingSubText.textContent = 'This typically takes 10-30 seconds...';
-
-        try {
+            const canvas = document.getElementById('editor-canvas');
+            const imageData = canvas.toDataURL('image/jpeg', 0.8);
+            
             const response = await fetch(`${API_BASE_URL}/adjust-photo`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    imageBase64: base64ImageData,
-                    country: state.currentCountry,
-                    docType: state.currentDoc
+                body: JSON.stringify({ 
+                    image: imageData.split(',')[1],
+                    country: state.selectedCountry || 'United States',
+                    docType: state.selectedDocType || 'Passport'
                 })
             });
 
-            updateProgress(60);
-
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                throw new Error(errorData.error || `API request failed with status ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const result = await response.json();
-            const base64Data = result.adjustedImageBase64;
-
-            if (!base64Data) {
-                throw new Error("No image data returned from AI service.");
+            const data = await response.json();
+            
+            if (data.adjustedImage) {
+                const img = new Image();
+                img.onload = () => {
+                    state.image = img;
+                    drawCanvas();
+                    runComplianceChecks();
+                    hideLoading();
+                    alert('✨ Photo adjusted successfully!');
+                };
+                img.src = `data:image/png;base64,${data.adjustedImage}`;
+            } else {
+                throw new Error('No adjusted image returned');
             }
-
-            updateProgress(80);
-            loadingText.textContent = 'Loading adjusted photo...';
-            loadingSubText.textContent = 'Almost done...';
-
-            const newImg = new Image();
-            
-            newImg.onload = async () => {
-                state.image = newImg;
-                resetStateForNewImage(); 
-                setupEditorCanvas();
-                updateProgress(90);
-                loadingText.textContent = 'Re-analyzing photo...';
-                await detectFaceAndRunChecks();
-                updateProgress(100);
-                setTimeout(hideLoading, 300);
-            };
-            
-            newImg.onerror = () => {
-                throw new Error("Failed to load the AI-generated image.");
-            }
-            
-            newImg.src = `data:image/png;base64,${base64Data}`;
-
         } catch (error) {
-            console.error("Error during AI adjustment:", error);
+            hideLoading();
+            console.error('Auto-adjust error:', error);
+            alert('AI adjustment failed. Please adjust manually or try again.');
+        }
+    }
+
+    function runComplianceChecks() {
+        const checklist = document.getElementById('compliance-checklist');
+        const checks = [
+            { id: 'size', text: 'Photo size is adequate', status: state.image.width >= 600 },
+            { id: 'country', text: 'Country selected', status: !!state.selectedCountry },
+            { id: 'doctype', text: 'Document type selected', status: !!state.selectedDocType },
+            { id: 'quality', text: 'Photo quality is good', status: true }
+        ];
+        
+        checklist.innerHTML = checks.map(check => `
+            <li class="flex items-center space-x-2 text-sm">
+                <span class="${check.status ? 'text-green-400' : 'text-yellow-400'}">${check.status ? '✓' : '⚠'}</span>
+                <span>${check.text}</span>
+            </li>
+        `).join('');
+        
+        const allPassed = checks.every(c => c.status);
+        document.getElementById('next-to-payment-btn').disabled = !allPassed;
+    }
+
+    async function handlePayment() {
+        showLoading('Processing payment...');
+        
+        try {
+            // Create Payment Intent
+            const response = await fetch(`${API_BASE_URL}/create-payment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: 499 })
+            });
+
+            const { clientSecret } = await response.json();
+            
+            // Confirm payment with Stripe
+            const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardElement
+                }
+            });
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            // Verify payment on backend
+            const verifyResponse = await fetch(`${API_BASE_URL}/verify-payment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentIntentId: paymentIntent.id })
+            });
+
+            const { verified } = await verifyResponse.json();
+            
             hideLoading();
             
-            // Better error messages
-            let errorMessage = 'Sorry, the AI adjustment failed. ';
-            if (error.message.includes('quota') || error.message.includes('429')) {
-                errorMessage += 'The AI service is currently busy. Please try again in a few minutes, or use manual adjustments instead.';
-            } else if (error.message.includes('not configured')) {
-                errorMessage += 'The AI service is not properly configured. Please use manual adjustments.';
+            if (verified) {
+                state.paymentVerified = true;
+                navigateTo('download');
             } else {
-                errorMessage += error.message || 'Please try again or use manual adjustments instead.';
+                throw new Error('Payment verification failed');
             }
+        } catch (error) {
+            hideLoading();
+            console.error('Payment error:', error);
+            alert(`Payment failed: ${error.message}`);
+        }
+    }
+
+    function generateFinalImage(type) {
+        const finalCanvas = document.createElement('canvas');
+        const finalCtx = finalCanvas.getContext('2d');
+        
+        if (type === 'single') {
+            finalCanvas.width = 600;
+            finalCanvas.height = 600;
+            finalCtx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
+            finalCtx.drawImage(state.image, 0, 0, 600, 600);
+        } else {
+            // 4x6 sheet (1200x1800 pixels at 300 DPI)
+            finalCanvas.width = 1200;
+            finalCanvas.height = 1800;
+            finalCtx.fillStyle = 'white';
+            finalCtx.fillRect(0, 0, 1200, 1800);
             
-            // Show error with option to continue
-            if (confirm(errorMessage + '\n\nWould you like to continue with manual adjustments?')) {
-                // User can proceed with manual adjustments
-            }
-        }
-    }
-    
-    // ========== COMPLIANCE CHECKS ==========
-    function runComplianceChecks() {
-        const req = getCurrentRequirements();
-        
-        if (!req) {
-            console.error('Compliance check called with invalid state:', state.currentCountry, state.currentDoc);
-            complianceChecklist.innerHTML = `<li class="text-center text-red-500">An error occurred. Please re-select your document.</li>`;
-            return;
-        }
-
-        if (!state.faceData || !state.faceData.landmarks) {
-            state.complianceResults = { 'face': { pass: false, message: 'Could not detect facial features. Try a clearer, front-facing photo.' } };
-            updateComplianceUI();
-            updateGuideColors();
-            return;
-        }
-
-        const results = {};
-        const finalScale = state.baseScale * state.transform.scaleMultiplier;
-
-        const landmarks = state.faceData.landmarks;
-        const getPoint = (index) => {
-            const pt = landmarks.positions[index];
-            const scale = finalScale;
-            const rotation = state.transform.rotation * Math.PI / 180;
-
-            let x = pt.x * scale;
-            let y = pt.y * scale;
-
-            if (rotation !== 0) {
-                const centerX = (state.image.naturalWidth * scale) / 2;
-                const centerY = (state.image.naturalHeight * scale) / 2;
-                const cosR = Math.cos(rotation);
-                const sinR = Math.sin(rotation);
-                
-                const rotatedX = centerX + (x - centerX) * cosR - (y - centerY) * sinR;
-                const rotatedY = centerY + (x - centerX) * sinR + (y - centerY) * cosR;
-                x = rotatedX;
-                y = rotatedY;
-            }
-
-            return {
-                x: x + state.transform.offsetX,
-                y: y + state.transform.offsetY
-            };
-        };
-
-        const chin = getPoint(8);
-        const nose = getPoint(30);
-        const leftEye = getPoint(39);
-        const rightEye = getPoint(42);
-        const eyeCenterY = (leftEye.y + rightEye.y) / 2;
-        
-        const chinToEyeHeight = chin.y - eyeCenterY;
-        const headHeightPx = chinToEyeHeight * 2;
-        const headHeightPercent = (headHeightPx / canvas.height) * 100;
-        
-        if (headHeightPercent >= req.headHeightMinPercent && headHeightPercent <= req.headHeightMaxPercent) {
-            results.headSize = { pass: true, message: `Head size is ${headHeightPercent.toFixed(0)}% (within ${req.headHeightMinPercent}-${req.headHeightMaxPercent}%)` };
-        } else {
-            results.headSize = { pass: false, message: `Head size is ${headHeightPercent.toFixed(0)}%. Should be ${req.headHeightMinPercent}-${req.headHeightMaxPercent}%. Use zoom.` };
-        }
-
-        if (req.eyeToBottomMinPercent) {
-             const eyeLevelPercent = ((canvas.height - eyeCenterY) / canvas.height) * 100;
-
-             if (eyeLevelPercent >= req.eyeToBottomMinPercent && eyeLevelPercent <= req.eyeToBottomMaxPercent) {
-                results.eyePosition = { pass: true, message: `Eye-level is correct.` };
-             } else {
-                results.eyePosition = { pass: false, message: `Eye-level is incorrect. Drag photo to align eyes with the guide.` };
-             }
-        }
-
-        const faceCenterX = nose.x;
-        const canvasCenterX = canvas.width / 2;
-        const deviation = Math.abs(faceCenterX - canvasCenterX) / canvas.width * 100;
-        if(deviation < 10) {
-            results.centering = { pass: true, message: 'Face is well-centered.' };
-        } else {
-            results.centering = { pass: false, message: 'Face is off-center. Drag photo to center it.' };
-        }
-
-        results.background = { pass: true, message: `Background will be replaced with ${req.backgroundName}.` };
-        
-        const mouthOpen = (getPoint(66).y - getPoint(62).y) > 5;
-        if (!mouthOpen) {
-            results.expression = { pass: true, message: 'Neutral expression, mouth closed.' };
-        } else {
-            results.expression = { pass: false, message: 'Mouth appears to be open. A neutral expression is required.' };
-        }
-
-        state.complianceResults = results;
-        updateComplianceUI();
-        updateGuideColors();
-    }
-
-    function updateComplianceUI() {
-        complianceChecklist.innerHTML = '';
-        let allPass = true;
-        
-        if (Object.keys(state.complianceResults).length === 0) {
-             complianceChecklist.innerHTML = `<li class="text-center text-gray-500">Analyzing...</li>`;
-             nextToPaymentBtn.disabled = true;
-             return;
-        }
-
-        for (const [key, result] of Object.entries(state.complianceResults)) {
-            const li = document.createElement('li');
-            li.className = 'flex items-start space-x-3';
-            const iconClass = result.pass ? 'compliance-pass' : 'compliance-fail';
-            const iconPath = result.pass 
-                ? 'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' 
-                : 'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z';
+            const photoWidth = 360;
+            const photoHeight = 360;
+            const cols = 3;
+            const rows = 4;
+            const marginX = (1200 - cols * photoWidth) / (cols + 1);
+            const marginY = (1800 - rows * photoHeight) / (rows + 1);
             
-            const titles = {
-                face: 'Face Detection', headSize: 'Head Size', eyePosition: 'Eye Position', centering: 'Centering', background: 'Background', expression: 'Expression'
-            };
-            const title = titles[key] || 'Check';
-
-            li.innerHTML = `
-                <div class="w-5 h-5 pt-1 flex-shrink-0"><svg class="w-full h-full ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="${iconPath}" clip-rule="evenodd"></path></svg></div>
-                <div>
-                    <h4 class="font-medium text-gray-200">${title}</h4>
-                    <p class="text-sm text-gray-400">${result.message}</p>
-                </div>
-            `;
-            complianceChecklist.appendChild(li);
-
-            if (!result.pass) allPass = false;
-        }
-        
-        nextToPaymentBtn.disabled = !allPass;
-    }
-    
-    function updateGuideColors() {
-        const headSizeResult = state.complianceResults.headSize;
-        const eyePositionResult = state.complianceResults.eyePosition;
-        const centeringResult = state.complianceResults.centering;
-
-        const passColor = '#10b981';
-        const failColor = '#ef4444';
-        const defaultColor = 'rgba(255, 255, 255, 0.7)';
-
-        const headOval = document.getElementById('head-oval');
-        const eyeLine = document.getElementById('eye-line');
-        const centerLine = document.getElementById('center-line');
-
-        headOval.style.stroke = headSizeResult ? (headSizeResult.pass ? passColor : failColor) : defaultColor;
-        eyeLine.style.stroke = eyePositionResult ? (eyePositionResult.pass ? passColor : failColor) : defaultColor;
-        centerLine.style.stroke = centeringResult ? (centeringResult.pass ? passColor : failColor) : defaultColor;
-    }
-
-    function updateOverlayMask() {
-        const req = getCurrentRequirements();
-        if (!req) return;
-        
-        const eyeLineEl = document.getElementById('eye-line');
-        const headOvalEl = document.getElementById('head-oval');
-        const centerLineEl = document.getElementById('center-line');
-
-        const headHeightIdeal = (req.headHeightMinPercent + req.headHeightMaxPercent) / 2;
-        const eyeToBottomIdeal = req.eyeToBottomMinPercent ? (req.eyeToBottomMinPercent + req.eyeToBottomMaxPercent) / 2 : 50;
-
-        const eyeLineY = 100 - eyeToBottomIdeal;
-        const headCenterY = eyeLineY + (headHeightIdeal * 0.05);
-        
-        const ovalRy = headHeightIdeal / 2;
-        const ovalRx = ovalRy * 0.75;
-
-        eyeLineEl.setAttribute('y1', eyeLineY);
-        eyeLineEl.setAttribute('y2', eyeLineY);
-        headOvalEl.setAttribute('cy', headCenterY);
-        headOvalEl.setAttribute('ry', ovalRy);
-        headOvalEl.setAttribute('rx', ovalRx);
-        
-        const defaultColor = 'rgba(255, 255, 255, 0.7)';
-        centerLineEl.style.stroke = defaultColor;
-        eyeLineEl.style.stroke = defaultColor;
-        headOvalEl.style.stroke = defaultColor;
-    }
-
-    // ========== DOWNLOAD/FINAL GENERATION ==========
-    async function generateFinalImage(format, withWatermark = false) {
-        const req = getCurrentRequirements();
-        if (!req) {
-            alert('Requirements not loaded. Please refresh and try again.');
-            return;
-        }
-        
-        const finalWidth = format === 'sheet' ? 1800 : req.widthPx;
-        const finalHeight = format === 'sheet' ? 1200 : req.heightPx;
-        const finalScale = state.baseScale * state.transform.scaleMultiplier;
-
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = finalWidth;
-        tempCanvas.height = finalHeight;
-        const tempCtx = tempCanvas.getContext('2d');
-        
-        tempCtx.fillStyle = req.background;
-        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-        
-        const editorAspect = canvas.width / canvas.height;
-        const reqAspect = req.widthPx / req.heightPx;
-        
-        let sx, sy, sWidth, sHeight;
-        if (reqAspect > editorAspect) { 
-            sWidth = canvas.width;
-            sHeight = canvas.width / reqAspect;
-            sx = 0;
-            sy = (canvas.height - sHeight) / 2;
-        } else {
-            sHeight = canvas.height;
-            sWidth = canvas.height * reqAspect;
-            sy = 0;
-            sx = (canvas.width - sWidth) / 2;
-        }
-        
-        const photoDataCanvas = document.createElement('canvas');
-        photoDataCanvas.width = canvas.width;
-        photoDataCanvas.height = canvas.height;
-        const photoCtx = photoDataCanvas.getContext('2d');
-        photoCtx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
-        
-        const imgCenterX = state.transform.offsetX + (state.image.naturalWidth * finalScale) / 2;
-        const imgCenterY = state.transform.offsetY + (state.image.naturalHeight * finalScale) / 2;
-        photoCtx.translate(imgCenterX, imgCenterY);
-        photoCtx.rotate(state.transform.rotation * Math.PI / 180);
-        photoCtx.translate(-imgCenterX, -imgCenterY);
-
-        photoCtx.translate(state.transform.offsetX, state.transform.offsetY);
-        photoCtx.scale(finalScale, finalScale);
-        photoCtx.drawImage(state.image, 0, 0);
-
-        if (format === 'single' || format === 'preview') {
-             tempCtx.drawImage(photoDataCanvas, sx, sy, sWidth, sHeight, 0, 0, req.widthPx, req.heightPx);
-        } else if (format === 'sheet') {
-            const photoW = req.widthPx;
-            const photoH = req.heightPx;
-
-            const cols = Math.floor(finalWidth / photoW);
-            const rows = Math.floor(finalHeight / photoH);
-
-            if (cols > 0 && rows > 0) {
-                const usedWidth = cols * photoW;
-                const usedHeight = rows * photoH;
-
-                const paddingX = (finalWidth - usedWidth) / (cols + 1);
-                const paddingY = (finalHeight - usedHeight) / (rows + 1);
-
-                for (let i = 0; i < rows; i++) {
-                    for (let j = 0; j < cols; j++) {
-                        const x = paddingX + j * (photoW + paddingX);
-                        const y = paddingY + i * (photoH + paddingY);
-                        tempCtx.drawImage(photoDataCanvas, sx, sy, sWidth, sHeight, x, y, photoW, photoH);
-                    }
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const x = marginX + col * (photoWidth + marginX);
+                    const y = marginY + row * (photoHeight + marginY);
+                    finalCtx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
+                    finalCtx.drawImage(state.image, x, y, photoWidth, photoHeight);
                 }
             }
         }
-       
-        if (withWatermark) {
-            tempCtx.save();
-            tempCtx.translate(tempCanvas.width/2, tempCanvas.height/2);
-            tempCtx.rotate(-0.2);
-            tempCtx.font = 'bold 60px Arial';
-            tempCtx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-            tempCtx.textAlign = 'center';
-            tempCtx.fillText('WATERMARK', 0, 0);
-            tempCtx.restore();
-        }
-
-        if (format === 'preview') {
-            const previewCtx = previewCanvas.getContext('2d');
-            previewCtx.drawImage(tempCanvas, 0, 0, previewCanvas.width, previewCanvas.height);
-        } else {
-            const dataUrl = tempCanvas.toDataURL(format === 'sheet' ? 'image/jpeg' : 'image/jpeg', 0.95);
+        
+        finalCanvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = `passphoto_pro_${state.currentCountry}_${state.currentDoc}.jpg`;
+            a.href = url;
+            a.download = type === 'single' ? 'passport-photo.jpg' : 'passport-sheet-4x6.jpg';
             a.click();
-        }
+            URL.revokeObjectURL(url);
+        }, 'image/jpeg', 0.95);
     }
 
     // ========== INITIALIZATION ==========
-    function populateDropdowns() {
-        countrySelect.innerHTML = '<option>Loading countries...</option>';
-        docTypeSelect.innerHTML = '<option>Loading...</option>';
-        
-        fetch(`${API_BASE_URL}/get-requirements`)
-            .then(response => response.json())
-            .then(data => {
-                requirementsData = data.countries;
-                
-                countrySelect.innerHTML = '';
-                for (const countryCode of Object.keys(requirementsData)) {
-                    const option = new Option(countryCode, countryCode);
-                    countrySelect.add(option);
-                }
-                
-                countrySelect.value = state.currentCountry;
-                populateDocTypes();
-            })
-            .catch(error => {
-                console.error('Failed to load requirements:', error);
-                countrySelect.innerHTML = '<option>Error loading countries</option>';
-                alert('Failed to load country requirements. Please refresh the page.');
-            });
-    }
-    
-    function populateDocTypes() {
-        docTypeSelect.innerHTML = '';
-        const docs = requirementsData?.[state.currentCountry];
-        
-        if (!docs) {
-            docTypeSelect.innerHTML = '<option>No documents available</option>';
-            return;
-        }
-        
-        for (const docCode of Object.keys(docs)) {
-            const docData = docs[docCode];
-            const option = new Option(docData.name, docCode);
-            docTypeSelect.add(option);
-        }
-        
-        const firstDocType = Object.keys(docs)[0];
-        if (firstDocType) {
-            state.currentDoc = firstDocType;
-            docTypeSelect.value = firstDocType;
-        }
-    }
-
     function init() {
-        startAppBtnHeader.addEventListener('click', startApp);
-        startAppBtnHero.addEventListener('click', startApp);
+        // Landing page buttons
+        document.getElementById('start-app-btn-header').addEventListener('click', () => {
+            landingPage.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            navigateTo('upload');
+            loadRequirements();
+        });
 
+        document.getElementById('start-app-btn-hero').addEventListener('click', () => {
+            landingPage.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            navigateTo('upload');
+            loadRequirements();
+        });
+
+        // File upload
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) loadImage(e.target.files[0]);
+        });
+        
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             dropZone.classList.add('border-blue-500');
@@ -1419,159 +516,75 @@
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropZone.classList.remove('border-blue-500');
-            if (e.dataTransfer.files.length) {
-                handleImageUpload(e.dataTransfer.files[0]);
-            }
-        });
-        imageUploadInput.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                handleImageUpload(e.target.files[0]);
-            }
+            if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
         });
 
-        aiAdjustBtn.addEventListener('click', handleAiAdjust);
-
-        countrySelect.addEventListener('change', (e) => {
-            state.currentCountry = e.target.value;
-            populateDocTypes();
-            const firstValidDoc = Object.keys(requirementsData[state.currentCountry])[0];
-            state.currentDoc = firstValidDoc;
-            docTypeSelect.value = firstValidDoc;
-            updateOverlayMask();
-            if (state.image) { 
-                runComplianceChecks();
+        // Country/doc type selection
+        document.getElementById('country-select').addEventListener('change', (e) => {
+            state.selectedCountry = e.target.value;
+            const docSelect = document.getElementById('doc-type-select');
+            if (state.selectedCountry && state.requirements[state.selectedCountry]) {
+                docSelect.innerHTML = '<option value="">Select document type</option>';
+                Object.keys(state.requirements[state.selectedCountry]).forEach(docType => {
+                    const option = document.createElement('option');
+                    option.value = docType;
+                    option.textContent = docType;
+                    docSelect.appendChild(option);
+                });
             }
-        });
-        
-        docTypeSelect.addEventListener('change', (e) => {
-            state.currentDoc = e.target.value;
-            updateOverlayMask();
-            if (state.image) {
-                runComplianceChecks();
-            }
+            runComplianceChecks();
         });
 
-        const canvasInteraction = (e) => {
-             e.preventDefault();
-            if (e.type === 'mousedown' || e.type === 'touchstart') {
-                state.isDragging = true;
-                const rect = canvas.getBoundingClientRect();
-                const clientX = e.clientX || e.touches[0].clientX;
-                const clientY = e.clientY || e.touches[0].clientY;
-                state.dragStart.x = clientX - rect.left - state.transform.offsetX;
-                state.dragStart.y = clientY - rect.top - state.transform.offsetY;
-            } else if (e.type === 'mouseup' || e.type === 'touchend') {
-                state.isDragging = false;
-                runComplianceChecks(); 
-            } else if ((e.type === 'mousemove' || e.type === 'touchmove') && state.isDragging) {
-                const rect = canvas.getBoundingClientRect();
-                 const clientX = e.clientX || e.touches[0].clientX;
-                const clientY = e.clientY || e.touches[0].clientY;
-                state.transform.offsetX = clientX - rect.left - state.dragStart.x;
-                state.transform.offsetY = clientY - rect.top - state.dragStart.y;
-                drawCanvas();
-            }
-        };
-
-        canvas.addEventListener('mousedown', canvasInteraction);
-        canvas.addEventListener('mousemove', canvasInteraction);
-        canvas.addEventListener('mouseup', canvasInteraction);
-        canvas.addEventListener('mouseleave', () => {
-            if (state.isDragging) {
-                state.isDragging = false;
-                runComplianceChecks();
-            }
+        document.getElementById('doc-type-select').addEventListener('change', (e) => {
+            state.selectedDocType = e.target.value;
+            runComplianceChecks();
         });
-        canvas.addEventListener('touchstart', canvasInteraction, { passive: false });
-        canvas.addEventListener('touchmove', canvasInteraction, { passive: false });
-        canvas.addEventListener('touchend', canvasInteraction);
 
-        const zoomSlider = document.getElementById('zoom-slider');
-        const brightnessSlider = document.getElementById('brightness-slider');
-        const contrastSlider = document.getElementById('contrast-slider');
-        const rotationSlider = document.getElementById('rotation-slider');
-        const zoomValue = document.getElementById('zoom-value');
-        const brightnessValue = document.getElementById('brightness-value');
-        const contrastValue = document.getElementById('contrast-value');
-        const rotationValue = document.getElementById('rotation-value');
+        // Auto-adjust button - NOW WORKING!
+        document.getElementById('auto-adjust-btn').addEventListener('click', autoAdjustPhoto);
 
-        zoomSlider.addEventListener('input', (e) => {
-            const oldMultiplier = state.transform.scaleMultiplier;
-            const newMultiplier = parseFloat(e.target.value);
-            
-            if (oldMultiplier === newMultiplier) return;
-
-            const oldScale = state.baseScale * oldMultiplier;
-            const newScale = state.baseScale * newMultiplier;
-
-            const canvasCenterX = canvas.width / 2;
-            const canvasCenterY = canvas.height / 2;
-
-            const imageXUnderCenter = (canvasCenterX - state.transform.offsetX) / oldScale;
-            const imageYUnderCenter = (canvasCenterY - state.transform.offsetY) / oldScale;
-            
-            state.transform.offsetX = canvasCenterX - (imageXUnderCenter * newScale);
-            state.transform.offsetY = canvasCenterY - (imageYUnderCenter * newScale);
-
-            state.transform.scaleMultiplier = newMultiplier;
-            zoomValue.textContent = `${Math.round(state.transform.scaleMultiplier * 100)}%`;
+        // Manual adjustments
+        document.getElementById('brightness-slider').addEventListener('input', (e) => {
+            state.filters.brightness = e.target.value;
             drawCanvas();
         });
-        zoomSlider.addEventListener('change', runComplianceChecks); 
-        
-        brightnessSlider.addEventListener('input', (e) => {
-            state.filters.brightness = parseInt(e.target.value);
-            brightnessValue.textContent = `${state.filters.brightness}%`;
+
+        document.getElementById('contrast-slider').addEventListener('input', (e) => {
+            state.filters.contrast = e.target.value;
             drawCanvas();
         });
-        contrastSlider.addEventListener('input', (e) => {
-            state.filters.contrast = parseInt(e.target.value);
-            contrastValue.textContent = `${state.filters.contrast}%`;
-            drawCanvas();
-        });
-        rotationSlider.addEventListener('input', (e) => {
+
+        document.getElementById('rotation-slider').addEventListener('input', (e) => {
             state.transform.rotation = parseFloat(e.target.value);
-            rotationValue.textContent = `${state.transform.rotation.toFixed(1)}°`;
+            document.getElementById('rotation-value').textContent = `${state.transform.rotation.toFixed(1)}°`;
             drawCanvas();
         });
-        rotationSlider.addEventListener('change', runComplianceChecks);
 
-        nextToPaymentBtn.addEventListener('click', () => {
+        // Next to payment
+        document.getElementById('next-to-payment-btn').addEventListener('click', () => {
             navigateTo('payment');
-            generateFinalImage('preview', true);
-        });
-
-        // DEMO PAYMENT - No real Stripe integration yet
-        payBtn.addEventListener('click', async () => {
-            showLoading('Processing payment...', 50);
             
-            try {
-                // Simulated demo payment
-                setTimeout(() => {
-                    hideLoading();
-                    state.paymentVerified = true;
-                    navigateTo('download');
-                }, 1500);
-                
-            } catch (error) {
-                hideLoading();
-                console.error('Payment error:', error);
-                alert('Payment failed. Please try again.');
-            }
-        });
-        
-        downloadSingleBtn.addEventListener('click', () => generateFinalImage('single'));
-        downloadSheetBtn.addEventListener('click', () => generateFinalImage('sheet'));
-        homeBtn.addEventListener('click', () => {
-            window.location.reload();
+            // Initialize Stripe Card Element
+            const elements = stripe.elements();
+            cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        color: '#fff',
+                        fontSize: '16px',
+                        '::placeholder': { color: '#aab7c4' }
+                    }
+                }
+            });
+            cardElement.mount('#card-element');
         });
 
-        window.addEventListener('resize', () => {
-            if(state.image) {
-                setupEditorCanvas();
-                runComplianceChecks();
-            }
-        });
+        // Payment button - NOW WORKING!
+        document.getElementById('pay-btn').addEventListener('click', handlePayment);
+
+        // Download buttons
+        document.getElementById('download-single-btn').addEventListener('click', () => generateFinalImage('single'));
+        document.getElementById('download-sheet-btn').addEventListener('click', () => generateFinalImage('sheet'));
+        document.getElementById('home-btn').addEventListener('click', () => window.location.reload());
     }
 
     init();
