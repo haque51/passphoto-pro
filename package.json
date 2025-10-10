@@ -1,1 +1,27 @@
-
+{
+  "name": "passphoto-pro",
+  "version": "1.0.0",
+  "description": "Professional passport photo creation tool",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required'",
+    "deploy": "netlify deploy --prod"
+  },
+  "keywords": [
+    "passport",
+    "photo",
+    "visa",
+    "biometric"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@netlify/functions": "^2.4.0",
+    "node-fetch": "^2.7.0",
+    "stripe": "^14.9.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.10.1"
+  }
+}
