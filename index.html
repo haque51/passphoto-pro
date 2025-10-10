@@ -100,6 +100,12 @@
         details summary::-webkit-details-marker {
             display: none;
         }
+        .progress-bar {
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -443,6 +449,11 @@
     
     <!-- Main Application Container -->
     <div id="app-container" class="hidden flex-grow flex-col">
+        <!-- Demo Mode Banner -->
+        <div id="demo-banner" class="bg-yellow-500 text-gray-900 px-4 py-2 text-center font-semibold text-sm">
+            ⚠️ TEST MODE - Use test card: 4242 4242 4242 4242, Expiry: 12/34, CVC: 123
+        </div>
+
         <!-- Header -->
         <header class="bg-gray-900/80 backdrop-blur-sm text-white p-4 border-b border-gray-700 sticky top-0 z-20">
             <div class="container mx-auto flex justify-between items-center">
@@ -609,7 +620,7 @@
                                     <button id="pay-btn" class="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all text-lg sm:text-xl">
                                         Pay $4.99 & Get Photo
                                     </button>
-                                    <p class="text-xs text-gray-500">Simulated payment for demonstration purposes.</p>
+                                    <p class="text-xs text-gray-500">⚠️ TEST MODE - Use card 4242 4242 4242 4242</p>
                                 </div>
                             </div>
                         </div>
@@ -642,10 +653,14 @@
             </div>
         </main>
 
-         <!-- Loading Overlay -->
-        <div id="loading-overlay" class="hidden fixed inset-0 bg-gray-900 bg-opacity-80 flex flex-col items-center justify-center z-50">
+         <!-- Loading Overlay (Enhanced) -->
+        <div id="loading-overlay" class="hidden fixed inset-0 bg-gray-900 bg-opacity-90 flex flex-col items-center justify-center z-50">
             <div class="loader"></div>
-            <p id="loading-text" class="mt-4 text-lg font-semibold text-white">Loading AI models...</p>
+            <p id="loading-text" class="mt-4 text-lg font-semibold text-white">Loading...</p>
+            <div class="mt-2 w-64 bg-gray-700 rounded-full h-1 overflow-hidden">
+                <div id="progress-bar" class="progress-bar h-full"></div>
+            </div>
+            <p id="loading-sub-text" class="mt-2 text-sm text-gray-400"></p>
         </div>
     </div>
     
@@ -656,9 +671,7 @@
       : '/.netlify/functions';
 
     // ⚠️ REPLACE WITH YOUR STRIPE PUBLISHABLE KEY ⚠️
-    // Get your key from: https://dashboard.stripe.com/test/apikeys
-    // It should look like: pk_test_51Abc...xyz
-    const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SGlcmIfW10O63OstDGfSqeGNjjRzQw03y2FvWVQpFn79l6yCvYBzvmacrvPu5WKhk9ucLcJCzeZ57GGy68LXajB00ZHbH0Xgi';
+    const STRIPE_PUBLISHABLE_KEY = 'REPLACE_WITH_YOUR_STRIPE_PUBLISHABLE_KEY';
     const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
 
     // ========== DOM ELEMENTS ==========
@@ -682,6 +695,8 @@
     };
     const loadingOverlay = document.getElementById('loading-overlay');
     const loadingText = document.getElementById('loading-text');
+    const loadingSubText = document.getElementById('loading-sub-text');
+    const progressBar = document.getElementById('progress-bar');
     
     const dropZone = document.getElementById('drop-zone');
     const imageUploadInput = document.getElementById('image-upload');
@@ -747,13 +762,18 @@
             screens.upload.classList.remove('hidden');
             screens.upload.classList.add('flex');
             
-            showLoading('Loading AI models...');
+            showLoading('Loading AI models...', 10);
+            loadingSubText.textContent = 'Preparing face detection...';
+            
             Promise.all([
                 faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights'),
                 faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights')
             ]).then(() => {
+                updateProgress(50);
+                loadingSubText.textContent = 'Loading country requirements...';
                 populateDropdowns();
                 updateOverlayMask();
+                updateProgress(100);
                 hideLoading();
             }).catch(err => {
                 loadingText.textContent = "Error loading models. Please refresh.";
@@ -800,39 +820,74 @@
         }
     }
 
-    function showLoading(text) {
+    function showLoading(text, progress = 0) {
         loadingText.textContent = text;
+        progressBar.style.width = `${progress}%`;
         loadingOverlay.classList.remove('hidden');
         loadingOverlay.classList.add('flex');
+    }
+
+    function updateProgress(percent) {
+        progressBar.style.width = `${percent}%`;
     }
 
     function hideLoading() {
         loadingOverlay.classList.add('hidden');
         loadingOverlay.classList.remove('flex');
+        progressBar.style.width = '0%';
     }
 
-    // ========== IMAGE HANDLING ==========
+    // ========== IMAGE HANDLING (Enhanced) ==========
     function handleImageUpload(file) {
         if (!file || !file.type.startsWith('image/')) return;
+        
+        // Show loading immediately
+        showLoading('Reading image...', 5);
+        loadingSubText.textContent = 'Processing your photo...';
+        
         const reader = new FileReader();
         reader.onload = (e) => {
+            updateProgress(20);
+            loadingSubText.textContent = 'Validating image size...';
+            
             const img = new Image();
             img.onload = async () => {
                 if (img.width < 600 || img.height < 600) {
+                    hideLoading();
                     alert('Image too small. Please upload an image with minimum dimensions of 600x600 pixels.');
                     return;
                 }
+                
+                updateProgress(40);
+                loadingSubText.textContent = 'Preparing editor...';
+                
                 state.image = img;
                 resetStateForNewImage();
                 navigateTo('editor');
+                
                 setTimeout(() => {
+                    updateProgress(60);
+                    loadingText.textContent = 'Setting up canvas...';
                     setupEditorCanvas();
-                    showLoading('Analyzing photo...');
-                    detectFaceAndRunChecks().then(hideLoading);
+                    
+                    updateProgress(80);
+                    loadingText.textContent = 'Analyzing facial features...';
+                    loadingSubText.textContent = 'This may take a moment...';
+                    
+                    detectFaceAndRunChecks().then(() => {
+                        updateProgress(100);
+                        setTimeout(hideLoading, 300);
+                    });
                 }, 100);
             };
             img.src = e.target.result;
         };
+        
+        reader.onerror = () => {
+            hideLoading();
+            alert('Failed to read image file. Please try again.');
+        };
+        
         reader.readAsDataURL(file);
     }
     
@@ -909,31 +964,47 @@
         runComplianceChecks();
     }
 
-    // ========== AI ADJUSTMENT ==========
+    // ========== AI ADJUSTMENT (Enhanced with better error handling) ==========
     async function handleAiAdjust() {
         if (!state.image) {
             alert('Please upload an image first.');
             return;
         }
 
-        showLoading('AI is adjusting your photo...');
+        showLoading('Preparing image for AI...', 10);
+        loadingSubText.textContent = 'Converting image format...';
 
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = state.image.naturalWidth || state.image.width;
-        tempCanvas.height = state.image.naturalHeight || state.image.height;
+        // Resize if image is too large (Gemini has limits)
+        const maxDimension = 2048;
+        let width = state.image.naturalWidth || state.image.width;
+        let height = state.image.naturalHeight || state.image.height;
+        
+        if (width > maxDimension || height > maxDimension) {
+            const scale = maxDimension / Math.max(width, height);
+            width = Math.floor(width * scale);
+            height = Math.floor(height * scale);
+        }
+        
+        tempCanvas.width = width;
+        tempCanvas.height = height;
         const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.drawImage(state.image, 0, 0);
+        tempCtx.drawImage(state.image, 0, 0, width, height);
         
         let base64ImageData;
         try {
-            base64ImageData = tempCanvas.toDataURL('image/jpeg').split(',')[1];
+            base64ImageData = tempCanvas.toDataURL('image/jpeg', 0.85).split(',')[1];
             if (!base64ImageData) throw new Error("Generated base64 data is empty.");
         } catch (e) {
             console.error("Error converting canvas to data URL:", e);
-            alert("Could not process the current image. Please try uploading the original photo again.");
             hideLoading();
+            alert("Could not process the current image. Please try uploading the original photo again.");
             return;
         }
+
+        updateProgress(30);
+        loadingText.textContent = 'Sending to AI service...';
+        loadingSubText.textContent = 'This typically takes 10-30 seconds...';
 
         try {
             const response = await fetch(`${API_BASE_URL}/adjust-photo`, {
@@ -946,17 +1017,23 @@
                 })
             });
 
+            updateProgress(60);
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'API request failed');
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(errorData.error || `API request failed with status ${response.status}`);
             }
 
             const result = await response.json();
             const base64Data = result.adjustedImageBase64;
 
             if (!base64Data) {
-                throw new Error("No image data returned from the API.");
+                throw new Error("No image data returned from AI service.");
             }
+
+            updateProgress(80);
+            loadingText.textContent = 'Loading adjusted photo...';
+            loadingSubText.textContent = 'Almost done...';
 
             const newImg = new Image();
             
@@ -964,9 +1041,11 @@
                 state.image = newImg;
                 resetStateForNewImage(); 
                 setupEditorCanvas();
-                showLoading('Re-analyzing adjusted photo...');
+                updateProgress(90);
+                loadingText.textContent = 'Re-analyzing photo...';
                 await detectFaceAndRunChecks();
-                hideLoading();
+                updateProgress(100);
+                setTimeout(hideLoading, 300);
             };
             
             newImg.onerror = () => {
@@ -977,8 +1056,22 @@
 
         } catch (error) {
             console.error("Error during AI adjustment:", error);
-            alert(`Sorry, the AI adjustment failed. ${error.message}`);
             hideLoading();
+            
+            // Better error messages
+            let errorMessage = 'Sorry, the AI adjustment failed. ';
+            if (error.message.includes('quota') || error.message.includes('429')) {
+                errorMessage += 'The AI service is currently busy. Please try again in a few minutes, or use manual adjustments instead.';
+            } else if (error.message.includes('not configured')) {
+                errorMessage += 'The AI service is not properly configured. Please use manual adjustments.';
+            } else {
+                errorMessage += error.message || 'Please try again or use manual adjustments instead.';
+            }
+            
+            // Show error with option to continue
+            if (confirm(errorMessage + '\n\nWould you like to continue with manual adjustments?')) {
+                // User can proceed with manual adjustments
+            }
         }
     }
     
@@ -1448,11 +1541,12 @@
             generateFinalImage('preview', true);
         });
 
+        // DEMO PAYMENT - No real Stripe integration yet
         payBtn.addEventListener('click', async () => {
-            showLoading('Creating payment...');
+            showLoading('Processing payment...', 50);
             
             try {
-                // Simulated payment for demo
+                // Simulated demo payment
                 setTimeout(() => {
                     hideLoading();
                     state.paymentVerified = true;
