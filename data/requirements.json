@@ -1,1 +1,579 @@
-data/requirements.json
+{
+  "version": "2.0.0",
+  "lastUpdated": "2025-01-15T10:00:00Z",
+  "countries": {
+    "US": {
+      "passport": {
+        "name": "U.S. Passport Photo",
+        "widthPx": 600,
+        "heightPx": 600,
+        "headHeightMinPercent": 50,
+        "headHeightMaxPercent": 69,
+        "eyeToBottomMinPercent": 56,
+        "eyeToBottomMaxPercent": 69,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-03-15",
+        "source": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html"
+      },
+      "visa": {
+        "name": "U.S. Visa Photo",
+        "widthPx": 600,
+        "heightPx": 600,
+        "headHeightMinPercent": 50,
+        "headHeightMaxPercent": 69,
+        "eyeToBottomMinPercent": 56,
+        "eyeToBottomMaxPercent": 69,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-03-15",
+        "source": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html"
+      }
+    },
+    "UK": {
+      "passport": {
+        "name": "United Kingdom Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 62,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 66,
+        "background": "#F0F0F0",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-01-10",
+        "source": "https://www.gov.uk/photos-for-passports"
+      }
+    },
+    "Schengen": {
+      "visa": {
+        "name": "Schengen Visa Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#E8E8E8",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-02-01",
+        "source": "https://www.schengenvisainfo.com/photo-requirements/"
+      }
+    },
+    "Canada": {
+      "passport": {
+        "name": "Canadian Passport Photo",
+        "widthPx": 590,
+        "heightPx": 827,
+        "headHeightMinPercent": 50,
+        "headHeightMaxPercent": 70,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 70,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-20",
+        "source": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+      },
+      "visa": {
+        "name": "Canadian Visa Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 62,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 66,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-20",
+        "source": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+      }
+    },
+    "Australia": {
+      "passport": {
+        "name": "Australian Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 62,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 66,
+        "background": "#F5F5F5",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-01-05",
+        "source": "https://www.passports.gov.au/getting-passport-how-it-works/photos"
+      },
+      "visa": {
+        "name": "Australian Visa Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 62,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 66,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-05",
+        "source": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing"
+      }
+    },
+    "India": {
+      "passport": {
+        "name": "Indian Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-12",
+        "source": "https://portal2.passportindia.gov.in/"
+      },
+      "visa": {
+        "name": "Indian Visa Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-12",
+        "source": "https://indianvisaonline.gov.in/evisa/"
+      }
+    },
+    "China": {
+      "passport": {
+        "name": "Chinese Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-08",
+        "source": "http://www.china-embassy.org/eng/visa/zyxx/t1751037.htm"
+      },
+      "visa": {
+        "name": "Chinese Visa Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-08",
+        "source": "http://www.china-embassy.org/eng/visa/zyxx/t1751037.htm"
+      }
+    },
+    "Japan": {
+      "passport": {
+        "name": "Japanese Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FAFAFA",
+        "backgroundName": "light background",
+        "lastUpdated": "2024-01-10",
+        "source": "https://www.mofa.go.jp/j_info/visit/visa/"
+      },
+      "visa": {
+        "name": "Japanese Visa Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-10",
+        "source": "https://www.mofa.go.jp/j_info/visit/visa/"
+      }
+    },
+    "Germany": {
+      "passport": {
+        "name": "German Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#E8E8E8",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-02-01",
+        "source": "https://www.bundesdruckerei.de/en/2293-biometric-photo"
+      }
+    },
+    "France": {
+      "passport": {
+        "name": "French Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#E8E8E8",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-02-01",
+        "source": "https://www.service-public.fr/particuliers/vosdroits/F10619"
+      }
+    },
+    "Italy": {
+      "passport": {
+        "name": "Italian Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#E8E8E8",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-02-01",
+        "source": "https://www.esteri.it/en/servizi-consolari-e-visti/rilascio-e-rinnovo-del-passaporto/"
+      }
+    },
+    "Spain": {
+      "passport": {
+        "name": "Spanish Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#E8E8E8",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-02-01",
+        "source": "https://www.policia.es/documentacion/pasaporte/pasaporte_ordinario.html"
+      }
+    },
+    "Netherlands": {
+      "passport": {
+        "name": "Dutch Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#E8E8E8",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-02-01",
+        "source": "https://www.government.nl/topics/identity-documents/passport"
+      }
+    },
+    "Switzerland": {
+      "passport": {
+        "name": "Swiss Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#E8E8E8",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-02-01",
+        "source": "https://www.schweizerpass.ch/en/"
+      }
+    },
+    "Sweden": {
+      "passport": {
+        "name": "Swedish Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#E8E8E8",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-02-01",
+        "source": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/"
+      }
+    },
+    "Norway": {
+      "passport": {
+        "name": "Norwegian Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#E8E8E8",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-02-01",
+        "source": "https://www.politiet.no/en/services/pass/"
+      }
+    },
+    "Denmark": {
+      "passport": {
+        "name": "Danish Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 70,
+        "headHeightMaxPercent": 80,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#E8E8E8",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-02-01",
+        "source": "https://www.borger.dk/english/identity-documents-and-citizenship/passport"
+      }
+    },
+    "Brazil": {
+      "passport": {
+        "name": "Brazilian Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-15",
+        "source": "https://www.gov.br/pt-br/servicos/obter-passaporte-comum"
+      }
+    },
+    "Mexico": {
+      "passport": {
+        "name": "Mexican Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-15",
+        "source": "https://www.gob.mx/sre/acciones-y-programas/pasaporte-mexicano"
+      }
+    },
+    "Argentina": {
+      "passport": {
+        "name": "Argentine Passport Photo",
+        "widthPx": 472,
+        "heightPx": 591,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-15",
+        "source": "https://www.argentina.gob.ar/interior/pasaportes"
+      }
+    },
+    "SouthAfrica": {
+      "passport": {
+        "name": "South African Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 62,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 66,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-10",
+        "source": "http://www.dha.gov.za/index.php/civic-services/passports"
+      }
+    },
+    "NewZealand": {
+      "passport": {
+        "name": "New Zealand Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 62,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 66,
+        "background": "#F5F5F5",
+        "backgroundName": "light grey",
+        "lastUpdated": "2024-01-05",
+        "source": "https://www.passports.govt.nz/photos/"
+      }
+    },
+    "Singapore": {
+      "passport": {
+        "name": "Singapore Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-12",
+        "source": "https://www.ica.gov.sg/documents/passport/application"
+      }
+    },
+    "SouthKorea": {
+      "passport": {
+        "name": "South Korean Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-10",
+        "source": "https://www.passport.go.kr/home/kor/contents.do?menuPos=22"
+      }
+    },
+    "Malaysia": {
+      "passport": {
+        "name": "Malaysian Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-12",
+        "source": "https://www.imi.gov.my/portal/pasport/en/"
+      }
+    },
+    "Thailand": {
+      "passport": {
+        "name": "Thai Passport Photo",
+        "widthPx": 472,
+        "heightPx": 591,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-12",
+        "source": "https://www.mfa.go.th/en/publicservice/passport"
+      }
+    },
+    "Indonesia": {
+      "passport": {
+        "name": "Indonesian Passport Photo",
+        "widthPx": 472,
+        "heightPx": 591,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-12",
+        "source": "https://www.imigrasi.go.id/"
+      }
+    },
+    "Philippines": {
+      "passport": {
+        "name": "Philippine Passport Photo",
+        "widthPx": 472,
+        "heightPx": 591,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-12",
+        "source": "https://consular.dfa.gov.ph/passport-requirements"
+      }
+    },
+    "Vietnam": {
+      "passport": {
+        "name": "Vietnamese Passport Photo",
+        "widthPx": 472,
+        "heightPx": 591,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-12",
+        "source": "https://xuatnhapcanh.gov.vn/"
+      }
+    },
+    "UAE": {
+      "passport": {
+        "name": "UAE Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-10",
+        "source": "https://u.ae/en/information-and-services/passports-and-traveling/passport"
+      }
+    },
+    "SaudiArabia": {
+      "passport": {
+        "name": "Saudi Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-10",
+        "source": "https://www.my.gov.sa/wps/portal/snp/servicesDirectory/servicedetails/10086"
+      }
+    },
+    "Turkey": {
+      "passport": {
+        "name": "Turkish Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-10",
+        "source": "https://www.nvi.gov.tr/hizmetler/pasaport-basvurusu"
+      }
+    },
+    "Russia": {
+      "passport": {
+        "name": "Russian Passport Photo",
+        "widthPx": 413,
+        "heightPx": 531,
+        "headHeightMinPercent": 60,
+        "headHeightMaxPercent": 75,
+        "eyeToBottomMinPercent": 55,
+        "eyeToBottomMaxPercent": 68,
+        "background": "#FFFFFF",
+        "backgroundName": "white",
+        "lastUpdated": "2024-01-10",
+        "source": "https://mvd.ru/services/passport"
+      }
+    }
+  }
+}
