@@ -1052,66 +1052,145 @@
         }
     }
 
-    // ========== PAYMENT RETURN HANDLER ==========
-    async function handlePaymentReturn() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const paymentStatus = urlParams.get('payment');
-        const sessionId = urlParams.get('session_id');
+        // Save photo state before redirecting to payment
+function savePhotoState() {
+    if (!state.image) return;
+    
+    try {
+        const photoData = canvas.toDataURL('image/jpeg', 0.95);
         
-        if (paymentStatus === 'success' && sessionId) {
-            showLoading('Verifying payment...', 50);
+        const stateToSave = {
+            photoData: photoData,
+            transform: state.transform,
+            filters: state.filters,
+            currentCountry: state.currentCountry,
+            currentDoc: state.currentDoc,
+            timestamp: Date.now()
+        };
+        
+        sessionStorage.setItem('pendingPhoto', JSON.stringify(stateToSave));
+        console.log('✅ Photo state saved');
+    } catch (e) {
+        console.error('Failed to save photo state:', e);
+    }
+}
+
+// Restore photo state after payment return
+async function restorePhotoState() {
+    try {
+        const savedState = sessionStorage.getItem('pendingPhoto');
+        if (!savedState) return false;
+        
+        const data = JSON.parse(savedState);
+        
+        // Check if saved state is less than 1 hour old
+        if (Date.now() - data.timestamp > 3600000) {
+            sessionStorage.removeItem('pendingPhoto');
+            return false;
+        }
+        
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                state.image = img;
+                state.transform = data.transform;
+                state.filters = data.filters;
+                state.currentCountry = data.currentCountry;
+                state.currentDoc = data.currentDoc;
+                
+                sessionStorage.removeItem('pendingPhoto');
+                console.log('✅ Photo state restored');
+                resolve(true);
+            };
+            img.onerror = () => resolve(false);
+            img.src = data.photoData;
+        });
+        
+    } catch (e) {
+        console.error('Failed to restore photo state:', e);
+        return false;
+    }
+}
+    // ========== PAYMENT RETURN HANDLER ==========
+  async function handlePaymentReturn() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const sessionId = urlParams.get('session_id');
+    
+    if (paymentStatus === 'success' && sessionId) {
+        showLoading('Verifying payment...', 30);
+        
+        try {
+            const response = await fetch('/.netlify/functions/verify-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId })
+            });
             
-            try {
-                const response = await fetch('/.netlify/functions/verify-payment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sessionId })
-                });
+            if (!response.ok) {
+                throw new Error('Verification request failed');
+            }
+            
+            const { verified, paymentStatus: status } = await response.json();
+            
+            if (verified && status === 'paid') {
+                state.paymentVerified = true;
                 
-                if (!response.ok) {
-                    throw new Error('Verification request failed');
-                }
+                updateProgress(60);
+                loadingText.textContent = 'Restoring your photo...';
                 
-                const { verified, paymentStatus: status } = await response.json();
+                const restored = await restorePhotoState();
                 
-                hideLoading();
-                
-                if (verified && status === 'paid') {
-                    state.paymentVerified = true;
+                if (restored) {
+                    updateProgress(80);
                     
-                    // If app hasn't started yet, start it first
-                    if (landingPage && !landingPage.classList.contains('hidden')) {
-                        startApp();
-                        // Wait for app to start, then navigate
-                        setTimeout(() => {
-                            navigateTo('download');
-                        }, 600);
-                    } else {
-                        // App already running, just navigate
+                    if (landingPage.classList.contains('hidden')) {
+                        setupEditorCanvas();
                         navigateTo('download');
+                        hideLoading();
+                    } else {
+                        startApp();
+                        setTimeout(() => {
+                            setupEditorCanvas();
+                            navigateTo('download');
+                            hideLoading();
+                        }, 1000);
                     }
-                    
-                    // Clean up URL
-                    window.history.replaceState({}, document.title, window.location.pathname);
                 } else {
-                    alert('Payment verification failed. Please contact support with session ID: ' + sessionId);
+                    hideLoading();
+                    alert('✅ Payment successful!\n\n❌ Session expired. Please contact support with session ID: ' + sessionId);
                     window.location.href = '/';
                 }
                 
-            } catch (error) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+            } else {
                 hideLoading();
-                console.error('Verification error:', error);
                 alert('Payment verification failed. Please contact support.');
                 window.location.href = '/';
             }
             
-        } else if (paymentStatus === 'cancelled') {
-            alert('Payment was cancelled. You can try again when ready.');
-            // Clean up URL and go back to landing
-            window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (error) {
+            hideLoading();
+            console.error('Verification error:', error);
+            alert('Payment verification failed. Please contact support.');
             window.location.href = '/';
         }
+        
+    } else if (paymentStatus === 'cancelled') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        alert('Payment was cancelled.');
+        
+        const restored = await restorePhotoState();
+        if (restored) {
+            startApp();
+            setTimeout(() => {
+                setupEditorCanvas();
+                navigateTo('payment');
+            }, 500);
+        }
     }
+}
     
     // ========== COMPLIANCE CHECKS ==========
     function runComplianceChecks() {
@@ -1591,6 +1670,7 @@
 
         // Payment button - REAL STRIPE INTEGRATION
         payBtn.addEventListener('click', async () => {
+            savePhotoState();
             showLoading('Creating secure checkout...');
             
             try {
