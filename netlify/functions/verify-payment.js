@@ -1,89 +1,69 @@
-// netlify/functions/verify-payment.js
+// File: netlify/functions/verify-payment.js
+// Verifies that a Stripe payment was completed successfully
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event, context) => {
-  // Handle CORS preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers: {
+    // CORS headers
+    const headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'POST, OPTIONS'
-      },
-      body: ''
     };
-  }
 
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
-  }
-
-  try {
-    const { paymentIntentId } = JSON.parse(event.body);
-
-    if (!paymentIntentId) {
-      return {
-        statusCode: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ error: 'Missing payment intent ID' })
-      };
+    // Handle preflight
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers, body: '' };
     }
 
-    // Check if Stripe key is configured
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('STRIPE_SECRET_KEY not configured');
-      return {
-        statusCode: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ error: 'Payment system not configured' })
-      };
+    // Only allow POST
+    if (event.httpMethod !== 'POST') {
+        return {
+            statusCode: 405,
+            headers,
+            body: JSON.stringify({ error: 'Method not allowed' })
+        };
     }
 
-    // Retrieve payment intent from Stripe
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    try {
+        const { sessionId } = JSON.parse(event.body);
 
-    // Check if payment was successful
-    const isVerified = paymentIntent.status === 'succeeded';
+        if (!sessionId) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ error: 'Session ID required' })
+            };
+        }
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
-        verified: isVerified,
-        status: paymentIntent.status,
-        amount: paymentIntent.amount
-      })
-    };
+        // Retrieve the Checkout Session from Stripe
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-  } catch (error) {
-    console.error('Payment verification error:', error);
-    return {
-      statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ 
-        error: 'Failed to verify payment',
-        message: error.message 
-      })
-    };
-  }
+        // Check if payment was successful
+        const verified = session.payment_status === 'paid';
+        
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                verified,
+                paymentStatus: session.payment_status,
+                amount: session.amount_total,
+                currency: session.currency,
+                customerEmail: session.customer_details?.email || null
+            })
+        };
+
+    } catch (error) {
+        console.error('Payment verification error:', error);
+        
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ 
+                error: 'Verification failed',
+                message: error.message 
+            })
+        };
+    }
 };
