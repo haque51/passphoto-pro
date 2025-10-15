@@ -670,9 +670,9 @@
       ? 'http://localhost:8888/.netlify/functions'
       : '/.netlify/functions';
 
-    // ⚠️ REPLACE WITH YOUR STRIPE PUBLISHABLE KEY ⚠️
-   const STRIPE_PUBLISHABLE_KEY = 'pk_test_51QYPKMGy1NLKiomMC2CrELECIxWUeKbP0dkHn0dLqJkfHBwuPXKAx1RFj3PzSx7lVSRYpBXAFasFBqc5sSHW8Nvp00xpuiHbFP'; // Replace with YOUR key!
-const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+    // ✅ REPLACE WITH YOUR STRIPE PUBLISHABLE KEY
+    const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SGlcmIfW10O63Os1CwHc9dT5k7b6zxLmTR2pU96d9PTuamzIXYheUN5znVouHNy9z4plPpyZ2mmdNHG9sUsBcsq00NC8w1uRZ';
+    const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
 
     // ========== DOM ELEMENTS ==========
     const landingPage = document.getElementById('landing-page');
@@ -738,6 +738,7 @@ const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
         complianceResults: {},
         isDragging: false,
         dragStart: { x: 0, y: 0 },
+        paymentVerified: false,
     };
 
     // ========== REQUIREMENTS (LOADED FROM API) ==========
@@ -837,11 +838,10 @@ const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
         progressBar.style.width = '0%';
     }
 
-    // ========== IMAGE HANDLING (Enhanced) ==========
+    // ========== IMAGE HANDLING ==========
     function handleImageUpload(file) {
         if (!file || !file.type.startsWith('image/')) return;
         
-        // Show loading immediately
         showLoading('Reading image...', 5);
         loadingSubText.textContent = 'Processing your photo...';
         
@@ -964,127 +964,230 @@ const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
         runComplianceChecks();
     }
 
-    // ========== AI ADJUSTMENT (Enhanced with better error handling) ==========
-async function handleAiAdjust() {
-    if (!state.image) {
-        alert('Please upload an image first.');
-        return;
-    }
-
-    showLoading('Preparing image for AI...', 10);
-    loadingSubText.textContent = 'Converting image format...';
-
-    const tempCanvas = document.createElement('canvas');
-    const maxDimension = 2048;
-    let width = state.image.naturalWidth || state.image.width;
-    let height = state.image.naturalHeight || state.image.height;
-    
-    if (width > maxDimension || height > maxDimension) {
-        const scale = maxDimension / Math.max(width, height);
-        width = Math.floor(width * scale);
-        height = Math.floor(height * scale);
-    }
-    
-    tempCanvas.width = width;
-    tempCanvas.height = height;
-    const tempCtx = tempCanvas.getContext('2d');
-    tempCtx.drawImage(state.image, 0, 0, width, height);
-    
-    let base64ImageData;
-    try {
-        base64ImageData = tempCanvas.toDataURL('image/jpeg', 0.85).split(',')[1];
-        if (!base64ImageData) throw new Error("Generated base64 data is empty.");
-    } catch (e) {
-        console.error("Error converting canvas to data URL:", e);
-        hideLoading();
-        alert("Could not process the current image. Please try uploading the original photo again.");
-        return;
-    }
-
-    loadingSubText.textContent = 'Sending to AI for analysis...';
-    
-    try {
-        // ✅ SECURE: Calls backend function instead of exposing API key
-        const response = await fetch(`${API_BASE_URL}/adjust-photo`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                imageBase64: base64ImageData,
-                country: state.currentCountry,
-                docType: state.currentDoc
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'API request failed');
+    // ========== AI ADJUSTMENT ==========
+    async function handleAiAdjust() {
+        if (!state.image) {
+            alert('Please upload an image first.');
+            return;
         }
 
-        loadingSubText.textContent = 'Processing AI response...';
-        const result = await response.json();
-        const base64Data = result.adjustedImageBase64;
+        showLoading('Preparing image for AI...', 10);
+        loadingSubText.textContent = 'Converting image format...';
 
-        if (!base64Data) {
-            throw new Error("No image data returned from the API.");
-        }
-
-        loadingSubText.textContent = 'Loading adjusted image...';
-        const newImg = new Image();
+        const tempCanvas = document.createElement('canvas');
+        const maxDimension = 2048;
+        let width = state.image.naturalWidth || state.image.width;
+        let height = state.image.naturalHeight || state.image.height;
         
-        newImg.onload = async () => {
-            state.image = newImg;
-            resetStateForNewImage(); 
-            setupEditorCanvas();
-            showLoading('Re-analyzing adjusted photo...', 90);
-            await detectFaceAndRunChecks();
+        if (width > maxDimension || height > maxDimension) {
+            const scale = maxDimension / Math.max(width, height);
+            width = Math.floor(width * scale);
+            height = Math.floor(height * scale);
+        }
+        
+        tempCanvas.width = width;
+        tempCanvas.height = height;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(state.image, 0, 0, width, height);
+        
+        let base64ImageData;
+        try {
+            base64ImageData = tempCanvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+            if (!base64ImageData) throw new Error("Generated base64 data is empty.");
+        } catch (e) {
+            console.error("Error converting canvas to data URL:", e);
             hideLoading();
+            alert("Could not process the current image. Please try uploading the original photo again.");
+            return;
+        }
+
+        loadingSubText.textContent = 'Sending to AI for analysis...';
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/adjust-photo`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    imageBase64: base64ImageData,
+                    country: state.currentCountry,
+                    docType: state.currentDoc
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'API request failed');
+            }
+
+            loadingSubText.textContent = 'Processing AI response...';
+            const result = await response.json();
+            const base64Data = result.adjustedImageBase64;
+
+            if (!base64Data) {
+                throw new Error("No image data returned from the API.");
+            }
+
+            loadingSubText.textContent = 'Loading adjusted image...';
+            const newImg = new Image();
+            
+            newImg.onload = async () => {
+                state.image = newImg;
+                resetStateForNewImage(); 
+                setupEditorCanvas();
+                showLoading('Re-analyzing adjusted photo...', 90);
+                await detectFaceAndRunChecks();
+                hideLoading();
+            };
+            
+            newImg.onerror = () => {
+                throw new Error("Failed to load the AI-generated image.");
+            }
+            
+            newImg.src = `data:image/png;base64,${base64Data}`;
+
+        } catch (error) {
+            console.error("Error during AI adjustment:", error);
+            alert(`Sorry, the AI adjustment failed. ${error.message}`);
+            hideLoading();
+        }
+    }
+
+        // Save photo state before redirecting to payment
+function savePhotoState() {
+    if (!state.image) return;
+    
+    try {
+        const photoData = canvas.toDataURL('image/jpeg', 0.95);
+        
+        const stateToSave = {
+            photoData: photoData,
+            transform: state.transform,
+            filters: state.filters,
+            currentCountry: state.currentCountry,
+            currentDoc: state.currentDoc,
+            timestamp: Date.now()
         };
         
-        newImg.onerror = () => {
-            throw new Error("Failed to load the AI-generated image.");
-        }
-        
-        newImg.src = `data:image/png;base64,${base64Data}`;
-
-    } catch (error) {
-        console.error("Error during AI adjustment:", error);
-        alert(`Sorry, the AI adjustment failed. ${error.message}`);
-        hideLoading();
+        sessionStorage.setItem('pendingPhoto', JSON.stringify(stateToSave));
+        console.log('✅ Photo state saved');
+    } catch (e) {
+        console.error('Failed to save photo state:', e);
     }
 }
 
-        //========================================NEW FUNCTION==================
-
-        async function checkPaymentStatus() {
+// Restore photo state after payment return
+async function restorePhotoState() {
+    try {
+        const savedState = sessionStorage.getItem('pendingPhoto');
+        if (!savedState) return false;
+        
+        const data = JSON.parse(savedState);
+        
+        // Check if saved state is less than 1 hour old
+        if (Date.now() - data.timestamp > 3600000) {
+            sessionStorage.removeItem('pendingPhoto');
+            return false;
+        }
+        
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                state.image = img;
+                state.transform = data.transform;
+                state.filters = data.filters;
+                state.currentCountry = data.currentCountry;
+                state.currentDoc = data.currentDoc;
+                
+                sessionStorage.removeItem('pendingPhoto');
+                console.log('✅ Photo state restored');
+                resolve(true);
+            };
+            img.onerror = () => resolve(false);
+            img.src = data.photoData;
+        });
+        
+    } catch (e) {
+        console.error('Failed to restore photo state:', e);
+        return false;
+    }
+}
+    // ========== PAYMENT RETURN HANDLER ==========
+  async function handlePaymentReturn() {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
-    const paymentIntent = urlParams.get('payment_intent');
+    const sessionId = urlParams.get('session_id');
     
-    if (paymentStatus === 'success' && paymentIntent) {
-        showLoading('Verifying payment...', 50);
+    if (paymentStatus === 'success' && sessionId) {
+        showLoading('Verifying payment...', 30);
         
         try {
-            const response = await fetch(`${API_BASE_URL}/verify-payment`, {
+            const response = await fetch('/.netlify/functions/verify-payment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ paymentIntentId: paymentIntent })
+                body: JSON.stringify({ sessionId })
             });
             
-            const { verified } = await response.json();
-            
-            hideLoading();
-            
-            if (verified) {
-                state.paymentVerified = true;
-                window.history.replaceState({}, document.title, window.location.pathname);
-                navigateTo('download');
-            } else {
-                alert('Payment verification failed. Please contact support.');
+            if (!response.ok) {
+                throw new Error('Verification request failed');
             }
+            
+            const { verified, paymentStatus: status } = await response.json();
+            
+            if (verified && status === 'paid') {
+                state.paymentVerified = true;
+                
+                updateProgress(60);
+                loadingText.textContent = 'Restoring your photo...';
+                
+                const restored = await restorePhotoState();
+                
+                if (restored) {
+                    updateProgress(80);
+                    
+                    if (landingPage.classList.contains('hidden')) {
+                        setupEditorCanvas();
+                        navigateTo('download');
+                        hideLoading();
+                    } else {
+                        startApp();
+                        setTimeout(() => {
+                            setupEditorCanvas();
+                            navigateTo('download');
+                            hideLoading();
+                        }, 1000);
+                    }
+                } else {
+                    hideLoading();
+                    alert('✅ Payment successful!\n\n❌ Session expired. Please contact support with session ID: ' + sessionId);
+                    window.location.href = '/';
+                }
+                
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+            } else {
+                hideLoading();
+                alert('Payment verification failed. Please contact support.');
+                window.location.href = '/';
+            }
+            
         } catch (error) {
             hideLoading();
             console.error('Verification error:', error);
-            alert('Could not verify payment. Please contact support.');
+            alert('Payment verification failed. Please contact support.');
+            window.location.href = '/';
+        }
+        
+    } else if (paymentStatus === 'cancelled') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        alert('Payment was cancelled.');
+        
+        const restored = await restorePhotoState();
+        if (restored) {
+            startApp();
+            setTimeout(() => {
+                setupEditorCanvas();
+                navigateTo('payment');
+            }, 500);
         }
     }
 }
@@ -1420,9 +1523,14 @@ async function handleAiAdjust() {
     }
 
     function init() {
+        // CRITICAL: Check for payment return FIRST
+        handlePaymentReturn();
+        
+        // Landing page buttons
         startAppBtnHeader.addEventListener('click', startApp);
         startAppBtnHero.addEventListener('click', startApp);
 
+        // Upload handlers
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             dropZone.classList.add('border-blue-500');
@@ -1443,8 +1551,10 @@ async function handleAiAdjust() {
             }
         });
 
+        // AI adjustment
         aiAdjustBtn.addEventListener('click', handleAiAdjust);
 
+        // Country/doc selectors
         countrySelect.addEventListener('change', (e) => {
             state.currentCountry = e.target.value;
             populateDocTypes();
@@ -1465,10 +1575,9 @@ async function handleAiAdjust() {
             }
         });
 
-        aiAdjustBtn.addEventListener('click', handleAiAdjust);
-
+        // Canvas interaction
         const canvasInteraction = (e) => {
-             e.preventDefault();
+            e.preventDefault();
             if (e.type === 'mousedown' || e.type === 'touchstart') {
                 state.isDragging = true;
                 const rect = canvas.getBoundingClientRect();
@@ -1481,7 +1590,7 @@ async function handleAiAdjust() {
                 runComplianceChecks(); 
             } else if ((e.type === 'mousemove' || e.type === 'touchmove') && state.isDragging) {
                 const rect = canvas.getBoundingClientRect();
-                 const clientX = e.clientX || e.touches[0].clientX;
+                const clientX = e.clientX || e.touches[0].clientX;
                 const clientY = e.clientY || e.touches[0].clientY;
                 state.transform.offsetX = clientX - rect.left - state.dragStart.x;
                 state.transform.offsetY = clientY - rect.top - state.dragStart.y;
@@ -1502,6 +1611,7 @@ async function handleAiAdjust() {
         canvas.addEventListener('touchmove', canvasInteraction, { passive: false });
         canvas.addEventListener('touchend', canvasInteraction);
 
+        // Sliders
         const zoomSlider = document.getElementById('zoom-slider');
         const brightnessSlider = document.getElementById('brightness-slider');
         const contrastSlider = document.getElementById('contrast-slider');
@@ -1552,126 +1662,68 @@ async function handleAiAdjust() {
         });
         rotationSlider.addEventListener('change', runComplianceChecks);
 
+        // Navigation buttons
         nextToPaymentBtn.addEventListener('click', () => {
             navigateTo('payment');
             generateFinalImage('preview', true);
         });
 
-        // DEMO PAYMENT - No real Stripe integration yet
-       // payBtn.addEventListener('click', async () => {
-            //showLoading('Processing payment...', 50);
+        // Payment button - REAL STRIPE INTEGRATION
+        payBtn.addEventListener('click', async () => {
+            savePhotoState();
+            showLoading('Creating secure checkout...');
             
-            //try {
-                // Simulated demo payment
-                //setTimeout(() => {
-                   // hideLoading();
-                  //  state.paymentVerified = true;
-                   // navigateTo('download');
-              //  }, 1500);
+            try {
+                const response = await fetch('/.netlify/functions/create-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        amount: 499,
+                        currency: 'usd',
+                        successUrl: window.location.origin + '?payment=success',
+                        cancelUrl: window.location.origin + '?payment=cancelled'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create checkout session');
+                }
+
+                const { sessionId } = await response.json();
+                hideLoading();
                 
-          //  } catch (error) {
-               // hideLoading();
-              //  console.error('Payment error:', error);
-              //  alert('Payment failed. Please try again.');
-          //  }
-       // });
-
-payBtn.addEventListener('click', async () => {
-        showLoading('Creating payment session...', 10);
-        
-        try {
-            const response = await fetch(`${API_BASE_URL}/create-payment`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: 499 })  // $4.99 in cents
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create payment');
-            }
-
-            const { clientSecret } = await response.json();
-            
-            loadingSubText.textContent = 'Redirecting to payment...';
-            hideLoading();
-            
-            const { error } = await stripe.confirmPayment({
-                clientSecret,
-                confirmParams: {
-                    return_url: `${window.location.origin}${window.location.pathname}?payment=success`,
-                },
-            });
-
-            if (error) {
+                // Redirect to Stripe Checkout
+                const { error } = await stripe.redirectToCheckout({ sessionId });
+                
+                if (error) {
+                    console.error('Stripe redirect error:', error);
+                    alert('Payment redirect failed. Please try again.');
+                }
+                
+            } catch (error) {
+                hideLoading();
                 console.error('Payment error:', error);
-                alert(`Payment failed: ${error.message}`);
+                alert('Payment failed. Please try again or contact support.');
             }
-            
-        } catch (error) {
-            hideLoading();
-            console.error('Payment error:', error);
-            alert('Payment failed. Please try again.');
-        }
-});
-        // Handle payment success redirect
-function checkPaymentSuccess() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('session_id');
-    
-    if (sessionId) {
-        // User just returned from Stripe
-        showLoading('Verifying payment...', 50);
-        
-        fetch(`${API_BASE_URL}/verify-payment`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId: sessionId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'complete') {
-                updateProgress(100);
-                setTimeout(() => {
-                    hideLoading();
-                    state.paymentVerified = true;
-                    
-                    // Start the app and go directly to download screen
-                    startApp();
-                    setTimeout(() => {
-                        navigateTo('download');
-                    }, 500);
-                    
-                    // Clean up URL
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }, 1000);
-            } else {
-                throw new Error('Payment not completed');
-            }
-        })
-        .catch(error => {
-            hideLoading();
-            console.error('Verification error:', error);
-            alert('Payment verification failed. Please contact support with your order details.');
         });
-    }
-}
-
         
+        // Download buttons
         downloadSingleBtn.addEventListener('click', () => generateFinalImage('single'));
         downloadSheetBtn.addEventListener('click', () => generateFinalImage('sheet'));
         homeBtn.addEventListener('click', () => {
             window.location.reload();
         });
 
+        // Window resize handler
         window.addEventListener('resize', () => {
             if(state.image) {
                 setupEditorCanvas();
                 runComplianceChecks();
             }
         });
-        checkPaymentSuccess();
     }
 
+    // Start the app
     init();
     </script>
 </body>
