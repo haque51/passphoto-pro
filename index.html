@@ -1113,15 +1113,13 @@ async function restorePhotoState() {
 }
     // ========== PAYMENT RETURN HANDLER ==========
 
-        // REPLACE your handlePaymentReturn() function with this improved version:
-
-async function handlePaymentReturn() {
+        async function handlePaymentReturn() {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     const sessionId = urlParams.get('session_id');
     
     if (paymentStatus === 'success' && sessionId) {
-        showLoading('Verifying payment...', 30);
+        showLoading('Verifying payment...', 20);
         
         try {
             const response = await fetch('/.netlify/functions/verify-payment', {
@@ -1139,13 +1137,28 @@ async function handlePaymentReturn() {
             if (verified && status === 'paid') {
                 state.paymentVerified = true;
                 
+                updateProgress(40);
+                loadingText.textContent = 'Loading requirements...';
+                
+                // Load requirements if not already loaded
+                if (Object.keys(requirementsData).length === 0) {
+                    try {
+                        const reqResponse = await fetch(`${API_BASE_URL}/get-requirements`);
+                        const reqData = await reqResponse.json();
+                        requirementsData = reqData.countries;
+                        console.log('✅ Requirements loaded');
+                    } catch (e) {
+                        console.error('Failed to load requirements:', e);
+                    }
+                }
+                
                 updateProgress(60);
                 loadingText.textContent = 'Restoring your photo...';
                 
                 const restored = await restorePhotoState();
                 
                 if (restored) {
-                    updateProgress(80);
+                    updateProgress(75);
                     loadingText.textContent = 'Preparing download...';
                     
                     // Start app if needed
@@ -1155,16 +1168,32 @@ async function handlePaymentReturn() {
                         appContainer.classList.remove('hidden');
                     }
                     
-                    // Wait a moment for DOM to be ready
-                    await new Promise(resolve => setTimeout(resolve, 100));
+                    // CRITICAL: Wait for DOM to be fully ready
+                    await new Promise(resolve => setTimeout(resolve, 300));
                     
-                    // Setup canvas with restored image
+                    // Setup canvas properly
                     const wrapperSize = canvasContainer.clientWidth;
-                    canvas.width = wrapperSize;
-                    canvas.height = wrapperSize;
+                    if (wrapperSize > 0) {
+                        canvas.width = wrapperSize;
+                        canvas.height = wrapperSize;
+                        console.log('✅ Canvas setup:', canvas.width + 'x' + canvas.height);
+                    } else {
+                        // Fallback if wrapper size is 0
+                        canvas.width = 600;
+                        canvas.height = 600;
+                        console.log('⚠️ Canvas setup with fallback:', canvas.width + 'x' + canvas.height);
+                    }
                     
-                    // Redraw the canvas
+                    // Calculate base scale for the restored image
+                    const hRatio = canvas.width / (state.image.naturalWidth || state.image.width);
+                    const vRatio = canvas.height / (state.image.naturalHeight || state.image.height);
+                    state.baseScale = Math.min(hRatio, vRatio) * 0.9;
+                    
+                    // Draw the canvas
                     drawCanvas();
+                    console.log('✅ Canvas drawn');
+                    
+                    updateProgress(90);
                     
                     // Navigate to download screen
                     Object.values(screens).forEach(s => s.classList.add('hidden'));
@@ -1181,10 +1210,17 @@ async function handlePaymentReturn() {
                     
                     hideLoading();
                     
-                    console.log('✅ Ready for download - image:', !!state.image, 'canvas:', canvas.width + 'x' + canvas.height);
+                    console.log('✅ Ready for download');
+                    console.log('Requirements:', getCurrentRequirements());
+                    console.log('State:', {
+                        image: !!state.image,
+                        canvas: canvas.width + 'x' + canvas.height,
+                        country: state.currentCountry,
+                        doc: state.currentDoc
+                    });
                 } else {
                     hideLoading();
-                    alert('✅ Payment successful!\n\n❌ Session expired. Please start over or contact support with session ID: ' + sessionId);
+                    alert('✅ Payment successful!\n\n❌ Session expired. Please contact support with session ID: ' + sessionId);
                     window.location.href = '/';
                 }
                 
@@ -1206,17 +1242,7 @@ async function handlePaymentReturn() {
     } else if (paymentStatus === 'cancelled') {
         window.history.replaceState({}, document.title, window.location.pathname);
         alert('Payment was cancelled.');
-        
-        const restored = await restorePhotoState();
-        if (restored && typeof startApp === 'function') {
-            startApp();
-            setTimeout(() => {
-                setupEditorCanvas();
-                navigateTo('payment');
-            }, 500);
-        } else {
-            window.location.href = '/';
-        }
+        window.location.href = '/';
     }
 }
     
