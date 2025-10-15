@@ -924,7 +924,41 @@
         
         drawCanvas();
     }
+
+        let lastCanvasState = null;
+
+function captureCanvasState() {
+    if (!state.image || !canvas || canvas.width === 0) {
+        return;
+    }
     
+    try {
+        // Capture the current canvas immediately
+        const photoData = canvas.toDataURL('image/jpeg', 0.85);
+        
+        // Only save if we actually got image data (not blank)
+        if (photoData.length < 1000) {
+            console.log('⚠️ Canvas appears empty, not capturing');
+            return;
+        }
+        
+        lastCanvasState = {
+            photoData: photoData,
+            transform: { ...state.transform },
+            filters: { ...state.filters },
+            baseScale: state.baseScale,
+            canvasSize: { width: canvas.width, height: canvas.height },
+            currentCountry: state.currentCountry,
+            currentDoc: state.currentDoc,
+            timestamp: Date.now()
+        };
+        
+        console.log('📸 Canvas state captured:', photoData.length, 'characters');
+    } catch (e) {
+        console.error('Failed to capture canvas:', e);
+    }
+}
+        
     function drawCanvas() {
         if (!state.image) return;
         const imageIsReady = (state.image instanceof HTMLImageElement && state.image.complete && state.image.naturalHeight !== 0) || (state.image instanceof ImageBitmap);
@@ -955,6 +989,7 @@
         
         ctx.restore();
         ctx.filter = 'none';
+        setTimeout(captureCanvasState, 50);
     }
     
     async function detectFaceAndRunChecks() {
@@ -1054,24 +1089,18 @@
 
         // Save photo state before redirecting to payment
 function savePhotoState() {
-    if (!state.image) return;
-    
     try {
-        const photoData = canvas.toDataURL('image/jpeg', 0.95);
+        if (!lastCanvasState) {
+            console.error('❌ No canvas state captured yet');
+            alert('Please wait a moment and try again.');
+            return;
+        }
         
-        const stateToSave = {
-            photoData: photoData,
-            transform: state.transform,
-            filters: state.filters,
-            currentCountry: state.currentCountry,
-            currentDoc: state.currentDoc,
-            timestamp: Date.now()
-        };
-        
-        sessionStorage.setItem('pendingPhoto', JSON.stringify(stateToSave));
-        console.log('✅ Photo state saved');
+        localStorage.setItem('pendingPhoto', JSON.stringify(lastCanvasState));
+        console.log('✅ Photo saved:', JSON.stringify(lastCanvasState).length, 'characters');
     } catch (e) {
-        console.error('Failed to save photo state:', e);
+        console.error('❌ Failed to save:', e);
+        alert('Warning: Could not save photo state.');
     }
 }
 
