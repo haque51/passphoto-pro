@@ -1112,7 +1112,10 @@ async function restorePhotoState() {
     }
 }
     // ========== PAYMENT RETURN HANDLER ==========
-  async function handlePaymentReturn() {
+
+        // REPLACE your handlePaymentReturn() function with this improved version:
+
+async function handlePaymentReturn() {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     const sessionId = urlParams.get('session_id');
@@ -1143,22 +1146,45 @@ async function restorePhotoState() {
                 
                 if (restored) {
                     updateProgress(80);
+                    loadingText.textContent = 'Preparing download...';
                     
-                    if (landingPage.classList.contains('hidden')) {
-                        setupEditorCanvas();
-                        navigateTo('download');
-                        hideLoading();
-                    } else {
-                        startApp();
-                        setTimeout(() => {
-                            setupEditorCanvas();
-                            navigateTo('download');
-                            hideLoading();
-                        }, 1000);
+                    // Start app if needed
+                    if (landingPage && !landingPage.classList.contains('hidden')) {
+                        document.body.style.backgroundColor = '#111827';
+                        landingPage.classList.add('hidden');
+                        appContainer.classList.remove('hidden');
                     }
+                    
+                    // Wait a moment for DOM to be ready
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    // Setup canvas with restored image
+                    const wrapperSize = canvasContainer.clientWidth;
+                    canvas.width = wrapperSize;
+                    canvas.height = wrapperSize;
+                    
+                    // Redraw the canvas
+                    drawCanvas();
+                    
+                    // Navigate to download screen
+                    Object.values(screens).forEach(s => s.classList.add('hidden'));
+                    screens.upload.classList.remove('flex');
+                    appFlowWrapper.classList.remove('hidden');
+                    appFlowWrapper.classList.add('flex');
+                    screens.download.classList.remove('hidden');
+                    
+                    // Update step indicator
+                    Object.values(steps).forEach(s => s.classList.replace('step-active', 'step-inactive'));
+                    steps[1].classList.replace('step-inactive', 'step-active');
+                    steps[2].classList.replace('step-inactive', 'step-active');
+                    steps[3].classList.replace('step-inactive', 'step-active');
+                    
+                    hideLoading();
+                    
+                    console.log('✅ Ready for download - image:', !!state.image, 'canvas:', canvas.width + 'x' + canvas.height);
                 } else {
                     hideLoading();
-                    alert('✅ Payment successful!\n\n❌ Session expired. Please contact support with session ID: ' + sessionId);
+                    alert('✅ Payment successful!\n\n❌ Session expired. Please start over or contact support with session ID: ' + sessionId);
                     window.location.href = '/';
                 }
                 
@@ -1182,12 +1208,14 @@ async function restorePhotoState() {
         alert('Payment was cancelled.');
         
         const restored = await restorePhotoState();
-        if (restored) {
+        if (restored && typeof startApp === 'function') {
             startApp();
             setTimeout(() => {
                 setupEditorCanvas();
                 navigateTo('payment');
             }, 500);
+        } else {
+            window.location.href = '/';
         }
     }
 }
