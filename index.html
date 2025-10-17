@@ -924,7 +924,41 @@
         
         drawCanvas();
     }
+
+        let lastCanvasState = null;
+
+function captureCanvasState() {
+    if (!state.image || !canvas || canvas.width === 0) {
+        return;
+    }
     
+    try {
+        // Capture the current canvas immediately
+        const photoData = canvas.toDataURL('image/jpeg', 0.85);
+        
+        // Only save if we actually got image data (not blank)
+        if (photoData.length < 1000) {
+            console.log('⚠️ Canvas appears empty, not capturing');
+            return;
+        }
+        
+        lastCanvasState = {
+            photoData: photoData,
+            transform: { ...state.transform },
+            filters: { ...state.filters },
+            baseScale: state.baseScale,
+            canvasSize: { width: canvas.width, height: canvas.height },
+            currentCountry: state.currentCountry,
+            currentDoc: state.currentDoc,
+            timestamp: Date.now()
+        };
+        
+        console.log('📸 Canvas state captured:', photoData.length, 'characters');
+    } catch (e) {
+        console.error('Failed to capture canvas:', e);
+    }
+}
+        
     function drawCanvas() {
         if (!state.image) return;
         const imageIsReady = (state.image instanceof HTMLImageElement && state.image.complete && state.image.naturalHeight !== 0) || (state.image instanceof ImageBitmap);
@@ -955,6 +989,7 @@
         
         ctx.restore();
         ctx.filter = 'none';
+        setTimeout(captureCanvasState, 50);
     }
     
     async function detectFaceAndRunChecks() {
@@ -1054,38 +1089,41 @@
 
         // Save photo state before redirecting to payment
 function savePhotoState() {
-    if (!state.image) return;
-    
     try {
-        const photoData = canvas.toDataURL('image/jpeg', 0.95);
+        if (!lastCanvasState) {
+            console.error('❌ No canvas state captured yet');
+            alert('Please wait a moment and try again.');
+            return;
+        }
         
-        const stateToSave = {
-            photoData: photoData,
-            transform: state.transform,
-            filters: state.filters,
-            currentCountry: state.currentCountry,
-            currentDoc: state.currentDoc,
-            timestamp: Date.now()
-        };
-        
-        sessionStorage.setItem('pendingPhoto', JSON.stringify(stateToSave));
-        console.log('✅ Photo state saved');
+        localStorage.setItem('pendingPhoto', JSON.stringify(lastCanvasState));
+        console.log('✅ Photo saved:', JSON.stringify(lastCanvasState).length, 'characters');
     } catch (e) {
-        console.error('Failed to save photo state:', e);
+        console.error('❌ Failed to save:', e);
+        alert('Warning: Could not save photo state.');
     }
 }
 
 // Restore photo state after payment return
 async function restorePhotoState() {
     try {
-        const savedState = sessionStorage.getItem('pendingPhoto');
-        if (!savedState) return false;
+        const savedState = localStorage.getItem('pendingPhoto'); // ← CHANGED from sessionStorage
+        if (!savedState) {
+            console.error('❌ No saved photo found in localStorage');
+            return false;
+        }
+        
+        console.log('Found saved photo, size:', savedState.length, 'characters');
         
         const data = JSON.parse(savedState);
         
-        // Check if saved state is less than 1 hour old
-        if (Date.now() - data.timestamp > 3600000) {
-            sessionStorage.removeItem('pendingPhoto');
+        // Check if saved state is less than 24 hours old
+        const ageMinutes = (Date.now() - data.timestamp) / 1000 / 60;
+        console.log('Saved photo age:', Math.round(ageMinutes), 'minutes');
+        
+        if (Date.now() - data.timestamp > 86400000) { // 24 hours
+            console.error('❌ Saved photo too old');
+            localStorage.removeItem('pendingPhoto'); // ← CHANGED from sessionStorage
             return false;
         }
         
@@ -1095,30 +1133,45 @@ async function restorePhotoState() {
                 state.image = img;
                 state.transform = data.transform;
                 state.filters = data.filters;
+                state.baseScale = data.baseScale; // ← ADDED this
                 state.currentCountry = data.currentCountry;
                 state.currentDoc = data.currentDoc;
                 
-                sessionStorage.removeItem('pendingPhoto');
-                console.log('✅ Photo state restored');
+                // Store original canvas size
+                if (data.canvasSize) {
+                    state.originalCanvasSize = data.canvasSize;
+                }
+                
+                localStorage.removeItem('pendingPhoto'); // ← CHANGED from sessionStorage
+                
+                console.log('✅ Photo state restored:', {
+                    transform: state.transform,
+                    baseScale: state.baseScale,
+                    canvasSize: data.canvasSize
+                });
                 resolve(true);
             };
-            img.onerror = () => resolve(false);
+            img.onerror = () => {
+                console.error('❌ Failed to load image from saved data');
+                resolve(false);
+            };
             img.src = data.photoData;
         });
         
     } catch (e) {
-        console.error('Failed to restore photo state:', e);
+        console.error('❌ Failed to restore photo state:', e);
         return false;
     }
 }
     // ========== PAYMENT RETURN HANDLER ==========
-  async function handlePaymentReturn() {
+
+        async function handlePaymentReturn() {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     const sessionId = urlParams.get('session_id');
     
     if (paymentStatus === 'success' && sessionId) {
-        showLoading('Verifying payment...', 30);
+        showLoading('Verifying payment...', 20);
         
         try {
             const response = await fetch('/.netlify/functions/verify-payment', {
@@ -1136,26 +1189,87 @@ async function restorePhotoState() {
             if (verified && status === 'paid') {
                 state.paymentVerified = true;
                 
+                updateProgress(40);
+                loadingText.textContent = 'Loading requirements...';
+                
+                // Load requirements if not already loaded
+                if (Object.keys(requirementsData).length === 0) {
+                    try {
+                        const reqResponse = await fetch(`${API_BASE_URL}/get-requirements`);
+                        const reqData = await reqResponse.json();
+                        requirementsData = reqData.countries;
+                        console.log('✅ Requirements loaded');
+                    } catch (e) {
+                        console.error('Failed to load requirements:', e);
+                    }
+                }
+                
                 updateProgress(60);
                 loadingText.textContent = 'Restoring your photo...';
                 
                 const restored = await restorePhotoState();
                 
                 if (restored) {
-                    updateProgress(80);
+                    updateProgress(75);
+                    loadingText.textContent = 'Preparing download...';
                     
-                    if (landingPage.classList.contains('hidden')) {
-                        setupEditorCanvas();
-                        navigateTo('download');
-                        hideLoading();
-                    } else {
-                        startApp();
-                        setTimeout(() => {
-                            setupEditorCanvas();
-                            navigateTo('download');
-                            hideLoading();
-                        }, 1000);
+                    // Start app if needed
+                    if (landingPage && !landingPage.classList.contains('hidden')) {
+                        document.body.style.backgroundColor = '#111827';
+                        landingPage.classList.add('hidden');
+                        appContainer.classList.remove('hidden');
                     }
+                    
+                    // CRITICAL: Wait for DOM to be fully ready
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                    // Setup canvas properly
+                    const wrapperSize = canvasContainer.clientWidth;
+                    if (wrapperSize > 0) {
+                        canvas.width = wrapperSize;
+                        canvas.height = wrapperSize;
+                        console.log('✅ Canvas setup:', canvas.width + 'x' + canvas.height);
+                    } else {
+                        // Fallback if wrapper size is 0
+                        canvas.width = 600;
+                        canvas.height = 600;
+                        console.log('⚠️ Canvas setup with fallback:', canvas.width + 'x' + canvas.height);
+                    }
+                    
+                    // Calculate base scale for the restored image
+                    const hRatio = canvas.width / (state.image.naturalWidth || state.image.width);
+                    const vRatio = canvas.height / (state.image.naturalHeight || state.image.height);
+                    state.baseScale = Math.min(hRatio, vRatio) * 0.9;
+                    
+                    // Draw the canvas
+                    drawCanvas();
+                    console.log('✅ Canvas drawn');
+                    
+                    updateProgress(90);
+                    
+                    // Navigate to download screen
+                    Object.values(screens).forEach(s => s.classList.add('hidden'));
+                    screens.upload.classList.remove('flex');
+                    appFlowWrapper.classList.remove('hidden');
+                    appFlowWrapper.classList.add('flex');
+                    screens.download.classList.remove('hidden');
+                    
+                    // Update step indicator
+                    Object.values(steps).forEach(s => s.classList.replace('step-active', 'step-inactive'));
+                    steps[1].classList.replace('step-inactive', 'step-active');
+                    steps[2].classList.replace('step-inactive', 'step-active');
+                    steps[3].classList.replace('step-inactive', 'step-active');
+                    
+                    hideLoading();
+                    
+                    console.log('✅ Ready for download');
+                    console.log('Requirements:', getCurrentRequirements());
+                    console.log('State:', {
+                        image: !!state.image,
+                        canvas: canvas.width + 'x' + canvas.height,
+                        country: state.currentCountry,
+                        doc: state.currentDoc
+                    });
                 } else {
                     hideLoading();
                     alert('✅ Payment successful!\n\n❌ Session expired. Please contact support with session ID: ' + sessionId);
@@ -1180,15 +1294,7 @@ async function restorePhotoState() {
     } else if (paymentStatus === 'cancelled') {
         window.history.replaceState({}, document.title, window.location.pathname);
         alert('Payment was cancelled.');
-        
-        const restored = await restorePhotoState();
-        if (restored) {
-            startApp();
-            setTimeout(() => {
-                setupEditorCanvas();
-                navigateTo('payment');
-            }, 500);
-        }
+        window.location.href = '/';
     }
 }
     
