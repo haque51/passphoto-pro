@@ -1480,106 +1480,96 @@ async function restorePhotoState() {
     }
 
     // ========== DOWNLOAD/FINAL GENERATION ==========
-    async function generateFinalImage(format, withWatermark = false) {
-        const req = getCurrentRequirements();
-        if (!req) {
-            alert('Requirements not loaded. Please refresh and try again.');
-            return;
-        }
-        
-        const finalWidth = format === 'sheet' ? 1800 : req.widthPx;
-        const finalHeight = format === 'sheet' ? 1200 : req.heightPx;
-        const finalScale = state.baseScale * state.transform.scaleMultiplier;
+    // ========== FIXED DOWNLOAD/FINAL GENERATION ==========
+async function generateFinalImage(format, withWatermark = false) {
+    const req = getCurrentRequirements();
+    if (!req) {
+        alert('Requirements not loaded. Please refresh and try again.');
+        return;
+    }
+    
+    const finalWidth = format === 'sheet' ? 1800 : req.widthPx;
+    const finalHeight = format === 'sheet' ? 1200 : req.heightPx;
 
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = finalWidth;
-        tempCanvas.height = finalHeight;
-        const tempCtx = tempCanvas.getContext('2d');
-        
-        tempCtx.fillStyle = req.background;
-        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-        
-        const editorAspect = canvas.width / canvas.height;
-        const reqAspect = req.widthPx / req.heightPx;
-        
-        let sx, sy, sWidth, sHeight;
-        if (reqAspect > editorAspect) { 
-            sWidth = canvas.width;
-            sHeight = canvas.width / reqAspect;
-            sx = 0;
-            sy = (canvas.height - sHeight) / 2;
-        } else {
-            sHeight = canvas.height;
-            sWidth = canvas.height * reqAspect;
-            sy = 0;
-            sx = (canvas.width - sWidth) / 2;
-        }
-        
-        const photoDataCanvas = document.createElement('canvas');
-        photoDataCanvas.width = canvas.width;
-        photoDataCanvas.height = canvas.height;
-        const photoCtx = photoDataCanvas.getContext('2d');
-        photoCtx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
-        
-        const imgCenterX = state.transform.offsetX + (state.image.naturalWidth * finalScale) / 2;
-        const imgCenterY = state.transform.offsetY + (state.image.naturalHeight * finalScale) / 2;
-        photoCtx.translate(imgCenterX, imgCenterY);
-        photoCtx.rotate(state.transform.rotation * Math.PI / 180);
-        photoCtx.translate(-imgCenterX, -imgCenterY);
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = finalWidth;
+    tempCanvas.height = finalHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    tempCtx.fillStyle = req.background;
+    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+    
+    const editorAspect = canvas.width / canvas.height;
+    const reqAspect = req.widthPx / req.heightPx;
+    
+    let sx, sy, sWidth, sHeight;
+    if (reqAspect > editorAspect) { 
+        sWidth = canvas.width;
+        sHeight = canvas.width / reqAspect;
+        sx = 0;
+        sy = (canvas.height - sHeight) / 2;
+    } else {
+        sHeight = canvas.height;
+        sWidth = canvas.height * reqAspect;
+        sy = 0;
+        sx = (canvas.width - sWidth) / 2;
+    }
+    
+    // KEY FIX: Instead of recreating the photo rendering,
+    // just use the CURRENT canvas state directly
+    // The canvas already has the photo rendered correctly
+    // with all transforms, filters, and positioning applied
+    
+    if (format === 'single' || format === 'preview') {
+        // Crop and scale from the current canvas to the final dimensions
+        tempCtx.drawImage(canvas, sx, sy, sWidth, sHeight, 0, 0, req.widthPx, req.heightPx);
+    } else if (format === 'sheet') {
+        const photoW = req.widthPx;
+        const photoH = req.heightPx;
 
-        photoCtx.translate(state.transform.offsetX, state.transform.offsetY);
-        photoCtx.scale(finalScale, finalScale);
-        photoCtx.drawImage(state.image, 0, 0);
+        const cols = Math.floor(finalWidth / photoW);
+        const rows = Math.floor(finalHeight / photoH);
 
-        if (format === 'single' || format === 'preview') {
-             tempCtx.drawImage(photoDataCanvas, sx, sy, sWidth, sHeight, 0, 0, req.widthPx, req.heightPx);
-        } else if (format === 'sheet') {
-            const photoW = req.widthPx;
-            const photoH = req.heightPx;
+        if (cols > 0 && rows > 0) {
+            const usedWidth = cols * photoW;
+            const usedHeight = rows * photoH;
 
-            const cols = Math.floor(finalWidth / photoW);
-            const rows = Math.floor(finalHeight / photoH);
+            const paddingX = (finalWidth - usedWidth) / (cols + 1);
+            const paddingY = (finalHeight - usedHeight) / (rows + 1);
 
-            if (cols > 0 && rows > 0) {
-                const usedWidth = cols * photoW;
-                const usedHeight = rows * photoH;
-
-                const paddingX = (finalWidth - usedWidth) / (cols + 1);
-                const paddingY = (finalHeight - usedHeight) / (rows + 1);
-
-                for (let i = 0; i < rows; i++) {
-                    for (let j = 0; j < cols; j++) {
-                        const x = paddingX + j * (photoW + paddingX);
-                        const y = paddingY + i * (photoH + paddingY);
-                        tempCtx.drawImage(photoDataCanvas, sx, sy, sWidth, sHeight, x, y, photoW, photoH);
-                    }
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const x = paddingX + j * (photoW + paddingX);
+                    const y = paddingY + i * (photoH + paddingY);
+                    // Use the current canvas for each photo copy
+                    tempCtx.drawImage(canvas, sx, sy, sWidth, sHeight, x, y, photoW, photoH);
                 }
             }
         }
-       
-        if (withWatermark) {
-            tempCtx.save();
-            tempCtx.translate(tempCanvas.width/2, tempCanvas.height/2);
-            tempCtx.rotate(-0.2);
-            tempCtx.font = 'bold 60px Arial';
-            tempCtx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-            tempCtx.textAlign = 'center';
-            tempCtx.fillText('WATERMARK', 0, 0);
-            tempCtx.restore();
-        }
-
-        if (format === 'preview') {
-            const previewCtx = previewCanvas.getContext('2d');
-            previewCtx.drawImage(tempCanvas, 0, 0, previewCanvas.width, previewCanvas.height);
-        } else {
-            const dataUrl = tempCanvas.toDataURL(format === 'sheet' ? 'image/jpeg' : 'image/jpeg', 0.95);
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = `passphoto_pro_${state.currentCountry}_${state.currentDoc}.jpg`;
-            a.click();
-        }
+    }
+   
+    if (withWatermark) {
+        tempCtx.save();
+        tempCtx.translate(tempCanvas.width/2, tempCanvas.height/2);
+        tempCtx.rotate(-0.2);
+        tempCtx.font = 'bold 60px Arial';
+        tempCtx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        tempCtx.textAlign = 'center';
+        tempCtx.fillText('WATERMARK', 0, 0);
+        tempCtx.restore();
     }
 
+    if (format === 'preview') {
+        const previewCtx = previewCanvas.getContext('2d');
+        previewCtx.drawImage(tempCanvas, 0, 0, previewCanvas.width, previewCanvas.height);
+    } else {
+        const dataUrl = tempCanvas.toDataURL(format === 'sheet' ? 'image/jpeg' : 'image/jpeg', 0.95);
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `passphoto_pro_${state.currentCountry}_${state.currentDoc}.${format === 'sheet' ? 'jpg' : 'jpg'}`;
+        a.click();
+    }
+}
     // ========== INITIALIZATION ==========
     function populateDropdowns() {
         countrySelect.innerHTML = '<option>Loading countries...</option>';
