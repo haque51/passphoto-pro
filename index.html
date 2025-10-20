@@ -2187,24 +2187,24 @@
         if (centerLine) {
             const color = results.centering?.pass ? passColor : (results.centering ? failColor : defaultColor);
             console.log('Setting center line color to:', color);
-            centerLine.setAttribute('stroke', color);
-            centerLine.setAttribute('stroke-width', results.centering?.pass ? '1.2' : '0.8');
+            centerLine.style.stroke = color;
+            centerLine.style.strokeWidth = results.centering?.pass ? '1.2' : '0.8';
         }
 
         // Update eye line based on eye position compliance
         if (eyeLine) {
             const color = results.eyePosition?.pass ? passColor : (results.eyePosition ? failColor : defaultColor);
             console.log('Setting eye line color to:', color);
-            eyeLine.setAttribute('stroke', color);
-            eyeLine.setAttribute('stroke-width', results.eyePosition?.pass ? '1.5' : '1');
+            eyeLine.style.stroke = color;
+            eyeLine.style.strokeWidth = results.eyePosition?.pass ? '1.5' : '1';
         }
 
         // Update head oval based on head size compliance
         if (headOval) {
             const color = results.headSize?.pass ? passColor : (results.headSize ? failColor : defaultColor);
             console.log('Setting head oval color to:', color);
-            headOval.setAttribute('stroke', color);
-            headOval.setAttribute('stroke-width', results.headSize?.pass ? '1.5' : '1');
+            headOval.style.stroke = color;
+            headOval.style.strokeWidth = results.headSize?.pass ? '1.5' : '1';
         }
 
         console.log('Overlay mask updated with compliance colors');
