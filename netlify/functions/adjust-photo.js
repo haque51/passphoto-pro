@@ -92,11 +92,17 @@ Generate a professional passport-compliant photo.`;
             }
         };
 
+        console.log('Sending request to Gemini API...');
+        console.log('Using model: gemini-2.5-flash-image');
+        console.log('Image size (base64 length):', imageBase64.length);
+
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
+
+        console.log('Gemini API response status:', response.status);
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -124,18 +130,31 @@ Generate a professional passport-compliant photo.`;
 
         const result = await response.json();
         console.log('API Response received');
+        console.log('Response structure:', JSON.stringify(result, null, 2).substring(0, 1000));
+        console.log('Number of candidates:', result?.candidates?.length);
+
+        if (result?.candidates?.[0]?.content?.parts) {
+            console.log('Parts in first candidate:', result.candidates[0].content.parts.length);
+            result.candidates[0].content.parts.forEach((part, i) => {
+                console.log(`Part ${i}:`, Object.keys(part));
+                if (part.text) {
+                    console.log(`Part ${i} text preview:`, part.text.substring(0, 200));
+                }
+            });
+        }
 
         // Extract generated image from response
         // Check for image in multiple possible locations
         let base64Data = null;
-        
+
         // Method 1: Check inline_data
         const imagePart = result?.candidates?.[0]?.content?.parts?.find(
             p => p.inline_data || p.inlineData
         );
-        
+
         if (imagePart) {
             base64Data = imagePart.inline_data?.data || imagePart.inlineData?.data;
+            console.log('Found image in inline_data, length:', base64Data?.length);
         }
 
         // Method 2: Check if image is in text response (some models return base64 in text)
@@ -146,6 +165,7 @@ Generate a professional passport-compliant photo.`;
                 const base64Match = textPart.text.match(/^[A-Za-z0-9+/]+=*$/);
                 if (base64Match) {
                     base64Data = textPart.text;
+                    console.log('Found base64 in text response, length:', base64Data.length);
                 }
             }
         }
@@ -165,19 +185,26 @@ Generate a professional passport-compliant photo.`;
             };
         }
 
-        console.log('Successfully generated image, base64 length:', base64Data.length);
+        console.log('Successfully found data, base64 length:', base64Data.length);
+        console.log('First 100 chars of base64:', base64Data.substring(0, 100));
+
+        // Verify it's actually different from input
+        if (base64Data === imageBase64) {
+            console.warn('⚠️  Warning: Returned image appears to be the same as input!');
+        }
 
         // Return the generated image
         return {
             statusCode: 200,
-            headers: { 
+            headers: {
                 'Access-Control-Allow-Origin': '*',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 success: true,
                 adjustedImageBase64: base64Data,
-                modelUsed: 'gemini-2.5-flash-image'
+                modelUsed: 'gemini-2.5-flash-image',
+                note: 'Check Netlify logs for detailed model response information'
             })
         };
 
