@@ -1960,6 +1960,15 @@
         const canvasCenterX = canvas.width / 2;
         const horizontalDeviation = Math.abs(faceCenterX - canvasCenterX);
         const maxDeviation = canvas.width * 0.08; // 8% tolerance
+
+        console.log('Centering check:', {
+            noseTipX: noseTip.x,
+            canvasCenterX: canvasCenterX,
+            deviation: horizontalDeviation,
+            maxDeviation: maxDeviation,
+            pass: horizontalDeviation < maxDeviation
+        });
+
         results.centering = {
             pass: horizontalDeviation < maxDeviation,
             message: horizontalDeviation >= maxDeviation ? 'Face not centered - move left/right' : 'Face is well-centered'
@@ -2109,7 +2118,12 @@
         const eyeLine = document.getElementById('eye-line');
         const headOval = document.getElementById('head-oval');
 
+        console.log('updateOverlayMask called');
+        console.log('state.complianceResults:', state.complianceResults);
+        console.log('state.faceData:', state.faceData);
+
         if (!state.complianceResults || !state.faceData) {
+            console.log('No compliance data - using blue');
             // No compliance data yet - use default blue color
             if (centerLine) centerLine.setAttribute('stroke', 'rgba(59, 130, 246, 0.8)');
             if (eyeLine) eyeLine.setAttribute('stroke', 'rgba(59, 130, 246, 0.9)');
@@ -2124,9 +2138,14 @@
         const failColor = 'rgba(239, 68, 68, 0.9)'; // Red
         const defaultColor = 'rgba(59, 130, 246, 0.8)'; // Blue
 
+        console.log('Centering result:', results.centering);
+        console.log('Eye position result:', results.eyePosition);
+        console.log('Head size result:', results.headSize);
+
         // Update center line based on centering compliance
         if (centerLine) {
             const color = results.centering?.pass ? passColor : (results.centering ? failColor : defaultColor);
+            console.log('Setting center line color to:', color);
             centerLine.setAttribute('stroke', color);
             centerLine.setAttribute('stroke-width', results.centering?.pass ? '1.2' : '0.8');
         }
@@ -2134,6 +2153,7 @@
         // Update eye line based on eye position compliance
         if (eyeLine) {
             const color = results.eyePosition?.pass ? passColor : (results.eyePosition ? failColor : defaultColor);
+            console.log('Setting eye line color to:', color);
             eyeLine.setAttribute('stroke', color);
             eyeLine.setAttribute('stroke-width', results.eyePosition?.pass ? '1.5' : '1');
         }
@@ -2141,6 +2161,7 @@
         // Update head oval based on head size compliance
         if (headOval) {
             const color = results.headSize?.pass ? passColor : (results.headSize ? failColor : defaultColor);
+            console.log('Setting head oval color to:', color);
             headOval.setAttribute('stroke', color);
             headOval.setAttribute('stroke-width', results.headSize?.pass ? '1.5' : '1');
         }
