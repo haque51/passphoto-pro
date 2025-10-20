@@ -504,6 +504,18 @@
                                             </div>
                                         </div>
 
+                                        <!-- AI Enhancement Button (MOVED BEFORE MANUAL ADJUSTMENTS) -->
+                                        <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+                                            <h3 class="text-lg font-semibold mb-3 text-white">AI Enhancement</h3>
+                                            <button id="enhance-btn-mobile" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center">
+                                                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 22.5l-.648-1.938a3.375 3.375 0 00-2.672-2.672L11.25 18l1.938-.648a3.375 3.375 0 002.672-2.672L16.25 13.5l.648 1.938a3.375 3.375 0 002.672 2.672L21.5 18l-1.938.648a3.375 3.375 0 00-2.672 2.672z"/>
+                                                </svg>
+                                                Auto-Adjust Photo
+                                            </button>
+                                            <p class="text-xs text-center text-gray-400 mt-2">AI removes background & fixes lighting</p>
+                                        </div>
+
                                         <!-- Manual Adjustments -->
                                         <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
                                             <h3 class="text-lg font-semibold mb-4 text-white">Adjust Photo</h3>
@@ -538,14 +550,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <!-- AI Enhancement Button -->
-                                        <button id="enhance-btn-mobile" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center">
-                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                            </svg>
-                                            AI Enhancement
-                                        </button>
                                     </div>
                                 </div>
 
@@ -568,6 +572,18 @@
                                                 </select>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <!-- AI Enhancement (MOVED BEFORE MANUAL ADJUSTMENTS) -->
+                                    <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
+                                        <h3 class="text-xl font-semibold mb-3 text-white">AI Enhancement</h3>
+                                        <button id="enhance-btn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center">
+                                            <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 22.5l-.648-1.938a3.375 3.375 0 00-2.672-2.672L11.25 18l1.938-.648a3.375 3.375 0 002.672-2.672L16.25 13.5l.648 1.938a3.375 3.375 0 002.672 2.672L21.5 18l-1.938.648a3.375 3.375 0 00-2.672 2.672z"/>
+                                            </svg>
+                                            Auto-Adjust Photo
+                                        </button>
+                                        <p class="text-xs text-center text-gray-400 mt-2">AI removes background & fixes lighting</p>
                                     </div>
 
                                     <!-- Manual Adjustments -->
@@ -604,14 +620,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- AI Enhancement -->
-                                    <button id="enhance-btn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                        </svg>
-                                        AI Enhancement
-                                    </button>
 
                                     <!-- Compliance Checks -->
                                     <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
@@ -1324,37 +1332,137 @@
     }
 
     async function enhancePhoto() {
-        showLoading('AI is enhancing your photo...');
+        if (!state.image || !originalImageData) {
+            alert('Please upload a photo first.');
+            return;
+        }
+
+        showLoading('Preparing image for AI...');
         enhanceBtn.disabled = true;
         enhanceBtnMobile.disabled = true;
 
         try {
+            // Create temp canvas to get base64
+            const tempCanvas = document.createElement('canvas');
+            const maxDimension = 2048;
+            let width = state.image.naturalWidth || state.image.width;
+            let height = state.image.naturalHeight || state.image.height;
+            
+            // Resize if too large
+            if (width > maxDimension || height > maxDimension) {
+                const scale = maxDimension / Math.max(width, height);
+                width = Math.floor(width * scale);
+                height = Math.floor(height * scale);
+            }
+            
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(state.image, 0, 0, width, height);
+            
+            const base64ImageData = tempCanvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+            
+            if (!base64ImageData) {
+                throw new Error('Failed to process image');
+            }
+
+            loadingText.textContent = 'AI is enhancing your photo...';
+            
             const response = await fetch(`${API_BASE_URL}/adjust-photo`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: originalImageData })
+                body: JSON.stringify({
+                    imageBase64: base64ImageData,
+                    country: state.currentCountry,
+                    docType: state.currentDoc
+                })
             });
 
-            if (!response.ok) throw new Error('Enhancement failed');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(errorData.error || `API request failed with status ${response.status}`);
+            }
 
-            const data = await response.json();
+            const result = await response.json();
+            const adjustedBase64 = result.adjustedImageBase64;
+
+            if (!adjustedBase64) {
+                throw new Error('No image data returned from AI service');
+            }
+
+            loadingText.textContent = 'Loading enhanced photo...';
+
+            // Load the enhanced image
+            const newImg = new Image();
             
-            const img = new Image();
-            img.onload = () => {
-                state.image = img;
-                originalImageData = data.adjustedImage;
+            newImg.onload = async () => {
+                state.image = newImg;
+                originalImageData = `data:image/png;base64,${adjustedBase64}`;
+                
+                // Reset adjustments
+                state.transform = {
+                    scaleMultiplier: 1,
+                    offsetX: 0,
+                    offsetY: 0,
+                    rotation: 0
+                };
+                state.filters = {
+                    brightness: 100,
+                    contrast: 100
+                };
+                
+                // Reset sliders
+                zoomSlider.value = 1;
+                brightnessSlider.value = 100;
+                contrastSlider.value = 100;
+                rotationSlider.value = 0;
+                zoomValue.textContent = '1.0x';
+                brightnessValue.textContent = '100%';
+                contrastValue.textContent = '100%';
+                rotationValue.textContent = '0°';
+                
+                // Update mobile sliders
+                zoomSliderMobile.value = 1;
+                brightnessSliderMobile.value = 100;
+                contrastSliderMobile.value = 100;
+                rotationSliderMobile.value = 0;
+                zoomValueMobile.textContent = '1.0x';
+                brightnessValueMobile.textContent = '100%';
+                contrastValueMobile.textContent = '100%';
+                rotationValueMobile.textContent = '0°';
+                
                 setupCanvas();
-                detectFace();
+                
+                loadingText.textContent = 'Re-analyzing photo...';
+                await detectFace();
+                
                 hideLoading();
+                enhanceBtn.disabled = false;
+                enhanceBtnMobile.disabled = false;
             };
-            img.src = data.adjustedImage;
+            
+            newImg.onerror = () => {
+                throw new Error('Failed to load the AI-enhanced image');
+            };
+            
+            newImg.src = `data:image/png;base64,${adjustedBase64}`;
+
         } catch (error) {
             console.error('Enhancement error:', error);
             hideLoading();
-            alert('AI enhancement failed. Please try again.');
-        } finally {
             enhanceBtn.disabled = false;
             enhanceBtnMobile.disabled = false;
+            
+            let errorMessage = 'AI enhancement failed. ';
+            if (error.message.includes('quota') || error.message.includes('429')) {
+                errorMessage += 'The AI service is currently busy. Please try again in a few minutes.';
+            } else if (error.message.includes('not configured')) {
+                errorMessage += 'The AI service is not properly configured.';
+            } else {
+                errorMessage += error.message || 'Please try again later.';
+            }
+            
+            alert(errorMessage);
         }
     }
 
