@@ -1927,42 +1927,70 @@
     function runComplianceChecks() {
         if (!state.image || !state.faceData) {
             renderComplianceChecklist({});
+            updateOverlayMask(); // Reset to default colors
             return;
         }
-        
+
         const requirements = getCurrentRequirements();
         if (!requirements) {
             renderComplianceChecklist({});
+            updateOverlayMask();
             return;
         }
-        
+
         const results = {};
-        
+        const landmarks = state.faceData.landmarks;
+        const faceBox = state.faceData.detection.box;
+
         // Face detected
         results.faceDetected = { pass: true, message: 'Face detected successfully' };
-        
-        // Face size check
-        const faceBox = state.faceData.detection.box;
-        const faceHeightRatio = faceBox.height / state.image.height;
-        const minFaceSize = 0.6;
-        const maxFaceSize = 0.85;
-        results.faceSize = {
+
+        // Face size check (for head oval)
+        const faceHeightRatio = faceBox.height / canvas.height;
+        const minFaceSize = 0.30;
+        const maxFaceSize = 0.50;
+        results.headSize = {
             pass: faceHeightRatio >= minFaceSize && faceHeightRatio <= maxFaceSize,
             message: faceHeightRatio < minFaceSize ? 'Face too small - zoom in' : faceHeightRatio > maxFaceSize ? 'Face too large - zoom out' : 'Face size is optimal'
         };
-        
+
+        // Centering check (for center line)
+        const noseTip = landmarks.getNose()[3]; // Bottom of nose
+        const faceCenterX = noseTip.x;
+        const canvasCenterX = canvas.width / 2;
+        const horizontalDeviation = Math.abs(faceCenterX - canvasCenterX);
+        const maxDeviation = canvas.width * 0.08; // 8% tolerance
+        results.centering = {
+            pass: horizontalDeviation < maxDeviation,
+            message: horizontalDeviation >= maxDeviation ? 'Face not centered - move left/right' : 'Face is well-centered'
+        };
+
+        // Eye position check (for eye line)
+        const leftEye = landmarks.getLeftEye();
+        const rightEye = landmarks.getRightEye();
+        const eyeCenterY = (leftEye[0].y + rightEye[0].y) / 2;
+        const idealEyeY = canvas.height * 0.48; // Eyes should be at ~48% from top
+        const eyeDeviation = Math.abs(eyeCenterY - idealEyeY);
+        const maxEyeDeviation = canvas.height * 0.10; // 10% tolerance
+        results.eyePosition = {
+            pass: eyeDeviation < maxEyeDeviation,
+            message: eyeDeviation >= maxEyeDeviation ?
+                (eyeCenterY < idealEyeY ? 'Eyes too high - move down' : 'Eyes too low - move up') :
+                'Eye position is correct'
+        };
+
         // Brightness check
         results.brightness = {
             pass: state.filters.brightness >= 90 && state.filters.brightness <= 110,
             message: state.filters.brightness < 90 ? 'Photo too dark' : state.filters.brightness > 110 ? 'Photo too bright' : 'Brightness is good'
         };
-        
+
         // Alignment check (simplified)
         results.alignment = {
             pass: Math.abs(state.transform.rotation) < 5,
             message: Math.abs(state.transform.rotation) >= 5 ? 'Head not straight - adjust rotation' : 'Head alignment looks good'
         };
-        
+
         state.complianceResults = results;
         renderComplianceChecklist(results);
         updateOverlayMask(); // Update overlay colors based on compliance
@@ -1971,7 +1999,9 @@
     function renderComplianceChecklist(results) {
         const checks = [
             { key: 'faceDetected', label: 'Face Detection', icon: '👤' },
-            { key: 'faceSize', label: 'Face Size', icon: '📏' },
+            { key: 'headSize', label: 'Head Size', icon: '📏' },
+            { key: 'centering', label: 'Centered', icon: '🎯' },
+            { key: 'eyePosition', label: 'Eye Position', icon: '👁️' },
             { key: 'brightness', label: 'Brightness', icon: '💡' },
             { key: 'alignment', label: 'Alignment', icon: '📐' },
         ];
