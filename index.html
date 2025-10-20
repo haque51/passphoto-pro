@@ -1817,11 +1817,25 @@
 
         try {
             console.log('Sending request to AI service...');
+            console.log('API_BASE_URL:', API_BASE_URL);
+
+            // Extract base64 data without the data:image/jpeg;base64, prefix
+            const base64Data = originalImageData.split(',')[1] || originalImageData;
+            console.log('Base64 data length:', base64Data.length);
+
+            // Get current country selection for background color
+            const selectedCountry = countrySelect.value;
+            const selectedDocType = docTypeSelect.value;
+
             updateProgress(40);
-            const response = await fetch(`${API_BASE_URL}/ai-adjust-photo`, {
+            const response = await fetch(`${API_BASE_URL}/adjust-photo`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imageData: originalImageData })
+                body: JSON.stringify({
+                    imageBase64: base64Data,
+                    country: selectedCountry,
+                    docType: selectedDocType
+                })
             });
             
             updateProgress(70);
@@ -1849,15 +1863,29 @@
             }
 
             console.log('AI adjustment successful, applying image...');
-            
+
+            // Check if we got the adjusted image
+            if (!data.adjustedImageBase64) {
+                console.error('No adjusted image in response');
+                throw new Error(data.message || 'No adjusted image returned. Please try manual adjustments.');
+            }
+
             updateProgress(90);
             loadingSubText.textContent = 'Applying changes...';
-            
+
+            // Convert base64 back to data URL
+            const adjustedImageDataUrl = `data:image/jpeg;base64,${data.adjustedImageBase64}`;
+            console.log('Adjusted image data URL created');
+
             const img = new Image();
             img.onload = () => {
+                console.log('AI-adjusted image loaded successfully');
                 state.image = img;
-                originalImageData = data.adjustedImage;
-                renderCanvas();
+                originalImageData = adjustedImageDataUrl;
+
+                // Re-initialize canvas with new image
+                initCanvas();
+
                 updateProgress(100);
                 hideLoading();
                 aiAdjustBtn.innerHTML = '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg><span>AI Adjusted!</span>';
@@ -1866,7 +1894,16 @@
                     aiAdjustBtn.disabled = false;
                 }, 2000);
             };
-            img.src = data.adjustedImage;
+
+            img.onerror = (error) => {
+                console.error('Failed to load AI-adjusted image:', error);
+                hideLoading();
+                aiAdjustBtn.disabled = false;
+                aiAdjustBtn.innerHTML = '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg><span>Auto-Adjust Photo</span>';
+                throw new Error('Failed to load adjusted image. Please try again.');
+            };
+
+            img.src = adjustedImageDataUrl;
         } catch (error) {
             console.error('AI adjustment error:', error);
             hideLoading();
