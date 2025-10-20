@@ -845,40 +845,46 @@ const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
     // ========== IMAGE HANDLING (Enhanced) ==========
     function handleImageUpload(file) {
         if (!file || !file.type.startsWith('image/')) return;
-        
+
+        console.log('Starting image upload for file:', file.name);
+
         // Show loading immediately
         showLoading('Reading image...', 5);
         loadingSubText.textContent = 'Processing your photo...';
-        
+
         const reader = new FileReader();
         reader.onload = (e) => {
             updateProgress(20);
             loadingSubText.textContent = 'Validating image size...';
-            
+
             const img = new Image();
             img.onload = async () => {
+                console.log('Image loaded:', img.width, 'x', img.height);
+
                 if (img.width < 600 || img.height < 600) {
                     hideLoading();
                     alert('Image too small. Please upload an image with minimum dimensions of 600x600 pixels.');
                     return;
                 }
-                
+
                 updateProgress(40);
                 loadingSubText.textContent = 'Preparing editor...';
-                
+
                 state.image = img;
                 resetStateForNewImage();
+                console.log('Navigating to editor screen...');
                 navigateTo('editor');
-                
+
                 setTimeout(() => {
                     updateProgress(60);
                     loadingText.textContent = 'Setting up canvas...';
+                    console.log('About to call setupEditorCanvas...');
                     setupEditorCanvas();
-                    
+
                     updateProgress(80);
                     loadingText.textContent = 'Analyzing facial features...';
                     loadingSubText.textContent = 'This may take a moment...';
-                    
+
                     detectFaceAndRunChecks().then(() => {
                         updateProgress(100);
                         setTimeout(hideLoading, 300);
@@ -887,12 +893,12 @@ const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
             };
             img.src = e.target.result;
         };
-        
+
         reader.onerror = () => {
             hideLoading();
             alert('Failed to read image file. Please try again.');
         };
-        
+
         reader.readAsDataURL(file);
     }
     
@@ -913,25 +919,40 @@ const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
 
     function setupEditorCanvas() {
         const wrapperSize = canvasContainer.clientWidth;
+        console.log('Canvas container width:', wrapperSize);
+
+        // If wrapper size is 0, the element might not be visible yet, retry after a short delay
+        if (wrapperSize === 0) {
+            console.warn('Canvas container width is 0, retrying...');
+            setTimeout(setupEditorCanvas, 50);
+            return;
+        }
+
         canvas.width = wrapperSize;
         canvas.height = wrapperSize;
-        
+        console.log('Canvas dimensions set to:', canvas.width, 'x', canvas.height);
+
         const hRatio = canvas.width / (state.image.naturalWidth || state.image.width);
         const vRatio = canvas.height / (state.image.naturalHeight || state.image.height);
         state.baseScale = Math.min(hRatio, vRatio) * 0.9;
-        
+
         state.transform.scaleMultiplier = 1;
         document.getElementById('zoom-slider').value = 1;
         document.getElementById('zoom-value').textContent = '100%';
 
         state.transform.offsetX = (canvas.width - (state.image.naturalWidth || state.image.width) * state.baseScale) / 2;
         state.transform.offsetY = (canvas.height - (state.image.naturalHeight || state.image.height) * state.baseScale) / 2;
-        
+
         drawCanvas();
+        console.log('Canvas setup complete, image should be visible');
     }
     
     function drawCanvas() {
-        if (!state.image) return;
+        console.log('drawCanvas called');
+        if (!state.image) {
+            console.error('drawCanvas: No image in state');
+            return;
+        }
         const imageIsReady = (state.image instanceof HTMLImageElement && state.image.complete && state.image.naturalHeight !== 0) || (state.image instanceof ImageBitmap);
         if(!imageIsReady){
             console.error("drawCanvas called with an invalid or unloaded image.");
@@ -941,10 +962,12 @@ const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
         const finalScale = state.baseScale * state.transform.scaleMultiplier;
         const imageWidth = state.image.naturalWidth || state.image.width;
         const imageHeight = state.image.naturalHeight || state.image.height;
-        
+
+        console.log('Drawing image:', imageWidth, 'x', imageHeight, 'at scale:', finalScale);
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
-        
+
         ctx.save();
 
         const imgCenterX = state.transform.offsetX + (imageWidth * finalScale) / 2;
@@ -953,13 +976,14 @@ const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
         ctx.translate(imgCenterX, imgCenterY);
         ctx.rotate(state.transform.rotation * Math.PI / 180);
         ctx.translate(-imgCenterX, -imgCenterY);
-        
+
         ctx.translate(state.transform.offsetX, state.transform.offsetY);
         ctx.scale(finalScale, finalScale);
         ctx.drawImage(state.image, 0, 0);
-        
+
         ctx.restore();
         ctx.filter = 'none';
+        console.log('Image drawn to canvas successfully');
     }
     
     async function detectFaceAndRunChecks() {
