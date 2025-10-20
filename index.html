@@ -1979,6 +1979,7 @@
             const canvasX = canvas.width / 2 + imageLeft + scaledX;
             const canvasY = canvas.height / 2 + imageTop + scaledY;
 
+            console.log(`imageToCanvas(${x.toFixed(1)}, ${y.toFixed(1)}) => canvas(${canvasX.toFixed(1)}, ${canvasY.toFixed(1)})`);
             return { x: canvasX, y: canvasY };
         }
 
@@ -2036,12 +2037,23 @@
         const idealEyeY = canvas.height * 0.48; // Eyes should be at ~48% from top
         const eyeDeviation = Math.abs(eyeCenterYCanvas - idealEyeY);
         const maxEyeDeviation = canvas.height * 0.10; // 10% tolerance
+
+        console.log('EYE POSITION CHECK:');
+        console.log('  eyeCenterYCanvas:', eyeCenterYCanvas);
+        console.log('  idealEyeY:', idealEyeY);
+        console.log('  eyeDeviation:', eyeDeviation);
+        console.log('  maxEyeDeviation:', maxEyeDeviation);
+        console.log('  eyeCenterYCanvas as % of canvas:', (eyeCenterYCanvas / canvas.height * 100).toFixed(1) + '%');
+        console.log('  Pass?', eyeDeviation < maxEyeDeviation);
+
         results.eyePosition = {
             pass: eyeDeviation < maxEyeDeviation,
             message: eyeDeviation >= maxEyeDeviation ?
                 (eyeCenterYCanvas < idealEyeY ? 'Eyes too high - move down' : 'Eyes too low - move up') :
                 'Eye position is correct'
         };
+
+        console.log('  Message:', results.eyePosition.message);
 
         // Brightness check
         results.brightness = {
