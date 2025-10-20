@@ -1552,24 +1552,28 @@
         zoomValue.textContent = `${Math.round(state.transform.scaleMultiplier * 100)}%`;
         renderCanvas();
     });
+    zoomSlider.addEventListener('change', runComplianceChecks);
 
     brightnessSlider.addEventListener('input', (e) => {
         state.filters.brightness = parseInt(e.target.value);
         brightnessValue.textContent = `${state.filters.brightness}%`;
         renderCanvas();
     });
+    brightnessSlider.addEventListener('change', runComplianceChecks);
 
     contrastSlider.addEventListener('input', (e) => {
         state.filters.contrast = parseInt(e.target.value);
         contrastValue.textContent = `${state.filters.contrast}%`;
         renderCanvas();
     });
+    contrastSlider.addEventListener('change', runComplianceChecks);
 
     rotationSlider.addEventListener('input', (e) => {
         state.transform.rotation = parseInt(e.target.value);
         rotationValue.textContent = `${state.transform.rotation}°`;
         renderCanvas();
     });
+    rotationSlider.addEventListener('change', runComplianceChecks);
 
     resetBtn.addEventListener('click', () => {
         state.transform.scaleMultiplier = 1;
@@ -1785,6 +1789,7 @@
 
     function endDrag() {
         state.isDragging = false;
+        runComplianceChecks();
     }
 
     function getEventPos(e) {
