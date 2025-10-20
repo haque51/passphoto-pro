@@ -1964,18 +1964,32 @@
         console.log('Final scale:', finalScale);
 
         // Helper function to transform image coordinates to canvas coordinates
+        // NOTE: Canvas uses centered coordinate system (ctx.translate to center)
         function imageToCanvas(x, y) {
-            const canvasX = state.transform.offsetX + x * finalScale;
-            const canvasY = state.transform.offsetY + y * finalScale;
+            const scaledX = x * finalScale;
+            const scaledY = y * finalScale;
+            const scaledWidth = imageWidth * finalScale;
+            const scaledHeight = imageHeight * finalScale;
+
+            // Position of top-left of image in the centered coordinate system
+            const imageLeft = state.transform.offsetX - scaledWidth / 2;
+            const imageTop = state.transform.offsetY - scaledHeight / 2;
+
+            // Transform to canvas coordinates (centered system, so add canvas.width/2)
+            const canvasX = canvas.width / 2 + imageLeft + scaledX;
+            const canvasY = canvas.height / 2 + imageTop + scaledY;
+
             return { x: canvasX, y: canvasY };
         }
 
         // Face size check (for head oval) - use canvas space
+        // NOTE: Oval guide is 72% of canvas height (ry=36 in viewBox 100)
+        // Face detection box is typically smaller than full head, so we check for 50-70%
         const faceBoxCanvas = imageToCanvas(faceBox.x, faceBox.y);
         const faceHeightCanvas = faceBox.height * finalScale;
         const faceHeightRatio = faceHeightCanvas / canvas.height;
-        const minFaceSize = 0.30;
-        const maxFaceSize = 0.50;
+        const minFaceSize = 0.50;  // Face should be at least 50% of canvas
+        const maxFaceSize = 0.70;  // Face should be at most 70% of canvas
 
         console.log('HEAD SIZE CHECK:');
         console.log('  faceBox.height (image):', faceBox.height);
