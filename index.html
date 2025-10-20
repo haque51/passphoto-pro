@@ -1925,6 +1925,10 @@
 
     // ========== COMPLIANCE CHECKS ==========
     function runComplianceChecks() {
+        console.log('=== runComplianceChecks called ===');
+        console.log('state.image:', state.image);
+        console.log('state.faceData:', state.faceData);
+
         if (!state.image || !state.faceData) {
             renderComplianceChecklist({});
             updateOverlayMask(); // Reset to default colors
@@ -1942,6 +1946,12 @@
         const landmarks = state.faceData.landmarks;
         const faceBox = state.faceData.detection.box;
 
+        console.log('Face box (image space):', faceBox);
+        console.log('state.baseScale:', state.baseScale);
+        console.log('state.transform.scaleMultiplier:', state.transform.scaleMultiplier);
+        console.log('state.transform.offset:', { x: state.transform.offsetX, y: state.transform.offsetY });
+        console.log('canvas dimensions:', { width: canvas.width, height: canvas.height });
+
         // Face detected
         results.faceDetected = { pass: true, message: 'Face detected successfully' };
 
@@ -1949,6 +1959,9 @@
         const finalScale = state.baseScale * state.transform.scaleMultiplier;
         const imageWidth = state.image.width || state.image.naturalWidth;
         const imageHeight = state.image.height || state.image.naturalHeight;
+
+        console.log('Image dimensions:', { width: imageWidth, height: imageHeight });
+        console.log('Final scale:', finalScale);
 
         // Helper function to transform image coordinates to canvas coordinates
         function imageToCanvas(x, y) {
@@ -1963,10 +1976,21 @@
         const faceHeightRatio = faceHeightCanvas / canvas.height;
         const minFaceSize = 0.30;
         const maxFaceSize = 0.50;
+
+        console.log('HEAD SIZE CHECK:');
+        console.log('  faceBox.height (image):', faceBox.height);
+        console.log('  faceHeightCanvas:', faceHeightCanvas);
+        console.log('  canvas.height:', canvas.height);
+        console.log('  faceHeightRatio:', faceHeightRatio);
+        console.log('  min/max:', minFaceSize, '/', maxFaceSize);
+        console.log('  Pass?', faceHeightRatio >= minFaceSize && faceHeightRatio <= maxFaceSize);
+
         results.headSize = {
             pass: faceHeightRatio >= minFaceSize && faceHeightRatio <= maxFaceSize,
             message: faceHeightRatio < minFaceSize ? 'Face too small - zoom in' : faceHeightRatio > maxFaceSize ? 'Face too large - zoom out' : 'Face size is optimal'
         };
+
+        console.log('  Message:', results.headSize.message);
 
         // Centering check (for center line) - convert to canvas space
         const noseTip = landmarks.getNose()[3]; // Bottom of nose in image coordinates
