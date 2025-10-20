@@ -1945,8 +1945,22 @@
         // Face detected
         results.faceDetected = { pass: true, message: 'Face detected successfully' };
 
-        // Face size check (for head oval)
-        const faceHeightRatio = faceBox.height / canvas.height;
+        // Calculate transformation from image coordinates to canvas coordinates
+        const finalScale = state.baseScale * state.transform.scaleMultiplier;
+        const imageWidth = state.image.width || state.image.naturalWidth;
+        const imageHeight = state.image.height || state.image.naturalHeight;
+
+        // Helper function to transform image coordinates to canvas coordinates
+        function imageToCanvas(x, y) {
+            const canvasX = state.transform.offsetX + x * finalScale;
+            const canvasY = state.transform.offsetY + y * finalScale;
+            return { x: canvasX, y: canvasY };
+        }
+
+        // Face size check (for head oval) - use canvas space
+        const faceBoxCanvas = imageToCanvas(faceBox.x, faceBox.y);
+        const faceHeightCanvas = faceBox.height * finalScale;
+        const faceHeightRatio = faceHeightCanvas / canvas.height;
         const minFaceSize = 0.30;
         const maxFaceSize = 0.50;
         results.headSize = {
@@ -1954,15 +1968,16 @@
             message: faceHeightRatio < minFaceSize ? 'Face too small - zoom in' : faceHeightRatio > maxFaceSize ? 'Face too large - zoom out' : 'Face size is optimal'
         };
 
-        // Centering check (for center line)
-        const noseTip = landmarks.getNose()[3]; // Bottom of nose
-        const faceCenterX = noseTip.x;
+        // Centering check (for center line) - convert to canvas space
+        const noseTip = landmarks.getNose()[3]; // Bottom of nose in image coordinates
+        const noseTipCanvas = imageToCanvas(noseTip.x, noseTip.y);
         const canvasCenterX = canvas.width / 2;
-        const horizontalDeviation = Math.abs(faceCenterX - canvasCenterX);
+        const horizontalDeviation = Math.abs(noseTipCanvas.x - canvasCenterX);
         const maxDeviation = canvas.width * 0.08; // 8% tolerance
 
         console.log('Centering check:', {
-            noseTipX: noseTip.x,
+            noseTipImageX: noseTip.x,
+            noseTipCanvasX: noseTipCanvas.x,
             canvasCenterX: canvasCenterX,
             deviation: horizontalDeviation,
             maxDeviation: maxDeviation,
@@ -1974,17 +1989,19 @@
             message: horizontalDeviation >= maxDeviation ? 'Face not centered - move left/right' : 'Face is well-centered'
         };
 
-        // Eye position check (for eye line)
+        // Eye position check (for eye line) - convert to canvas space
         const leftEye = landmarks.getLeftEye();
         const rightEye = landmarks.getRightEye();
-        const eyeCenterY = (leftEye[0].y + rightEye[0].y) / 2;
+        const leftEyeCanvas = imageToCanvas(leftEye[0].x, leftEye[0].y);
+        const rightEyeCanvas = imageToCanvas(rightEye[0].x, rightEye[0].y);
+        const eyeCenterYCanvas = (leftEyeCanvas.y + rightEyeCanvas.y) / 2;
         const idealEyeY = canvas.height * 0.48; // Eyes should be at ~48% from top
-        const eyeDeviation = Math.abs(eyeCenterY - idealEyeY);
+        const eyeDeviation = Math.abs(eyeCenterYCanvas - idealEyeY);
         const maxEyeDeviation = canvas.height * 0.10; // 10% tolerance
         results.eyePosition = {
             pass: eyeDeviation < maxEyeDeviation,
             message: eyeDeviation >= maxEyeDeviation ?
-                (eyeCenterY < idealEyeY ? 'Eyes too high - move down' : 'Eyes too low - move up') :
+                (eyeCenterYCanvas < idealEyeY ? 'Eyes too high - move down' : 'Eyes too low - move up') :
                 'Eye position is correct'
         };
 
