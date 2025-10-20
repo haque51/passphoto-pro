@@ -1799,18 +1799,24 @@
 
     // ========== AI ADJUSTMENT ==========
     aiAdjustBtn.addEventListener('click', async () => {
+        console.log('AI Adjust button clicked');
+        console.log('originalImageData exists:', !!originalImageData);
+        console.log('state.image exists:', !!state.image);
+
         if (!originalImageData) {
+            console.error('originalImageData is null or undefined');
             alert('Please upload an image first');
             return;
         }
-        
+
         aiAdjustBtn.disabled = true;
         aiAdjustBtn.innerHTML = '<div class="loader mr-2"></div> Processing...';
-        
+
         showLoading('AI is enhancing your photo...', 20);
         loadingSubText.textContent = 'Removing background and adjusting lighting...';
-        
+
         try {
+            console.log('Sending request to AI service...');
             updateProgress(40);
             const response = await fetch(`${API_BASE_URL}/ai-adjust-photo`, {
                 method: 'POST',
@@ -1819,20 +1825,30 @@
             });
             
             updateProgress(70);
-            
+
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             const contentType = response.headers.get('content-type');
+            console.log('Response content-type:', contentType);
+
             if (!contentType || !contentType.includes('application/json')) {
+                console.error('Invalid content type received');
                 throw new Error('The AI service is currently unavailable. Please try manual adjustments or try again later.');
             }
-            
+
             const data = await response.json();
-            
+            console.log('Response data received:', data ? 'yes' : 'no');
+
             if (!response.ok) {
+                console.error('Response not ok, status:', response.status);
                 if (response.status === 429) {
                     throw new Error('AI service quota exceeded. Please use manual adjustments or try again later.');
                 }
                 throw new Error(data.error || 'AI adjustment failed. Please try manual adjustments.');
             }
+
+            console.log('AI adjustment successful, applying image...');
             
             updateProgress(90);
             loadingSubText.textContent = 'Applying changes...';
