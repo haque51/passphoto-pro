@@ -992,7 +992,7 @@
                                             AI Assistant
                                             <span class="ml-auto bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">Beta</span>
                                         </h3>
-                                        <button id="ai-adjust-btn" class="tooltip w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
+                                        <button type="button" id="ai-adjust-btn" class="tooltip w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
                                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>
                                             <span class="text-sm md:text-base">Auto-Adjust Photo</span>
                                             <span class="tooltip-text">AI will automatically enhance background and lighting</span>
@@ -1798,7 +1798,8 @@
     }
 
     // ========== AI ADJUSTMENT ==========
-    aiAdjustBtn.addEventListener('click', async () => {
+    aiAdjustBtn.addEventListener('click', async (event) => {
+        event.preventDefault(); // Prevent any default button behavior
         console.log('AI Adjust button clicked');
         console.log('originalImageData exists:', !!originalImageData);
         console.log('state.image exists:', !!state.image);
@@ -1884,10 +1885,19 @@
                 originalImageData = adjustedImageDataUrl;
 
                 // Re-initialize canvas with new image
+                console.log('Calling initCanvas after AI adjustment...');
                 initCanvas();
 
-                updateProgress(100);
-                hideLoading();
+                // Wait a bit for initCanvas to complete, then render
+                setTimeout(() => {
+                    console.log('Calling renderCanvas after AI adjustment...');
+                    renderCanvas();
+                    runComplianceChecks();
+
+                    updateProgress(100);
+                    setTimeout(hideLoading, 300);
+                }, 150);
+
                 aiAdjustBtn.innerHTML = '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg><span>AI Adjusted!</span>';
                 setTimeout(() => {
                     aiAdjustBtn.innerHTML = '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg><span>Auto-Adjust Photo</span>';
@@ -1900,7 +1910,7 @@
                 hideLoading();
                 aiAdjustBtn.disabled = false;
                 aiAdjustBtn.innerHTML = '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg><span>Auto-Adjust Photo</span>';
-                throw new Error('Failed to load adjusted image. Please try again.');
+                alert('Failed to load adjusted image. Please try again.');
             };
 
             img.src = adjustedImageDataUrl;
