@@ -215,6 +215,13 @@
         .success-message {
             @apply bg-green-900/20 border border-green-700 text-green-300 p-4 rounded-lg mb-4 flex items-start;
         }
+        
+        .compliance-pass {
+            color: #10b981;
+        }
+        .compliance-fail {
+            color: #ef4444;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -436,7 +443,7 @@
                             <h2 class="text-2xl md:text-4xl font-bold mb-3 text-white">Upload Your Photo</h2>
                             <p class="text-base md:text-lg text-gray-400 mb-6">Take or upload a clear photo of yourself with plain background</p>
                         </div>
-                        <div id="drop-zone" class="border-3 border-dashed border-gray-600 bg-gray-800 rounded-2xl p-8 md:p-12 text-center hover:border-blue-500 hover:bg-gray-750 transition-all duration-300 cursor-pointer">
+                        <div id="drop-zone" class="border-3 border-dashed border-gray-600 bg-gray-800 rounded-2xl p-8 md:p-12 text-center hover:border-blue-500 hover:bg-gray-750 transition-all duration-300">
                             <svg class="w-12 h-12 md:w-16 md:h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                             </svg>
@@ -504,7 +511,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- AI Enhancement Button (MOVED BEFORE MANUAL ADJUSTMENTS) -->
+                                        <!-- AI Enhancement Button -->
                                         <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
                                             <h3 class="text-lg font-semibold mb-3 text-white">AI Enhancement</h3>
                                             <button id="enhance-btn-mobile" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center">
@@ -523,9 +530,9 @@
                                                 <div>
                                                     <label class="flex justify-between text-sm font-medium mb-2">
                                                         <span class="text-gray-300">Zoom</span>
-                                                        <span class="text-blue-400" id="zoom-value-mobile">1.0x</span>
+                                                        <span class="text-blue-400" id="zoom-value-mobile">100%</span>
                                                     </label>
-                                                    <input type="range" id="zoom-slider-mobile" min="0.25" max="4" step="0.05" value="1" class="w-full">
+                                                    <input type="range" id="zoom-slider-mobile" min="1" max="300" step="1" value="100" class="w-full">
                                                 </div>
                                                 <div>
                                                     <label class="flex justify-between text-sm font-medium mb-2">
@@ -544,7 +551,7 @@
                                                 <div>
                                                     <label class="flex justify-between text-sm font-medium mb-2">
                                                         <span class="text-gray-300">Rotation</span>
-                                                        <span class="text-blue-400" id="rotation-value-mobile">0°</span>
+                                                        <span class="text-blue-400" id="rotation-value-mobile">0.0°</span>
                                                     </label>
                                                     <input type="range" id="rotation-slider-mobile" min="-15" max="15" step="0.1" value="0" class="w-full">
                                                 </div>
@@ -574,7 +581,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- AI Enhancement (MOVED BEFORE MANUAL ADJUSTMENTS) -->
+                                    <!-- AI Enhancement -->
                                     <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
                                         <h3 class="text-xl font-semibold mb-3 text-white">AI Enhancement</h3>
                                         <button id="enhance-btn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center">
@@ -593,9 +600,9 @@
                                             <div>
                                                 <label class="flex justify-between text-sm font-medium mb-2">
                                                     <span class="text-gray-300">Zoom</span>
-                                                    <span class="text-blue-400 font-semibold" id="zoom-value">1.0x</span>
+                                                    <span class="text-blue-400 font-semibold" id="zoom-value">100%</span>
                                                 </label>
-                                                <input type="range" id="zoom-slider" min="0.25" max="4" step="0.05" value="1" class="w-full">
+                                                <input type="range" id="zoom-slider" min="1" max="300" step="1" value="100" class="w-full">
                                             </div>
                                             <div>
                                                 <label class="flex justify-between text-sm font-medium mb-2">
@@ -614,7 +621,7 @@
                                             <div>
                                                 <label class="flex justify-between text-sm font-medium mb-2">
                                                     <span class="text-gray-300">Rotation</span>
-                                                    <span class="text-blue-400 font-semibold" id="rotation-value">0°</span>
+                                                    <span class="text-blue-400 font-semibold" id="rotation-value">0.0°</span>
                                                 </label>
                                                 <input type="range" id="rotation-slider" min="-15" max="15" step="0.1" value="0" class="w-full">
                                             </div>
@@ -625,7 +632,7 @@
                                     <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
                                         <h3 class="text-xl font-semibold mb-4 text-white">Compliance Checks</h3>
                                         <div id="compliance-list" class="space-y-3">
-                                            <div class="compliance-check">
+                                            <div class="compliance-check bg-gray-700">
                                                 <span class="text-sm text-gray-300">Detecting face...</span>
                                                 <div class="spinner ml-auto"></div>
                                             </div>
@@ -643,7 +650,7 @@
                                     <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
                                         <h3 class="text-lg font-semibold mb-4 text-white">Compliance Checks</h3>
                                         <div id="compliance-list-mobile" class="space-y-3">
-                                            <div class="compliance-check">
+                                            <div class="compliance-check bg-gray-700">
                                                 <span class="text-sm text-gray-300">Detecting face...</span>
                                                 <div class="spinner ml-auto"></div>
                                             </div>
@@ -834,6 +841,7 @@
     const fileInput = document.getElementById('file-input');
     const canvas = document.getElementById('editorCanvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const canvasContainer = document.getElementById('canvas-container');
     
     // Desktop controls
     const zoomSlider = document.getElementById('zoom-slider');
@@ -874,6 +882,7 @@
     // State
     let state = {
         image: null,
+        faceData: null,
         transform: {
             scaleMultiplier: 1,
             offsetX: 0,
@@ -887,10 +896,9 @@
         currentCountry: 'US',
         currentDoc: 'passport',
         baseScale: 1,
-        dragging: false,
-        lastX: 0,
-        lastY: 0,
-        detections: null
+        isDragging: false,
+        dragStart: { x: 0, y: 0 },
+        complianceResults: {}
     };
 
     let requirements = {};
@@ -902,13 +910,7 @@
     startAppBtnHero.addEventListener('click', startApp);
     startAppBtnPricing.addEventListener('click', startApp);
 
-    // Event Listeners - Upload
-    dropZone.addEventListener('click', (e) => {
-        // Prevent double-trigger when clicking on file input label
-        if (e.target.tagName !== 'INPUT') {
-            fileInput.click();
-        }
-    });
+    // Event Listeners - Upload (NO CLICK HANDLER - label handles it)
     fileInput.addEventListener('change', (e) => {
         if (e.target.files[0]) handleImageUpload(e.target.files[0]);
     });
@@ -927,8 +929,8 @@
 
     // Event Listeners - Desktop Controls
     zoomSlider.addEventListener('input', (e) => {
-        state.transform.scaleMultiplier = parseFloat(e.target.value);
-        zoomValue.textContent = state.transform.scaleMultiplier.toFixed(2) + 'x';
+        state.transform.scaleMultiplier = parseFloat(e.target.value) / 100;
+        zoomValue.textContent = e.target.value + '%';
         zoomSliderMobile.value = e.target.value;
         zoomValueMobile.textContent = zoomValue.textContent;
         drawCanvas();
@@ -983,7 +985,9 @@
         state.currentCountry = e.target.value;
         countrySelectMobile.value = e.target.value;
         updateDocumentTypes();
-        updateOverlayMask();
+        if (state.image && state.faceData) {
+            runComplianceChecks();
+        }
     });
 
     countrySelectMobile.addEventListener('change', (e) => {
@@ -994,7 +998,9 @@
     docSelect.addEventListener('change', (e) => {
         state.currentDoc = e.target.value;
         docSelectMobile.value = e.target.value;
-        updateOverlayMask();
+        if (state.image && state.faceData) {
+            runComplianceChecks();
+        }
     });
 
     docSelectMobile.addEventListener('change', (e) => {
@@ -1014,13 +1020,44 @@
     });
 
     // Canvas interaction
-    canvas.addEventListener('mousedown', startDrag);
-    canvas.addEventListener('mousemove', drag);
-    canvas.addEventListener('mouseup', endDrag);
-    canvas.addEventListener('mouseleave', endDrag);
-    canvas.addEventListener('touchstart', startDrag, { passive: false });
-    canvas.addEventListener('touchmove', drag, { passive: false });
-    canvas.addEventListener('touchend', endDrag);
+    const canvasInteraction = (e) => {
+        e.preventDefault();
+        if (e.type === 'mousedown' || e.type === 'touchstart') {
+            state.isDragging = true;
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            state.dragStart.x = clientX - rect.left - state.transform.offsetX;
+            state.dragStart.y = clientY - rect.top - state.transform.offsetY;
+        } else if (e.type === 'mouseup' || e.type === 'touchend') {
+            state.isDragging = false;
+            if (state.faceData) {
+                runComplianceChecks();
+            }
+        } else if ((e.type === 'mousemove' || e.type === 'touchmove') && state.isDragging) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            state.transform.offsetX = clientX - rect.left - state.dragStart.x;
+            state.transform.offsetY = clientY - rect.top - state.dragStart.y;
+            drawCanvas();
+        }
+    };
+
+    canvas.addEventListener('mousedown', canvasInteraction);
+    canvas.addEventListener('mousemove', canvasInteraction);
+    canvas.addEventListener('mouseup', canvasInteraction);
+    canvas.addEventListener('mouseleave', () => {
+        if (state.isDragging) {
+            state.isDragging = false;
+            if (state.faceData) {
+                runComplianceChecks();
+            }
+        }
+    });
+    canvas.addEventListener('touchstart', canvasInteraction, { passive: false });
+    canvas.addEventListener('touchmove', canvasInteraction, { passive: false });
+    canvas.addEventListener('touchend', canvasInteraction);
 
     // Payment
     payBtn.addEventListener('click', handlePayment);
@@ -1039,22 +1076,6 @@
     }
 
     init();
-
-    // Load Face API models
-    function loadModels() {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                Promise.all([
-                    faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights'),
-                    faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights')
-                ]).then(resolve).catch((err) => {
-                    loadingText.textContent = "Error loading models. Please refresh.";
-                    console.error("Model loading error:", err);
-                    reject(err);
-                });
-            }, 500);
-        });
-    }
 
     function navigateTo(screenName) {
         Object.values(screens).forEach(s => s.classList.add('hidden'));
@@ -1110,203 +1131,195 @@
                     return;
                 }
                 state.image = img;
-                setupCanvas();
+                resetStateForNewImage();
                 navigateTo('editor');
-                await detectFace();
+                setTimeout(() => {
+                    setupEditorCanvas();
+                    showLoading('Analyzing photo...');
+                    detectFaceAndRunChecks().then(hideLoading);
+                }, 100);
             };
             img.src = originalImageData;
         };
         reader.readAsDataURL(file);
     }
 
-    function setupCanvas() {
-        const container = document.getElementById('canvas-container');
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
+    function resetStateForNewImage() {
+        state.faceData = null;
+        state.baseScale = 1;
+        state.transform = { scaleMultiplier: 1, offsetX: 0, offsetY: 0, rotation: 0 };
+        state.filters = { brightness: 100, contrast: 100 };
         
-        canvas.width = 600;
-        canvas.height = 600;
+        zoomSlider.value = 100;
+        zoomValue.textContent = '100%';
+        brightnessSlider.value = 100;
+        brightnessValue.textContent = '100%';
+        contrastSlider.value = 100;
+        contrastValue.textContent = '100%';
+        rotationSlider.value = 0;
+        rotationValue.textContent = '0.0°';
+        
+        zoomSliderMobile.value = 100;
+        zoomValueMobile.textContent = '100%';
+        brightnessSliderMobile.value = 100;
+        brightnessValueMobile.textContent = '100%';
+        contrastSliderMobile.value = 100;
+        contrastValueMobile.textContent = '100%';
+        rotationSliderMobile.value = 0;
+        rotationValueMobile.textContent = '0.0°';
+    }
 
-        const imgAspect = state.image.width / state.image.height;
-        const canvasAspect = canvas.width / canvas.height;
-
-        if (imgAspect > canvasAspect) {
-            state.baseScale = canvas.height / state.image.height;
-        } else {
-            state.baseScale = canvas.width / state.image.width;
-        }
-
-        state.transform.offsetX = 0;
-        state.transform.offsetY = 0;
+    function setupEditorCanvas() {
+        const wrapperSize = canvasContainer.clientWidth;
+        canvas.width = wrapperSize;
+        canvas.height = wrapperSize;
+        
+        const hRatio = canvas.width / (state.image.naturalWidth || state.image.width);
+        const vRatio = canvas.height / (state.image.naturalHeight || state.image.height);
+        state.baseScale = Math.min(hRatio, vRatio) * 0.9;
+        
         state.transform.scaleMultiplier = 1;
+        zoomSlider.value = 100;
+        zoomValue.textContent = '100%';
+        zoomSliderMobile.value = 100;
+        zoomValueMobile.textContent = '100%';
 
+        state.transform.offsetX = (canvas.width - (state.image.naturalWidth || state.image.width) * state.baseScale) / 2;
+        state.transform.offsetY = (canvas.height - (state.image.naturalHeight || state.image.height) * state.baseScale) / 2;
+        
         drawCanvas();
     }
 
     function drawCanvas() {
         if (!state.image) return;
+        
+        const imageIsReady = (state.image instanceof HTMLImageElement && state.image.complete && state.image.naturalHeight !== 0) || (state.image instanceof ImageBitmap);
+        if(!imageIsReady){
+            console.error("drawCanvas called with an invalid or unloaded image.");
+            return;
+        }
 
-        ctx.save();
-        ctx.fillStyle = '#1f2937';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        const scale = state.baseScale * state.transform.scaleMultiplier;
-        const w = state.image.width * scale;
-        const h = state.image.height * scale;
-        const x = (canvas.width - w) / 2 + state.transform.offsetX;
-        const y = (canvas.height - h) / 2 + state.transform.offsetY;
-
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate((state.transform.rotation * Math.PI) / 180);
-        ctx.translate(-canvas.width / 2, -canvas.height / 2);
-
+        const finalScale = state.baseScale * state.transform.scaleMultiplier;
+        const imageWidth = state.image.naturalWidth || state.image.width;
+        const imageHeight = state.image.naturalHeight || state.image.height;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
-        ctx.drawImage(state.image, x, y, w, h);
-        ctx.filter = 'none';
+        
+        ctx.save();
 
-        drawOverlays();
+        const imgCenterX = state.transform.offsetX + (imageWidth * finalScale) / 2;
+        const imgCenterY = state.transform.offsetY + (imageHeight * finalScale) / 2;
+
+        ctx.translate(imgCenterX, imgCenterY);
+        ctx.rotate(state.transform.rotation * Math.PI / 180);
+        ctx.translate(-imgCenterX, -imgCenterY);
+        
+        ctx.translate(state.transform.offsetX, state.transform.offsetY);
+        ctx.scale(finalScale, finalScale);
+        ctx.drawImage(state.image, 0, 0);
+        
         ctx.restore();
+        ctx.filter = 'none';
         
         captureCanvasState();
     }
 
-    function drawOverlays() {
-        if (!state.detections) return;
-
-        const req = getCurrentRequirements();
-        if (!req) return;
-
-        const detection = state.detections;
-        const landmarks = detection.landmarks;
-        const box = detection.detection.box;
-
-        // Eye line - draw at actual detected eye position
-        const leftEye = landmarks.getLeftEye();
-        const rightEye = landmarks.getRightEye();
-        const leftEyeCenter = leftEye.reduce((sum, pt) => ({ x: sum.x + pt.x, y: sum.y + pt.y }), { x: 0, y: 0 });
-        leftEyeCenter.x /= leftEye.length;
-        leftEyeCenter.y /= leftEye.length;
-        const rightEyeCenter = rightEye.reduce((sum, pt) => ({ x: sum.x + pt.x, y: sum.y + pt.y }), { x: 0, y: 0 });
-        rightEyeCenter.x /= rightEye.length;
-        rightEyeCenter.y /= rightEye.length;
-        
-        const eyeY = (leftEyeCenter.y + rightEyeCenter.y) / 2;
-
-        ctx.strokeStyle = 'rgba(74, 222, 128, 0.6)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(0, eyeY);
-        ctx.lineTo(canvas.width, eyeY);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Head oval - positioned based on detected face box
-        const headCenterX = box.x + box.width / 2;
-        const headCenterY = box.y + box.height / 2;
-        const headWidth = box.width * 1.1;
-        const headHeight = box.height * 1.3;
-
-        ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.ellipse(headCenterX, headCenterY, headWidth / 2, headHeight / 2, 0, 0, 2 * Math.PI);
-        ctx.stroke();
-
-        // Center line
-        ctx.strokeStyle = 'rgba(251, 191, 36, 0.5)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([3, 3]);
-        ctx.beginPath();
-        ctx.moveTo(canvas.width / 2, 0);
-        ctx.lineTo(canvas.width / 2, canvas.height);
-        ctx.stroke();
-        ctx.setLineDash([]);
+    async function detectFaceAndRunChecks() {
+        if (!state.image) return;
+        const detection = await faceapi.detectSingleFace(state.image, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
+        state.faceData = detection;
+        runComplianceChecks();
     }
 
-    async function detectFace() {
-        if (!state.image) return;
+    function runComplianceChecks() {
+        const req = getCurrentRequirements();
+        
+        if (!req) {
+            console.error('Compliance check called with invalid state:', state.currentCountry, state.currentDoc);
+            updateComplianceUI([{ text: 'Error loading requirements. Please refresh.', status: 'fail' }]);
+            return;
+        }
 
-        updateComplianceUI([{ text: 'Detecting face...', status: 'loading' }]);
-
-        try {
-            const detections = await faceapi.detectSingleFace(
-                canvas,
-                new faceapi.TinyFaceDetectorOptions()
-            ).withFaceLandmarks();
-
-            if (!detections) {
-                updateComplianceUI([{ text: 'No face detected - please upload a photo with a clear face', status: 'fail' }]);
-                proceedBtn.disabled = true;
-                proceedBtnMobile.disabled = true;
-                return;
-            }
-
-            state.detections = detections;
-            checkCompliance();
-            drawCanvas();
-        } catch (error) {
-            console.error('Face detection error:', error);
-            updateComplianceUI([{ text: 'Face detection failed - please try again', status: 'fail' }]);
+        if (!state.faceData || !state.faceData.landmarks) {
+            updateComplianceUI([{ text: 'No face detected - please upload a photo with a clear face', status: 'fail' }]);
             proceedBtn.disabled = true;
             proceedBtnMobile.disabled = true;
+            return;
         }
-    }
 
-    function checkCompliance() {
-        const req = getCurrentRequirements();
-        if (!req || !state.detections) return;
+        const results = [];
+        const finalScale = state.baseScale * state.transform.scaleMultiplier;
+        const landmarks = state.faceData.landmarks;
+        
+        const getPoint = (index) => {
+            const pt = landmarks.positions[index];
+            const scale = finalScale;
+            const rotation = state.transform.rotation * Math.PI / 180;
 
-        const detection = state.detections;
-        const box = detection.detection.box;
-        const landmarks = detection.landmarks;
+            let x = pt.x * scale;
+            let y = pt.y * scale;
 
-        const checks = [];
+            if (rotation !== 0) {
+                const centerX = (state.image.naturalWidth * scale) / 2;
+                const centerY = (state.image.naturalHeight * scale) / 2;
+                const cosR = Math.cos(rotation);
+                const sinR = Math.sin(rotation);
+                
+                const rotatedX = centerX + (x - centerX) * cosR - (y - centerY) * sinR;
+                const rotatedY = centerY + (x - centerX) * sinR + (y - centerY) * cosR;
+                x = rotatedX;
+                y = rotatedY;
+            }
 
+            return {
+                x: x + state.transform.offsetX,
+                y: y + state.transform.offsetY
+            };
+        };
+
+        const chin = getPoint(8);
+        const leftEye = getPoint(39);
+        const rightEye = getPoint(42);
+        const eyeCenterY = (leftEye.y + rightEye.y) / 2;
+        const eyeCenterX = (leftEye.x + rightEye.x) / 2;
+        
+        const chinToEyeHeight = chin.y - eyeCenterY;
+        const headHeightPx = chinToEyeHeight * 2;
+        const headHeightPercent = (headHeightPx / canvas.height) * 100;
+        
         // Face detected
-        checks.push({ text: 'Face detected', status: 'pass' });
-
+        results.push({ text: 'Face detected', status: 'pass' });
+        
         // Head size check
-        const headHeight = box.height;
-        const canvasHeight = canvas.height;
-        const headRatio = headHeight / canvasHeight;
-        const minRatio = 0.5;
-        const maxRatio = 0.8;
-        
-        if (headRatio >= minRatio && headRatio <= maxRatio) {
-            checks.push({ text: `Head size: ${(headRatio * 100).toFixed(0)}% (optimal)`, status: 'pass' });
+        if (headHeightPercent >= req.headHeightMinPercent && headHeightPercent <= req.headHeightMaxPercent) {
+            results.push({ text: `Head size: ${headHeightPercent.toFixed(0)}% (optimal)`, status: 'pass' });
         } else {
-            checks.push({ text: `Head size: ${(headRatio * 100).toFixed(0)}% (adjust zoom)`, status: 'fail' });
-        }
-
-        // Face centering
-        const faceCenterX = box.x + box.width / 2;
-        const canvasCenterX = canvas.width / 2;
-        const horizontalOffset = Math.abs(faceCenterX - canvasCenterX);
-        
-        if (horizontalOffset < canvas.width * 0.1) {
-            checks.push({ text: 'Face centered horizontally', status: 'pass' });
-        } else {
-            checks.push({ text: 'Face not centered (adjust position)', status: 'fail' });
+            results.push({ text: `Head size: ${headHeightPercent.toFixed(0)}% (adjust zoom)`, status: 'fail' });
         }
 
         // Eye position
-        const leftEye = landmarks.getLeftEye();
-        const rightEye = landmarks.getRightEye();
-        const leftEyeY = leftEye.reduce((sum, pt) => sum + pt.y, 0) / leftEye.length;
-        const rightEyeY = rightEye.reduce((sum, pt) => sum + pt.y, 0) / rightEye.length;
-        const eyeLevel = (leftEyeY + rightEyeY) / 2;
-        const eyeLevelRatio = eyeLevel / canvas.height;
-        
-        if (eyeLevelRatio >= 0.4 && eyeLevelRatio <= 0.6) {
-            checks.push({ text: 'Eye level correct', status: 'pass' });
-        } else {
-            checks.push({ text: 'Eye level incorrect (adjust position)', status: 'fail' });
+        if (req.eyeToBottomMinPercent) {
+            const eyeLevelPercent = ((canvas.height - eyeCenterY) / canvas.height) * 100;
+            if (eyeLevelPercent >= req.eyeToBottomMinPercent && eyeLevelPercent <= req.eyeToBottomMaxPercent) {
+                results.push({ text: 'Eye level correct', status: 'pass' });
+            } else {
+                results.push({ text: 'Eye level incorrect (adjust position)', status: 'fail' });
+            }
         }
 
-        updateComplianceUI(checks);
+        // Centering
+        const horizontalOffset = Math.abs(eyeCenterX - canvas.width / 2);
+        if (horizontalOffset < canvas.width * 0.1) {
+            results.push({ text: 'Face centered horizontally', status: 'pass' });
+        } else {
+            results.push({ text: 'Face not centered (adjust position)', status: 'fail' });
+        }
 
-        const allPassed = checks.every(c => c.status === 'pass');
+        state.complianceResults = results;
+        updateComplianceUI(results);
+
+        const allPassed = results.every(r => r.status === 'pass');
         proceedBtn.disabled = !allPassed;
         proceedBtnMobile.disabled = !allPassed;
     }
@@ -1349,13 +1362,11 @@
         enhanceBtnMobile.disabled = true;
 
         try {
-            // Create temp canvas to get base64
             const tempCanvas = document.createElement('canvas');
             const maxDimension = 2048;
             let width = state.image.naturalWidth || state.image.width;
             let height = state.image.naturalHeight || state.image.height;
             
-            // Resize if too large
             if (width > maxDimension || height > maxDimension) {
                 const scale = maxDimension / Math.max(width, height);
                 width = Math.floor(width * scale);
@@ -1399,49 +1410,16 @@
 
             loadingText.textContent = 'Loading enhanced photo...';
 
-            // Load the enhanced image
             const newImg = new Image();
             
             newImg.onload = async () => {
                 state.image = newImg;
                 originalImageData = `data:image/png;base64,${adjustedBase64}`;
-                
-                // Reset adjustments
-                state.transform = {
-                    scaleMultiplier: 1,
-                    offsetX: 0,
-                    offsetY: 0,
-                    rotation: 0
-                };
-                state.filters = {
-                    brightness: 100,
-                    contrast: 100
-                };
-                
-                // Reset sliders
-                zoomSlider.value = 1;
-                brightnessSlider.value = 100;
-                contrastSlider.value = 100;
-                rotationSlider.value = 0;
-                zoomValue.textContent = '1.0x';
-                brightnessValue.textContent = '100%';
-                contrastValue.textContent = '100%';
-                rotationValue.textContent = '0°';
-                
-                // Update mobile sliders
-                zoomSliderMobile.value = 1;
-                brightnessSliderMobile.value = 100;
-                contrastSliderMobile.value = 100;
-                rotationSliderMobile.value = 0;
-                zoomValueMobile.textContent = '1.0x';
-                brightnessValueMobile.textContent = '100%';
-                contrastValueMobile.textContent = '100%';
-                rotationValueMobile.textContent = '0°';
-                
-                setupCanvas();
+                resetStateForNewImage();
+                setupEditorCanvas();
                 
                 loadingText.textContent = 'Re-analyzing photo...';
-                await detectFace();
+                await detectFaceAndRunChecks();
                 
                 hideLoading();
                 enhanceBtn.disabled = false;
@@ -1471,48 +1449,6 @@
             
             alert(errorMessage);
         }
-    }
-
-    function startDrag(e) {
-        e.preventDefault();
-        state.dragging = true;
-        const pos = getEventPosition(e);
-        state.lastX = pos.x;
-        state.lastY = pos.y;
-    }
-
-    function drag(e) {
-        if (!state.dragging) return;
-        e.preventDefault();
-        const pos = getEventPosition(e);
-        const dx = pos.x - state.lastX;
-        const dy = pos.y - state.lastY;
-        state.transform.offsetX += dx;
-        state.transform.offsetY += dy;
-        state.lastX = pos.x;
-        state.lastY = pos.y;
-        drawCanvas();
-    }
-
-    function endDrag() {
-        state.dragging = false;
-    }
-
-    function getEventPosition(e) {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        
-        if (e.touches && e.touches[0]) {
-            return {
-                x: (e.touches[0].clientX - rect.left) * scaleX,
-                y: (e.touches[0].clientY - rect.top) * scaleY
-            };
-        }
-        return {
-            x: (e.clientX - rect.left) * scaleX,
-            y: (e.clientY - rect.top) * scaleY
-        };
     }
 
     function captureCanvasState() {
@@ -1762,7 +1698,7 @@
         try {
             const response = await fetch(`${API_BASE_URL}/get-requirements`);
             const data = await response.json();
-            requirements = data.countries || data; // Handle both response formats
+            requirements = data.countries || data;
             populateDropdowns();
         } catch (error) {
             console.error('Failed to load requirements:', error);
@@ -1782,7 +1718,6 @@
         countrySelect.innerHTML = '<option value="">Select Country</option>' + options;
         countrySelectMobile.innerHTML = '<option value="">Select Country</option>' + options;
         
-        // Set default country
         if (countries.includes('US')) {
             countrySelect.value = 'US';
             countrySelectMobile.value = 'US';
@@ -1829,10 +1764,6 @@
         return requirements[state.currentCountry]?.[state.currentDoc];
     }
 
-    function updateOverlayMask() {
-        drawCanvas();
-    }
-
     function startApp() {
         document.body.style.backgroundColor = '#111827';
         landingPage.classList.add('fade-out');
@@ -1849,7 +1780,8 @@
             
             showLoading('Loading AI models...');
             Promise.all([
-                loadModels(),
+                faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights'),
                 loadRequirements()
             ]).then(() => {
                 hideLoading();
