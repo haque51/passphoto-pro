@@ -1965,6 +1965,7 @@
         
         state.complianceResults = results;
         renderComplianceChecklist(results);
+        updateOverlayMask(); // Update overlay colors based on compliance
     }
 
     function renderComplianceChecklist(results) {
@@ -2074,7 +2075,47 @@
     });
 
     function updateOverlayMask() {
-        // This function can be enhanced based on requirements
+        const centerLine = document.getElementById('center-line');
+        const eyeLine = document.getElementById('eye-line');
+        const headOval = document.getElementById('head-oval');
+
+        if (!state.complianceResults || !state.faceData) {
+            // No compliance data yet - use default blue color
+            if (centerLine) centerLine.setAttribute('stroke', 'rgba(59, 130, 246, 0.8)');
+            if (eyeLine) eyeLine.setAttribute('stroke', 'rgba(59, 130, 246, 0.9)');
+            if (headOval) headOval.setAttribute('stroke', 'rgba(59, 130, 246, 0.7)');
+            return;
+        }
+
+        const results = state.complianceResults;
+
+        // Green for pass, red for fail
+        const passColor = 'rgba(16, 185, 129, 0.9)'; // Green
+        const failColor = 'rgba(239, 68, 68, 0.9)'; // Red
+        const defaultColor = 'rgba(59, 130, 246, 0.8)'; // Blue
+
+        // Update center line based on centering compliance
+        if (centerLine) {
+            const color = results.centering?.pass ? passColor : (results.centering ? failColor : defaultColor);
+            centerLine.setAttribute('stroke', color);
+            centerLine.setAttribute('stroke-width', results.centering?.pass ? '1.2' : '0.8');
+        }
+
+        // Update eye line based on eye position compliance
+        if (eyeLine) {
+            const color = results.eyePosition?.pass ? passColor : (results.eyePosition ? failColor : defaultColor);
+            eyeLine.setAttribute('stroke', color);
+            eyeLine.setAttribute('stroke-width', results.eyePosition?.pass ? '1.5' : '1');
+        }
+
+        // Update head oval based on head size compliance
+        if (headOval) {
+            const color = results.headSize?.pass ? passColor : (results.headSize ? failColor : defaultColor);
+            headOval.setAttribute('stroke', color);
+            headOval.setAttribute('stroke-width', results.headSize?.pass ? '1.5' : '1');
+        }
+
+        console.log('Overlay mask updated with compliance colors');
     }
 
     // ========== PAYMENT ==========
@@ -2098,7 +2139,7 @@
         payBtn.textContent = 'Processing...';
         
         try {
-            const response = await fetch(`${API_BASE_URL}/create-checkout`, {
+            const response = await fetch(`${API_BASE_URL}/create-payment`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
