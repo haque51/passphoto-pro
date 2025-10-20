@@ -1829,7 +1829,7 @@
             const selectedDocType = docTypeSelect.value;
 
             updateProgress(40);
-            const response = await fetch(`${API_BASE_URL}/adjust-photo`, {
+            const response = await fetch(`${API_BASE_URL}/ai-adjust-photo`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
