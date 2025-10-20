@@ -102,9 +102,12 @@
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
-            background: transparent;
+            background: #374151;
+            height: 0.5rem;
+            border-radius: 0.25rem;
             cursor: pointer;
             width: 100%;
+            outline: none;
         }
         input[type="range"]::-webkit-slider-track {
             background: #374151;
@@ -118,7 +121,7 @@
             height: 1.25rem;
             width: 1.25rem;
             border-radius: 50%;
-            margin-top: -0.375rem;
+            cursor: pointer;
             transition: background 0.2s;
         }
         input[type="range"]::-webkit-slider-thumb:hover {
@@ -135,10 +138,26 @@
             width: 1.25rem;
             border-radius: 50%;
             border: none;
+            cursor: pointer;
             transition: background 0.2s;
         }
         input[type="range"]::-moz-range-thumb:hover {
             background: #2563eb;
+        }
+        input[type="range"]::-ms-track {
+            background: #374151;
+            height: 0.5rem;
+            border-radius: 0.25rem;
+            border: none;
+            color: transparent;
+        }
+        input[type="range"]::-ms-thumb {
+            background: #3b82f6;
+            height: 1.25rem;
+            width: 1.25rem;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
         }
         
         /* Loading spinner animation */
@@ -1202,7 +1221,9 @@
             ).withFaceLandmarks();
 
             if (!detections) {
-                updateComplianceUI([{ text: 'No face detected', status: 'fail' }]);
+                updateComplianceUI([{ text: 'No face detected - please upload a photo with a clear face', status: 'fail' }]);
+                proceedBtn.disabled = true;
+                proceedBtnMobile.disabled = true;
                 return;
             }
 
@@ -1211,7 +1232,9 @@
             drawCanvas();
         } catch (error) {
             console.error('Face detection error:', error);
-            updateComplianceUI([{ text: 'Face detection failed', status: 'fail' }]);
+            updateComplianceUI([{ text: 'Face detection failed - please try again', status: 'fail' }]);
+            proceedBtn.disabled = true;
+            proceedBtnMobile.disabled = true;
         }
     }
 
@@ -1623,32 +1646,67 @@
     async function loadRequirements() {
         try {
             const response = await fetch(`${API_BASE_URL}/get-requirements`);
-            requirements = await response.json();
+            const data = await response.json();
+            requirements = data.countries || data; // Handle both response formats
             populateDropdowns();
         } catch (error) {
             console.error('Failed to load requirements:', error);
+            countrySelect.innerHTML = '<option value="">Error loading countries</option>';
+            countrySelectMobile.innerHTML = '<option value="">Error loading countries</option>';
         }
     }
 
     function populateDropdowns() {
+        if (!requirements || Object.keys(requirements).length === 0) {
+            console.error('No requirements data available');
+            return;
+        }
+        
         const countries = Object.keys(requirements);
         const options = countries.map(c => `<option value="${c}">${c}</option>`).join('');
         countrySelect.innerHTML = '<option value="">Select Country</option>' + options;
         countrySelectMobile.innerHTML = '<option value="">Select Country</option>' + options;
-        countrySelect.value = 'US';
-        countrySelectMobile.value = 'US';
-        state.currentCountry = 'US';
+        
+        // Set default country
+        if (countries.includes('US')) {
+            countrySelect.value = 'US';
+            countrySelectMobile.value = 'US';
+            state.currentCountry = 'US';
+        } else {
+            state.currentCountry = countries[0];
+            countrySelect.value = countries[0];
+            countrySelectMobile.value = countries[0];
+        }
+        
         updateDocumentTypes();
     }
 
     function updateDocumentTypes() {
-        if (!state.currentCountry || !requirements[state.currentCountry]) return;
+        if (!state.currentCountry || !requirements[state.currentCountry]) {
+            console.error('No requirements for country:', state.currentCountry);
+            return;
+        }
         
-        const docs = Object.keys(requirements[state.currentCountry]);
-        const options = docs.map(d => `<option value="${d}">${d.charAt(0).toUpperCase() + d.slice(1)}</option>`).join('');
+        const docs = requirements[state.currentCountry];
+        const docKeys = Object.keys(docs);
+        
+        if (docKeys.length === 0) {
+            docSelect.innerHTML = '<option value="">No documents available</option>';
+            docSelectMobile.innerHTML = '<option value="">No documents available</option>';
+            return;
+        }
+        
+        const options = docKeys.map(d => {
+            const docData = docs[d];
+            const displayName = docData.name || d.charAt(0).toUpperCase() + d.slice(1);
+            return `<option value="${d}">${displayName}</option>`;
+        }).join('');
+        
         docSelect.innerHTML = options;
         docSelectMobile.innerHTML = options;
-        state.currentDoc = docs[0];
+        state.currentDoc = docKeys[0];
+        docSelect.value = docKeys[0];
+        docSelectMobile.value = docKeys[0];
     }
 
     function getCurrentRequirements() {
