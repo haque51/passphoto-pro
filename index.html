@@ -1594,52 +1594,59 @@
     // ========== IMAGE UPLOAD ==========
     function handleImageUpload(file) {
         if (!file || !file.type.startsWith('image/')) return;
-        
+
+        console.log('Starting image upload for:', file.name);
+
         showLoading('Reading image...', 5);
         loadingSubText.textContent = 'Processing your photo...';
-        
+
         const reader = new FileReader();
         reader.onload = (e) => {
             updateProgress(20);
             loadingSubText.textContent = 'Validating image size...';
-            
+
             originalImageData = e.target.result;
             console.log('✅ Original image saved');
-            
+
             const img = new Image();
             img.onload = async () => {
+                console.log('Image loaded:', img.width, 'x', img.height);
+
                 if (img.width < 600 || img.height < 600) {
                     hideLoading();
                     alert('Image too small. Please upload an image with minimum dimensions of 600x600 pixels.');
                     return;
                 }
-                
+
                 updateProgress(40);
                 loadingSubText.textContent = 'Preparing editor...';
-                
+
                 state.image = img;
-                
+
                 updateProgress(60);
                 loadingSubText.textContent = 'Detecting face...';
-                
+
                 const detections = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
-                
+
                 if (detections) {
                     state.faceData = detections;
                     console.log('Face detected:', detections);
                 } else {
                     console.warn('No face detected, proceeding anyway');
                 }
-                
+
                 updateProgress(80);
                 loadingSubText.textContent = 'Setting up editor...';
-                
+
+                console.log('Calling initCanvas...');
                 initCanvas();
+                console.log('Navigating to editor...');
                 navigateTo('editor');
-                
+
                 updateProgress(100);
                 setTimeout(() => {
                     hideLoading();
+                    console.log('About to call renderCanvas...');
                     renderCanvas();
                     runComplianceChecks();
                 }, 300);
@@ -1677,38 +1684,61 @@
     function initCanvas() {
         const container = canvasContainer;
         const size = Math.min(container.clientWidth, container.clientHeight);
+
+        console.log('initCanvas: container size =', size);
+
+        // If container size is 0, the element is not visible yet - retry
+        if (size === 0) {
+            console.warn('Container not visible yet, retrying initCanvas...');
+            setTimeout(initCanvas, 50);
+            return;
+        }
+
         canvas.width = size;
         canvas.height = size;
-        
+
+        console.log('Canvas dimensions set to:', canvas.width, 'x', canvas.height);
+
         const imgRatio = state.image.width / state.image.height;
         const canvasRatio = canvas.width / canvas.height;
-        
+
         if (imgRatio > canvasRatio) {
             state.baseScale = canvas.height / state.image.height;
         } else {
             state.baseScale = canvas.width / state.image.width;
         }
-        
+
         state.transform.offsetX = 0;
         state.transform.offsetY = 0;
+
+        console.log('Canvas initialized, baseScale:', state.baseScale);
     }
 
     // ========== CANVAS RENDERING ==========
     function renderCanvas() {
-        if (!state.image) return;
-        
+        console.log('renderCanvas called');
+
+        if (!state.image) {
+            console.error('renderCanvas: No image in state');
+            return;
+        }
+
+        console.log('Canvas size:', canvas.width, 'x', canvas.height);
+
         const totalScale = state.baseScale * state.transform.scaleMultiplier;
         const scaledWidth = state.image.width * totalScale;
         const scaledHeight = state.image.height * totalScale;
-        
+
+        console.log('Drawing image:', state.image.width, 'x', state.image.height, 'at scale:', totalScale);
+
         ctx.save();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate((state.transform.rotation * Math.PI) / 180);
-        
+
         ctx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
-        
+
         ctx.drawImage(
             state.image,
             state.transform.offsetX - scaledWidth / 2,
@@ -1716,9 +1746,11 @@
             scaledWidth,
             scaledHeight
         );
-        
+
         ctx.restore();
-        
+
+        console.log('Image drawn to canvas successfully');
+
         lastCanvasState = canvas.toDataURL('image/jpeg', 1.0);
         runComplianceChecks();
     }
