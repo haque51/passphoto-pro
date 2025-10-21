@@ -2065,43 +2065,44 @@
     function populateDropdowns() {
         requirementsData = {
             'US': {
-                'passport': { width: 2, height: 2, unit: 'inches', bgColor: 'white', faceHeightMin: 50, faceHeightMax: 69 },
-                'visa': { width: 2, height: 2, unit: 'inches', bgColor: 'white', faceHeightMin: 50, faceHeightMax: 69 }
+                'passport': { name: 'U.S. Passport Photo', widthPx: 600, heightPx: 600, headHeightMinPercent: 50, headHeightMaxPercent: 69, eyeToBottomMinPercent: 56, eyeToBottomMaxPercent: 69, background: '#FFFFFF', backgroundName: 'white' },
+                'visa': { name: 'U.S. Visa Photo', widthPx: 600, heightPx: 600, headHeightMinPercent: 50, headHeightMaxPercent: 69, eyeToBottomMinPercent: 56, eyeToBottomMaxPercent: 69, background: '#FFFFFF', backgroundName: 'white' }
             },
             'UK': {
-                'passport': { width: 35, height: 45, unit: 'mm', bgColor: 'light grey', faceHeightMin: 29, faceHeightMax: 34 },
-                'visa': { width: 35, height: 45, unit: 'mm', bgColor: 'light grey', faceHeightMin: 29, faceHeightMax: 34 }
+                'passport': { name: 'United Kingdom Passport Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 62, headHeightMaxPercent: 75, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 66, background: '#F0F0F0', backgroundName: 'light grey' }
             },
             'Canada': {
-                'passport': { width: 50, height: 70, unit: 'mm', bgColor: 'white', faceHeightMin: 31, faceHeightMax: 36 },
-                'visa': { width: 35, height: 45, unit: 'mm', bgColor: 'white', faceHeightMin: 31, faceHeightMax: 36 }
+                'passport': { name: 'Canadian Passport Photo', widthPx: 590, heightPx: 827, headHeightMinPercent: 50, headHeightMaxPercent: 70, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 70, background: '#FFFFFF', backgroundName: 'white' },
+                'visa': { name: 'Canadian Visa Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 62, headHeightMaxPercent: 75, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 66, background: '#FFFFFF', backgroundName: 'white' }
             },
             'Germany': {
-                'passport': { width: 35, height: 45, unit: 'mm', bgColor: 'white', faceHeightMin: 32, faceHeightMax: 36 },
-                'visa': { width: 35, height: 45, unit: 'mm', bgColor: 'white', faceHeightMin: 32, faceHeightMax: 36 }
+                'passport': { name: 'German Passport Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 70, headHeightMaxPercent: 80, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 68, background: '#E8E8E8', backgroundName: 'light grey' }
             },
             'France': {
-                'passport': { width: 35, height: 45, unit: 'mm', bgColor: 'light grey', faceHeightMin: 32, faceHeightMax: 36 },
-                'visa': { width: 35, height: 45, unit: 'mm', bgColor: 'light grey', faceHeightMin: 32, faceHeightMax: 36 }
+                'passport': { name: 'French Passport Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 70, headHeightMaxPercent: 80, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 68, background: '#E8E8E8', backgroundName: 'light grey' }
             },
             'India': {
-                'passport': { width: 35, height: 35, unit: 'mm', bgColor: 'white', faceHeightMin: 25, faceHeightMax: 35 },
-                'visa': { width: 51, height: 51, unit: 'mm', bgColor: 'white', faceHeightMin: 25, faceHeightMax: 35 }
+                'passport': { name: 'Indian Passport Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 70, headHeightMaxPercent: 80, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 68, background: '#FFFFFF', backgroundName: 'white' },
+                'visa': { name: 'Indian Visa Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 70, headHeightMaxPercent: 80, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 68, background: '#FFFFFF', backgroundName: 'white' }
             }
         };
-        
-        countrySelect.innerHTML = Object.keys(requirementsData).map(country => 
+
+        countrySelect.innerHTML = Object.keys(requirementsData).map(country =>
             `<option value="${country}">${country}</option>`
         ).join('');
-        
+
         updateDocTypes();
     }
 
     function updateDocTypes() {
         const country = countrySelect.value;
-        docTypeSelect.innerHTML = Object.keys(requirementsData[country] || {}).map(doc => 
-            `<option value="${doc}">${doc.charAt(0).toUpperCase() + doc.slice(1)}</option>`
-        ).join('');
+        const docs = requirementsData[country] || {};
+
+        docTypeSelect.innerHTML = Object.keys(docs).map(docCode => {
+            const docData = docs[docCode];
+            return `<option value="${docCode}">${docData.name || docCode.charAt(0).toUpperCase() + docCode.slice(1)}</option>`;
+        }).join('');
+
         state.currentCountry = country;
         state.currentDoc = docTypeSelect.value;
         updateOverlayMask();
