@@ -346,9 +346,8 @@
 
         /* Canvas Guides Enhancement */
         .canvas-guide-visible {
-            stroke: rgba(59, 130, 246, 0.9);
-            stroke-width: 1.5;
-            filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.5));
+            /* stroke color is set dynamically by updateGuideColors() */
+            filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.3));
         }
 
         /* Loading Skeleton */
@@ -941,11 +940,11 @@
                                             <!-- Enhanced Overlay Mask -->
                                             <svg id="overlay-mask" class="overlay-mask" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                                                 <!-- Center vertical line -->
-                                                <line id="center-line" x1="50" y1="15" x2="50" y2="85" stroke="rgba(59, 130, 246, 0.8)" stroke-width="0.8" stroke-dasharray="3 3" class="canvas-guide-visible" />
+                                                <line id="center-line" x1="50" y1="15" x2="50" y2="85" stroke-width="0.8" stroke-dasharray="3 3" class="canvas-guide-visible" />
                                                 <!-- Eye level horizontal line -->
-                                                <line id="eye-line" x1="20" y1="48" x2="80" y2="48" stroke="rgba(59, 130, 246, 0.9)" stroke-width="1" class="canvas-guide-visible" />
+                                                <line id="eye-line" x1="20" y1="48" x2="80" y2="48" stroke-width="1" class="canvas-guide-visible" />
                                                 <!-- Head oval guide -->
-                                                <ellipse id="head-oval" cx="50" cy="50" rx="26" ry="36" fill="none" stroke="rgba(59, 130, 246, 0.7)" stroke-width="1" stroke-dasharray="4 3" class="canvas-guide-visible" />
+                                                <ellipse id="head-oval" cx="50" cy="50" rx="26" ry="36" fill="none" stroke-width="1" stroke-dasharray="4 3" class="canvas-guide-visible" />
                                             </svg>
                                         </div>
                                         <!-- Guides Toggle Button -->
@@ -1466,6 +1465,7 @@
                 loadingSubText.textContent = 'Loading country requirements...';
                 populateDropdowns();
                 updateOverlayMask();
+                updateGuideColors(); // Initialize guide colors
                 updateProgress(100);
                 hideLoading();
             }).catch(err => {
@@ -1936,14 +1936,14 @@
 
         if (!state.image || !state.faceData) {
             renderComplianceChecklist({});
-            updateOverlayMask(); // Reset to default colors
+            updateGuideColors(); // Reset to default colors
             return;
         }
 
         const requirements = getCurrentRequirements();
         if (!requirements) {
             renderComplianceChecklist({});
-            updateOverlayMask();
+            updateGuideColors();
             return;
         }
 
@@ -2074,7 +2074,7 @@
 
         state.complianceResults = results;
         renderComplianceChecklist(results);
-        updateOverlayMask(); // Update overlay colors based on compliance
+        updateGuideColors(); // Update overlay colors based on compliance
     }
 
     function renderComplianceChecklist(results) {
@@ -2185,60 +2185,45 @@
         runComplianceChecks();
     });
 
-    function updateOverlayMask() {
-        const centerLine = document.getElementById('center-line');
-        const eyeLine = document.getElementById('eye-line');
+    function updateGuideColors() {
+        const headSizeResult = state.complianceResults?.headSize;
+        const eyePositionResult = state.complianceResults?.eyePosition;
+        const centeringResult = state.complianceResults?.centering;
+
+        const passColor = 'rgb(16, 185, 129)'; // Green
+        const failColor = 'rgb(239, 68, 68)'; // Red
+        const defaultColor = 'rgba(255, 255, 255, 0.7)'; // White
+
         const headOval = document.getElementById('head-oval');
+        const eyeLine = document.getElementById('eye-line');
+        const centerLine = document.getElementById('center-line');
 
-        console.log('updateOverlayMask called');
-        console.log('state.complianceResults:', state.complianceResults);
-        console.log('state.faceData:', state.faceData);
+        console.log('updateGuideColors called');
+        console.log('headSize:', headSizeResult);
+        console.log('eyePosition:', eyePositionResult);
+        console.log('centering:', centeringResult);
 
-        if (!state.complianceResults || !state.faceData) {
-            console.log('No compliance data - using blue');
-            // No compliance data yet - use default blue color
-            if (centerLine) centerLine.setAttribute('stroke', 'rgba(59, 130, 246, 0.8)');
-            if (eyeLine) eyeLine.setAttribute('stroke', 'rgba(59, 130, 246, 0.9)');
-            if (headOval) headOval.setAttribute('stroke', 'rgba(59, 130, 246, 0.7)');
-            return;
-        }
-
-        const results = state.complianceResults;
-
-        // Green for pass, red for fail
-        const passColor = 'rgba(16, 185, 129, 0.9)'; // Green
-        const failColor = 'rgba(239, 68, 68, 0.9)'; // Red
-        const defaultColor = 'rgba(59, 130, 246, 0.8)'; // Blue
-
-        console.log('Centering result:', results.centering);
-        console.log('Eye position result:', results.eyePosition);
-        console.log('Head size result:', results.headSize);
-
-        // Update center line based on centering compliance
-        if (centerLine) {
-            const color = results.centering?.pass ? passColor : (results.centering ? failColor : defaultColor);
-            console.log('Setting center line color to:', color);
-            centerLine.style.stroke = color;
-            centerLine.style.strokeWidth = results.centering?.pass ? '1.2' : '0.8';
-        }
-
-        // Update eye line based on eye position compliance
-        if (eyeLine) {
-            const color = results.eyePosition?.pass ? passColor : (results.eyePosition ? failColor : defaultColor);
-            console.log('Setting eye line color to:', color);
-            eyeLine.style.stroke = color;
-            eyeLine.style.strokeWidth = results.eyePosition?.pass ? '1.5' : '1';
-        }
-
-        // Update head oval based on head size compliance
         if (headOval) {
-            const color = results.headSize?.pass ? passColor : (results.headSize ? failColor : defaultColor);
-            console.log('Setting head oval color to:', color);
+            const color = headSizeResult ? (headSizeResult.pass ? passColor : failColor) : defaultColor;
             headOval.style.stroke = color;
-            headOval.style.strokeWidth = results.headSize?.pass ? '1.5' : '1';
+            console.log('headOval color set to:', color);
         }
+        if (eyeLine) {
+            const color = eyePositionResult ? (eyePositionResult.pass ? passColor : failColor) : defaultColor;
+            eyeLine.style.stroke = color;
+            console.log('eyeLine color set to:', color);
+        }
+        if (centerLine) {
+            const color = centeringResult ? (centeringResult.pass ? passColor : failColor) : defaultColor;
+            centerLine.style.stroke = color;
+            console.log('centerLine color set to:', color);
+        }
+    }
 
-        console.log('Overlay mask updated with compliance colors');
+    function updateOverlayMask() {
+        // This function only handles overlay positioning, not colors
+        // Colors are handled by updateGuideColors() based on compliance results
+        console.log('updateOverlayMask called - no color changes here');
     }
 
     // ========== PAYMENT ==========
