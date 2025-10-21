@@ -1549,28 +1549,28 @@
     zoomSlider.addEventListener('input', (e) => {
         state.transform.scaleMultiplier = parseFloat(e.target.value);
         zoomValue.textContent = `${Math.round(state.transform.scaleMultiplier * 100)}%`;
-        renderCanvas();
+        drawCanvas();
     });
     zoomSlider.addEventListener('change', runComplianceChecks);
 
     brightnessSlider.addEventListener('input', (e) => {
         state.filters.brightness = parseInt(e.target.value);
         brightnessValue.textContent = `${state.filters.brightness}%`;
-        renderCanvas();
+        drawCanvas();
     });
     brightnessSlider.addEventListener('change', runComplianceChecks);
 
     contrastSlider.addEventListener('input', (e) => {
         state.filters.contrast = parseInt(e.target.value);
         contrastValue.textContent = `${state.filters.contrast}%`;
-        renderCanvas();
+        drawCanvas();
     });
     contrastSlider.addEventListener('change', runComplianceChecks);
 
     rotationSlider.addEventListener('input', (e) => {
         state.transform.rotation = parseInt(e.target.value);
         rotationValue.textContent = `${state.transform.rotation}°`;
-        renderCanvas();
+        drawCanvas();
     });
     rotationSlider.addEventListener('change', runComplianceChecks);
 
@@ -1591,7 +1591,7 @@
         rotationSlider.value = 0;
         rotationValue.textContent = '0°';
         
-        renderCanvas();
+        drawCanvas();
     });
 
     // ========== IMAGE UPLOAD ==========
@@ -1650,7 +1650,7 @@
                 setTimeout(() => {
                     hideLoading();
                     console.log('About to call renderCanvas...');
-                    renderCanvas();
+                    drawCanvas();
                     runComplianceChecks();
                 }, 300);
             };
@@ -1718,44 +1718,41 @@
     }
 
     // ========== CANVAS RENDERING ==========
-    function renderCanvas() {
-        console.log('renderCanvas called');
-
-        if (!state.image) {
-            console.error('renderCanvas: No image in state');
+    function drawCanvas() {
+        if (!state.image) return;
+        const imageIsReady = (state.image instanceof HTMLImageElement && state.image.complete && state.image.naturalHeight !== 0) || (state.image instanceof ImageBitmap);
+        if(!imageIsReady){
+            console.error("drawCanvas called with invalid image");
             return;
         }
 
-        console.log('Canvas size:', canvas.width, 'x', canvas.height);
+        const finalScale = state.baseScale * state.transform.scaleMultiplier;
+        const imageWidth = state.image.naturalWidth || state.image.width;
+        const imageHeight = state.image.naturalHeight || state.image.height;
 
-        const totalScale = state.baseScale * state.transform.scaleMultiplier;
-        const scaledWidth = state.image.width * totalScale;
-        const scaledHeight = state.image.height * totalScale;
-
-        console.log('Drawing image:', state.image.width, 'x', state.image.height, 'at scale:', totalScale);
-
-        ctx.save();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate((state.transform.rotation * Math.PI) / 180);
-
         ctx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
 
-        ctx.drawImage(
-            state.image,
-            state.transform.offsetX - scaledWidth / 2,
-            state.transform.offsetY - scaledHeight / 2,
-            scaledWidth,
-            scaledHeight
-        );
+        ctx.save();
+
+        const imgCenterX = state.transform.offsetX + (imageWidth * finalScale) / 2;
+        const imgCenterY = state.transform.offsetY + (imageHeight * finalScale) / 2;
+
+        ctx.translate(imgCenterX, imgCenterY);
+        ctx.rotate(state.transform.rotation * Math.PI / 180);
+        ctx.translate(-imgCenterX, -imgCenterY);
+
+        ctx.translate(state.transform.offsetX, state.transform.offsetY);
+        ctx.scale(finalScale, finalScale);
+        ctx.drawImage(state.image, 0, 0);
 
         ctx.restore();
+        ctx.filter = 'none';
+        setTimeout(captureCanvasState, 50);
+    }
 
-        console.log('Image drawn to canvas successfully');
-
+    function captureCanvasState() {
         lastCanvasState = canvas.toDataURL('image/jpeg', 1.0);
-        runComplianceChecks();
     }
 
     // ========== CANVAS DRAG ==========
@@ -1783,7 +1780,7 @@
         const pos = getEventPos(e);
         state.transform.offsetX = pos.x - state.dragStart.x;
         state.transform.offsetY = pos.y - state.dragStart.y;
-        renderCanvas();
+        drawCanvas();
     }
 
     function endDrag() {
@@ -1895,7 +1892,7 @@
                 // Wait a bit for initCanvas to complete, then render
                 setTimeout(() => {
                     console.log('Calling renderCanvas after AI adjustment...');
-                    renderCanvas();
+                    drawCanvas();
                     runComplianceChecks();
 
                     updateProgress(100);
@@ -2226,7 +2223,7 @@
                     state.currentDoc = parsed.currentDoc;
                     
                     initCanvas();
-                    renderCanvas();
+                    drawCanvas();
                     navigateTo('download');
                 };
                 img.src = originalImageData;
