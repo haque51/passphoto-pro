@@ -1930,205 +1930,136 @@
 
     // ========== COMPLIANCE CHECKS ==========
     function runComplianceChecks() {
-        console.log('=== runComplianceChecks called ===');
-        console.log('state.image:', state.image);
-        console.log('state.faceData:', state.faceData);
+        const req = getCurrentRequirements();
 
-        if (!state.image || !state.faceData) {
-            renderComplianceChecklist({});
-            updateGuideColors(); // Reset to default colors
+        if (!req) {
+            console.error('Compliance check called with invalid state:', state.currentCountry, state.currentDoc);
+            complianceChecklist.innerHTML = `<li class="text-center text-red-500">An error occurred. Please re-select your document.</li>`;
             return;
         }
 
-        const requirements = getCurrentRequirements();
-        if (!requirements) {
-            renderComplianceChecklist({});
+        if (!state.faceData || !state.faceData.landmarks) {
+            state.complianceResults = { 'face': { pass: false, message: 'Could not detect facial features. Try a clearer, front-facing photo.' } };
+            updateComplianceUI();
             updateGuideColors();
             return;
         }
 
         const results = {};
-        const landmarks = state.faceData.landmarks;
-        const faceBox = state.faceData.detection.box;
-
-        console.log('Face box (image space):', faceBox);
-        console.log('state.baseScale:', state.baseScale);
-        console.log('state.transform.scaleMultiplier:', state.transform.scaleMultiplier);
-        console.log('state.transform.offset:', { x: state.transform.offsetX, y: state.transform.offsetY });
-        console.log('canvas dimensions:', { width: canvas.width, height: canvas.height });
-
-        // Face detected
-        results.faceDetected = { pass: true, message: 'Face detected successfully' };
-
-        // Calculate transformation from image coordinates to canvas coordinates
         const finalScale = state.baseScale * state.transform.scaleMultiplier;
-        const imageWidth = state.image.width || state.image.naturalWidth;
-        const imageHeight = state.image.height || state.image.naturalHeight;
 
-        console.log('Image dimensions:', { width: imageWidth, height: imageHeight });
-        console.log('Final scale:', finalScale);
+        const landmarks = state.faceData.landmarks;
+        const getPoint = (index) => {
+            const pt = landmarks.positions[index];
+            const scale = finalScale;
+            const rotation = state.transform.rotation * Math.PI / 180;
 
-        // Helper function to transform image coordinates to canvas coordinates
-        // NOTE: Canvas uses centered coordinate system (ctx.translate to center)
-        function imageToCanvas(x, y) {
-            const scaledX = x * finalScale;
-            const scaledY = y * finalScale;
-            const scaledWidth = imageWidth * finalScale;
-            const scaledHeight = imageHeight * finalScale;
+            let x = pt.x * scale;
+            let y = pt.y * scale;
 
-            // Position of top-left of image in the centered coordinate system
-            const imageLeft = state.transform.offsetX - scaledWidth / 2;
-            const imageTop = state.transform.offsetY - scaledHeight / 2;
+            if (rotation !== 0) {
+                const centerX = (state.image.naturalWidth * scale) / 2;
+                const centerY = (state.image.naturalHeight * scale) / 2;
+                const cosR = Math.cos(rotation);
+                const sinR = Math.sin(rotation);
 
-            // Transform to canvas coordinates (centered system, so add canvas.width/2)
-            const canvasX = canvas.width / 2 + imageLeft + scaledX;
-            const canvasY = canvas.height / 2 + imageTop + scaledY;
+                const rotatedX = centerX + (x - centerX) * cosR - (y - centerY) * sinR;
+                const rotatedY = centerY + (x - centerX) * sinR + (y - centerY) * cosR;
+                x = rotatedX;
+                y = rotatedY;
+            }
 
-            console.log(`imageToCanvas(${x.toFixed(1)}, ${y.toFixed(1)}) => canvas(${canvasX.toFixed(1)}, ${canvasY.toFixed(1)})`);
-            return { x: canvasX, y: canvasY };
+            return {
+                x: x + state.transform.offsetX,
+                y: y + state.transform.offsetY
+            };
+        };
+
+        const chin = getPoint(8);
+        const nose = getPoint(30);
+        const leftEye = getPoint(39);
+        const rightEye = getPoint(42);
+        const eyeCenterY = (leftEye.y + rightEye.y) / 2;
+
+        const chinToEyeHeight = chin.y - eyeCenterY;
+        const headHeightPx = chinToEyeHeight * 2;
+        const headHeightPercent = (headHeightPx / canvas.height) * 100;
+
+        if (headHeightPercent >= req.headHeightMinPercent && headHeightPercent <= req.headHeightMaxPercent) {
+            results.headSize = { pass: true, message: `Head size is ${headHeightPercent.toFixed(0)}% (within ${req.headHeightMinPercent}-${req.headHeightMaxPercent}%)` };
+        } else {
+            results.headSize = { pass: false, message: `Head size is ${headHeightPercent.toFixed(0)}%. Should be ${req.headHeightMinPercent}-${req.headHeightMaxPercent}%. Use zoom.` };
         }
 
-        // Face size check (for head oval) - use canvas space
-        // NOTE: Oval guide is 72% of canvas height (ry=36 in viewBox 100)
-        // Face detection box is typically smaller than full head, so we check for 50-70%
-        const faceBoxCanvas = imageToCanvas(faceBox.x, faceBox.y);
-        const faceHeightCanvas = faceBox.height * finalScale;
-        const faceHeightRatio = faceHeightCanvas / canvas.height;
-        const minFaceSize = 0.50;  // Face should be at least 50% of canvas
-        const maxFaceSize = 0.70;  // Face should be at most 70% of canvas
+        if (req.eyeToBottomMinPercent) {
+             const eyeLevelPercent = ((canvas.height - eyeCenterY) / canvas.height) * 100;
 
-        console.log('HEAD SIZE CHECK:');
-        console.log('  faceBox.height (image):', faceBox.height);
-        console.log('  faceHeightCanvas:', faceHeightCanvas);
-        console.log('  canvas.height:', canvas.height);
-        console.log('  faceHeightRatio:', faceHeightRatio);
-        console.log('  min/max:', minFaceSize, '/', maxFaceSize);
-        console.log('  Pass?', faceHeightRatio >= minFaceSize && faceHeightRatio <= maxFaceSize);
+             if (eyeLevelPercent >= req.eyeToBottomMinPercent && eyeLevelPercent <= req.eyeToBottomMaxPercent) {
+                results.eyePosition = { pass: true, message: `Eye-level is correct.` };
+             } else {
+                results.eyePosition = { pass: false, message: `Eye-level is incorrect. Drag photo to align eyes with the guide.` };
+             }
+        }
 
-        results.headSize = {
-            pass: faceHeightRatio >= minFaceSize && faceHeightRatio <= maxFaceSize,
-            message: faceHeightRatio < minFaceSize ? 'Face too small - zoom in' : faceHeightRatio > maxFaceSize ? 'Face too large - zoom out' : 'Face size is optimal'
-        };
-
-        console.log('  Message:', results.headSize.message);
-
-        // Centering check (for center line) - convert to canvas space
-        const noseTip = landmarks.getNose()[3]; // Bottom of nose in image coordinates
-        const noseTipCanvas = imageToCanvas(noseTip.x, noseTip.y);
+        const faceCenterX = nose.x;
         const canvasCenterX = canvas.width / 2;
-        const horizontalDeviation = Math.abs(noseTipCanvas.x - canvasCenterX);
-        const maxDeviation = canvas.width * 0.08; // 8% tolerance
+        const deviation = Math.abs(faceCenterX - canvasCenterX) / canvas.width * 100;
+        if(deviation < 10) {
+            results.centering = { pass: true, message: 'Face is well-centered.' };
+        } else {
+            results.centering = { pass: false, message: 'Face is off-center. Drag photo to center it.' };
+        }
 
-        console.log('Centering check:', {
-            noseTipImageX: noseTip.x,
-            noseTipCanvasX: noseTipCanvas.x,
-            canvasCenterX: canvasCenterX,
-            deviation: horizontalDeviation,
-            maxDeviation: maxDeviation,
-            pass: horizontalDeviation < maxDeviation
-        });
+        results.background = { pass: true, message: `Background will be replaced with ${req.backgroundName}.` };
 
-        results.centering = {
-            pass: horizontalDeviation < maxDeviation,
-            message: horizontalDeviation >= maxDeviation ? 'Face not centered - move left/right' : 'Face is well-centered'
-        };
-
-        // Eye position check (for eye line) - convert to canvas space
-        const leftEye = landmarks.getLeftEye();
-        const rightEye = landmarks.getRightEye();
-        const leftEyeCanvas = imageToCanvas(leftEye[0].x, leftEye[0].y);
-        const rightEyeCanvas = imageToCanvas(rightEye[0].x, rightEye[0].y);
-        const eyeCenterYCanvas = (leftEyeCanvas.y + rightEyeCanvas.y) / 2;
-        const idealEyeY = canvas.height * 0.48; // Eyes should be at ~48% from top
-        const eyeDeviation = Math.abs(eyeCenterYCanvas - idealEyeY);
-        const maxEyeDeviation = canvas.height * 0.10; // 10% tolerance
-
-        console.log('EYE POSITION CHECK:');
-        console.log('  eyeCenterYCanvas:', eyeCenterYCanvas);
-        console.log('  idealEyeY:', idealEyeY);
-        console.log('  eyeDeviation:', eyeDeviation);
-        console.log('  maxEyeDeviation:', maxEyeDeviation);
-        console.log('  eyeCenterYCanvas as % of canvas:', (eyeCenterYCanvas / canvas.height * 100).toFixed(1) + '%');
-        console.log('  Pass?', eyeDeviation < maxEyeDeviation);
-
-        results.eyePosition = {
-            pass: eyeDeviation < maxEyeDeviation,
-            message: eyeDeviation >= maxEyeDeviation ?
-                (eyeCenterYCanvas < idealEyeY ? 'Eyes too high - move down' : 'Eyes too low - move up') :
-                'Eye position is correct'
-        };
-
-        console.log('  Message:', results.eyePosition.message);
-
-        // Brightness check
-        results.brightness = {
-            pass: state.filters.brightness >= 90 && state.filters.brightness <= 110,
-            message: state.filters.brightness < 90 ? 'Photo too dark' : state.filters.brightness > 110 ? 'Photo too bright' : 'Brightness is good'
-        };
-
-        // Alignment check (simplified)
-        results.alignment = {
-            pass: Math.abs(state.transform.rotation) < 5,
-            message: Math.abs(state.transform.rotation) >= 5 ? 'Head not straight - adjust rotation' : 'Head alignment looks good'
-        };
+        const mouthOpen = (getPoint(66).y - getPoint(62).y) > 5;
+        if (!mouthOpen) {
+            results.expression = { pass: true, message: 'Neutral expression, mouth closed.' };
+        } else {
+            results.expression = { pass: false, message: 'Mouth appears to be open. A neutral expression is required.' };
+        }
 
         state.complianceResults = results;
-        renderComplianceChecklist(results);
-        updateGuideColors(); // Update overlay colors based on compliance
+        updateComplianceUI();
+        updateGuideColors();
     }
 
-    function renderComplianceChecklist(results) {
-        const checks = [
-            { key: 'faceDetected', label: 'Face Detection', icon: '👤' },
-            { key: 'headSize', label: 'Head Size', icon: '📏' },
-            { key: 'centering', label: 'Centered', icon: '🎯' },
-            { key: 'eyePosition', label: 'Eye Position', icon: '👁️' },
-            { key: 'brightness', label: 'Brightness', icon: '💡' },
-            { key: 'alignment', label: 'Alignment', icon: '📐' },
-        ];
-        
-        let passCount = 0;
-        let totalCount = checks.length;
-        
-        complianceChecklist.innerHTML = checks.map(check => {
-            const result = results[check.key];
-            const pass = result?.pass ?? false;
-            if (pass) passCount++;
-            
-            const statusClass = result ? (pass ? 'compliance-pass' : 'compliance-fail') : 'compliance-pending';
-            const statusIcon = result ? (pass ? '✓' : '✗') : '○';
-            const message = result?.message || 'Checking...';
-            
-            return `
-                <div class="flex items-start justify-between p-3 bg-gray-700/30 rounded-lg transition-all hover:bg-gray-700/50">
-                    <div class="flex items-start flex-1">
-                        <span class="text-lg mr-3">${check.icon}</span>
-                        <div class="flex-1">
-                            <div class="font-semibold text-white text-sm">${check.label}</div>
-                            <div class="text-xs ${statusClass} mt-0.5">${message}</div>
-                        </div>
-                    </div>
-                    <span class="text-xl ml-2 ${statusClass}">${statusIcon}</span>
+    function updateComplianceUI() {
+        complianceChecklist.innerHTML = '';
+        let allPass = true;
+
+        if (Object.keys(state.complianceResults).length === 0) {
+             complianceChecklist.innerHTML = `<li class="text-center text-gray-500">Analyzing...</li>`;
+             nextToPaymentBtn.disabled = true;
+             return;
+        }
+
+        for (const [key, result] of Object.entries(state.complianceResults)) {
+            const li = document.createElement('li');
+            li.className = 'flex items-start space-x-2 md:space-x-3';
+            const iconClass = result.pass ? 'compliance-pass' : 'compliance-fail';
+            const iconPath = result.pass
+                ? 'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
+                : 'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z';
+
+            const titles = {
+                face: 'Face Detection', headSize: 'Head Size', eyePosition: 'Eye Position', centering: 'Centering', background: 'Background', expression: 'Expression'
+            };
+            const title = titles[key] || 'Check';
+
+            li.innerHTML = `
+                <div class="w-5 h-5 pt-1 flex-shrink-0"><svg class="w-full h-full ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="${iconPath}" clip-rule="evenodd"></path></svg></div>
+                <div>
+                    <h4 class="font-medium text-gray-200 text-sm md:text-base">${title}</h4>
+                    <p class="text-xs md:text-sm text-gray-400">${result.message}</p>
                 </div>
             `;
-        }).join('');
-        
-        // Update progress bar
-        const percentage = Math.round((passCount / totalCount) * 100);
-        complianceProgress.style.width = `${percentage}%`;
-        compliancePercentage.textContent = `${percentage}%`;
-        
-        // Enable/disable next button
-        const allPassed = passCount === totalCount;
-        nextToPaymentBtn.disabled = !allPassed;
-        
-        if (allPassed) {
-            nextToPaymentBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            nextToPaymentBtn.classList.add('pulse-animation');
-        } else {
-            nextToPaymentBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            nextToPaymentBtn.classList.remove('pulse-animation');
+            complianceChecklist.appendChild(li);
+
+            if (!result.pass) allPass = false;
         }
+
+        nextToPaymentBtn.disabled = !allPass;
     }
 
     // ========== COUNTRY/DOCUMENT SELECTION ==========
