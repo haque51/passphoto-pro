@@ -940,11 +940,11 @@
                                             <!-- Enhanced Overlay Mask -->
                                             <svg id="overlay-mask" class="overlay-mask" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                                                 <!-- Center vertical line -->
-                                                <line id="center-line" x1="50" y1="15" x2="50" y2="85" stroke-width="0.8" stroke-dasharray="3 3" class="canvas-guide-visible" />
+                                                <line id="center-line" x1="50" y1="15" x2="50" y2="85" stroke="rgba(255,255,255,0.7)" stroke-width="0.8" stroke-dasharray="3 3" />
                                                 <!-- Eye level horizontal line -->
-                                                <line id="eye-line" x1="20" y1="48" x2="80" y2="48" stroke-width="1" class="canvas-guide-visible" />
+                                                <line id="eye-line" x1="20" y1="48" x2="80" y2="48" stroke="rgba(255,255,255,0.7)" stroke-width="1" />
                                                 <!-- Head oval guide -->
-                                                <ellipse id="head-oval" cx="50" cy="50" rx="26" ry="36" fill="none" stroke-width="1" stroke-dasharray="4 3" class="canvas-guide-visible" />
+                                                <ellipse id="head-oval" cx="50" cy="50" rx="26" ry="36" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1" stroke-dasharray="4 3" />
                                             </svg>
                                         </div>
                                         <!-- Guides Toggle Button -->
@@ -1465,7 +1465,6 @@
                 loadingSubText.textContent = 'Loading country requirements...';
                 populateDropdowns();
                 updateOverlayMask();
-                updateGuideColors(); // Initialize guide colors
                 updateProgress(100);
                 hideLoading();
             }).catch(err => {
@@ -2117,44 +2116,50 @@
     });
 
     function updateGuideColors() {
-        const headSizeResult = state.complianceResults?.headSize;
-        const eyePositionResult = state.complianceResults?.eyePosition;
-        const centeringResult = state.complianceResults?.centering;
+        const headSizeResult = state.complianceResults.headSize;
+        const eyePositionResult = state.complianceResults.eyePosition;
+        const centeringResult = state.complianceResults.centering;
 
-        const passColor = 'rgb(16, 185, 129)'; // Green
-        const failColor = 'rgb(239, 68, 68)'; // Red
-        const defaultColor = 'rgba(255, 255, 255, 0.7)'; // White
+        const passColor = '#10b981';
+        const failColor = '#ef4444';
+        const defaultColor = 'rgba(255, 255, 255, 0.7)';
 
         const headOval = document.getElementById('head-oval');
         const eyeLine = document.getElementById('eye-line');
         const centerLine = document.getElementById('center-line');
 
-        console.log('updateGuideColors called');
-        console.log('headSize:', headSizeResult);
-        console.log('eyePosition:', eyePositionResult);
-        console.log('centering:', centeringResult);
-
-        if (headOval) {
-            const color = headSizeResult ? (headSizeResult.pass ? passColor : failColor) : defaultColor;
-            headOval.style.stroke = color;
-            console.log('headOval color set to:', color);
-        }
-        if (eyeLine) {
-            const color = eyePositionResult ? (eyePositionResult.pass ? passColor : failColor) : defaultColor;
-            eyeLine.style.stroke = color;
-            console.log('eyeLine color set to:', color);
-        }
-        if (centerLine) {
-            const color = centeringResult ? (centeringResult.pass ? passColor : failColor) : defaultColor;
-            centerLine.style.stroke = color;
-            console.log('centerLine color set to:', color);
-        }
+        headOval.style.stroke = headSizeResult ? (headSizeResult.pass ? passColor : failColor) : defaultColor;
+        eyeLine.style.stroke = eyePositionResult ? (eyePositionResult.pass ? passColor : failColor) : defaultColor;
+        centerLine.style.stroke = centeringResult ? (centeringResult.pass ? passColor : failColor) : defaultColor;
     }
 
     function updateOverlayMask() {
-        // This function only handles overlay positioning, not colors
-        // Colors are handled by updateGuideColors() based on compliance results
-        console.log('updateOverlayMask called - no color changes here');
+        const req = getCurrentRequirements();
+        if (!req) return;
+
+        const eyeLineEl = document.getElementById('eye-line');
+        const headOvalEl = document.getElementById('head-oval');
+        const centerLineEl = document.getElementById('center-line');
+
+        const headHeightIdeal = (req.headHeightMinPercent + req.headHeightMaxPercent) / 2;
+        const eyeToBottomIdeal = req.eyeToBottomMinPercent ? (req.eyeToBottomMinPercent + req.eyeToBottomMaxPercent) / 2 : 50;
+
+        const eyeLineY = 100 - eyeToBottomIdeal;
+        const headCenterY = eyeLineY + (headHeightIdeal * 0.05);
+
+        const ovalRy = headHeightIdeal / 2;
+        const ovalRx = ovalRy * 0.75;
+
+        eyeLineEl.setAttribute('y1', eyeLineY);
+        eyeLineEl.setAttribute('y2', eyeLineY);
+        headOvalEl.setAttribute('cy', headCenterY);
+        headOvalEl.setAttribute('ry', ovalRy);
+        headOvalEl.setAttribute('rx', ovalRx);
+
+        const defaultColor = 'rgba(255, 255, 255, 0.7)';
+        centerLineEl.style.stroke = defaultColor;
+        eyeLineEl.style.stroke = defaultColor;
+        headOvalEl.style.stroke = defaultColor;
     }
 
     // ========== PAYMENT ==========
