@@ -2285,7 +2285,8 @@
             transform: state.transform,
             filters: state.filters,
             currentCountry: state.currentCountry,
-            currentDoc: state.currentDoc
+            currentDoc: state.currentDoc,
+            baseScale: state.baseScale
         };
         localStorage.setItem('photoState', JSON.stringify(stateToSave));
         console.log('State saved to localStorage');
@@ -2356,27 +2357,45 @@
             if (savedState) {
                 const parsed = JSON.parse(savedState);
                 originalImageData = parsed.originalImageData;
-                
+
                 const img = new Image();
                 img.onload = () => {
                     state.image = img;
+
+                    // Set canvas size without resetting transform
+                    const container = canvasContainer;
+                    const size = Math.min(container.clientWidth, container.clientHeight);
+                    canvas.width = size;
+                    canvas.height = size;
+
+                    // Restore all saved state including baseScale
                     state.transform = parsed.transform;
                     state.filters = parsed.filters;
                     state.currentCountry = parsed.currentCountry;
                     state.currentDoc = parsed.currentDoc;
-                    
-                    initCanvas();
+                    state.baseScale = parsed.baseScale;
+
+                    // Update UI sliders to match restored state
+                    zoomSlider.value = state.transform.scaleMultiplier;
+                    zoomValue.textContent = `${Math.round(state.transform.scaleMultiplier * 100)}%`;
+                    brightnessSlider.value = state.filters.brightness;
+                    brightnessValue.textContent = `${state.filters.brightness}%`;
+                    contrastSlider.value = state.filters.contrast;
+                    contrastValue.textContent = `${state.filters.contrast}%`;
+                    rotationSlider.value = state.transform.rotation;
+                    rotationValue.textContent = `${state.transform.rotation.toFixed(1)}°`;
+
                     drawCanvas();
                     navigateTo('download');
                 };
                 img.src = originalImageData;
-                
+
                 localStorage.removeItem('photoState');
             }
         }, 1000);
     }
 
-    // Save state before payment
+    // Save state before payment (backup in case of unexpected page reload)
     window.addEventListener('beforeunload', () => {
         if (!state.paymentVerified && originalImageData) {
             localStorage.setItem('photoState', JSON.stringify({
@@ -2384,7 +2403,8 @@
                 transform: state.transform,
                 filters: state.filters,
                 currentCountry: state.currentCountry,
-                currentDoc: state.currentDoc
+                currentDoc: state.currentDoc,
+                baseScale: state.baseScale
             }));
         }
     });
