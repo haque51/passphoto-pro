@@ -2125,13 +2125,6 @@
 
         results.background = { pass: true, message: `Background will be replaced with ${req.backgroundName}.` };
 
-        const mouthOpen = (getPoint(66).y - getPoint(62).y) > 5;
-        if (!mouthOpen) {
-            results.expression = { pass: true, message: 'Neutral expression, mouth closed.' };
-        } else {
-            results.expression = { pass: false, message: 'Mouth appears to be open. A neutral expression is required.' };
-        }
-
         state.complianceResults = results;
         updateComplianceUI();
         updateGuideColors();
