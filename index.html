@@ -2299,14 +2299,37 @@
         console.log('STRIPE_PUBLISHABLE_KEY exists:', !!STRIPE_PUBLISHABLE_KEY);
         console.log('stripe object exists:', !!stripe);
 
+        // Save current state to localStorage before payment
+        const stateToSave = {
+            originalImageData: originalImageData,
+            transform: state.transform,
+            filters: state.filters,
+            currentCountry: state.currentCountry,
+            currentDoc: state.currentDoc
+        };
+        localStorage.setItem('photoState', JSON.stringify(stateToSave));
+        console.log('State saved to localStorage');
+
         payBtn.disabled = true;
         payBtn.textContent = 'Processing...';
 
         try {
             console.log('Fetching payment session from:', `${API_BASE_URL}/create-payment`);
+
+            const currentUrl = window.location.origin + window.location.pathname;
+            const paymentData = {
+                amount: 499,
+                currency: 'usd',
+                successUrl: `${currentUrl}?success=true`,
+                cancelUrl: `${currentUrl}?cancelled=true`
+            };
+
+            console.log('Payment request data:', paymentData);
+
             const response = await fetch(`${API_BASE_URL}/create-payment`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(paymentData)
             });
 
             console.log('Response status:', response.status);
