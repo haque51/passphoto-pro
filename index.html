@@ -1162,18 +1162,7 @@
                                         <h3 class="text-base md:text-lg font-bold mb-4 text-white flex items-center">
                                             <svg class="w-5 h-5 mr-2 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                             Compliance Check
-                                            <span id="compliance-score" class="ml-auto text-sm font-normal text-gray-400"></span>
                                         </h3>
-                                        <!-- Progress Bar -->
-                                        <div class="mb-4">
-                                            <div class="flex justify-between items-center text-xs text-gray-400 mb-1">
-                                                <span>Compliance Score</span>
-                                                <span id="compliance-percentage">0%</span>
-                                            </div>
-                                            <div class="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
-                                                <div id="compliance-progress" class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-500" style="width: 0%"></div>
-                                            </div>
-                                        </div>
                                         <div id="compliance-checklist" class="space-y-3 text-sm">
                                             <!-- Checklist items will be populated here -->
                                         </div>
@@ -1473,8 +1462,6 @@
     
     const overlayMask = document.getElementById('overlay-mask');
     const complianceChecklist = document.getElementById('compliance-checklist');
-    const complianceProgress = document.getElementById('compliance-progress');
-    const compliancePercentage = document.getElementById('compliance-percentage');
     const nextToPaymentBtn = document.getElementById('next-to-payment-btn');
     const payBtn = document.getElementById('pay-btn');
     const previewCanvas = document.getElementById('preview-canvas');
@@ -2403,32 +2390,37 @@
     });
 
     // ========== DOWNLOADS ==========
-    function generateFinalImage() {
+    async function generateFinalImage() {
         if (!originalImageData) return null;
-        
+
         const finalCanvas = document.createElement('canvas');
         const finalCtx = finalCanvas.getContext('2d');
-        
+
         const requirements = getCurrentRequirements();
         const dpi = 300;
         const widthInches = requirements.width / (requirements.unit === 'mm' ? 25.4 : 1);
         const heightInches = requirements.height / (requirements.unit === 'mm' ? 25.4 : 1);
-        
+
         finalCanvas.width = widthInches * dpi;
         finalCanvas.height = heightInches * dpi;
-        
-        const img = new Image();
-        img.src = originalImageData;
-        
+
+        // Wait for image to load before drawing
+        const img = await new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = () => resolve(image);
+            image.onerror = reject;
+            image.src = originalImageData;
+        });
+
         const totalScale = state.baseScale * state.transform.scaleMultiplier;
         const scaledWidth = img.width * totalScale * (finalCanvas.width / canvas.width);
         const scaledHeight = img.height * totalScale * (finalCanvas.height / canvas.height);
-        
+
         finalCtx.save();
         finalCtx.translate(finalCanvas.width / 2, finalCanvas.height / 2);
         finalCtx.rotate((state.transform.rotation * Math.PI) / 180);
         finalCtx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
-        
+
         finalCtx.drawImage(
             img,
             state.transform.offsetX * (finalCanvas.width / canvas.width) - scaledWidth / 2,
@@ -2436,39 +2428,44 @@
             scaledWidth,
             scaledHeight
         );
-        
+
         finalCtx.restore();
-        
+
         return finalCanvas.toDataURL('image/jpeg', 1.0);
     }
 
-    function generate4x6Sheet() {
-        const singlePhoto = generateFinalImage();
+    async function generate4x6Sheet() {
+        const singlePhoto = await generateFinalImage();
         if (!singlePhoto) return null;
-        
+
         const sheetCanvas = document.createElement('canvas');
         const sheetCtx = sheetCanvas.getContext('2d');
-        
+
         const dpi = 300;
         sheetCanvas.width = 4 * dpi;
         sheetCanvas.height = 6 * dpi;
-        
+
         sheetCtx.fillStyle = 'white';
         sheetCtx.fillRect(0, 0, sheetCanvas.width, sheetCanvas.height);
-        
-        const img = new Image();
-        img.src = singlePhoto;
-        
+
+        // Wait for image to load before drawing
+        const img = await new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = () => resolve(image);
+            image.onerror = reject;
+            image.src = singlePhoto;
+        });
+
         const requirements = getCurrentRequirements();
         const photoWidth = (requirements.width / (requirements.unit === 'mm' ? 25.4 : 1)) * dpi;
         const photoHeight = (requirements.height / (requirements.unit === 'mm' ? 25.4 : 1)) * dpi;
-        
+
         const cols = Math.floor(sheetCanvas.width / photoWidth);
         const rows = Math.floor(sheetCanvas.height / photoHeight);
-        
+
         const marginX = (sheetCanvas.width - (cols * photoWidth)) / 2;
         const marginY = (sheetCanvas.height - (rows * photoHeight)) / 2;
-        
+
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < cols; col++) {
                 sheetCtx.drawImage(
@@ -2480,22 +2477,22 @@
                 );
             }
         }
-        
+
         return sheetCanvas.toDataURL('image/jpeg', 1.0);
     }
 
-    downloadSingleBtn.addEventListener('click', () => {
-        const dataUrl = generateFinalImage();
+    downloadSingleBtn.addEventListener('click', async () => {
+        const dataUrl = await generateFinalImage();
         if (!dataUrl) return;
-        
+
         const link = document.createElement('a');
         link.download = `passport-photo-${state.currentCountry}-${state.currentDoc}.jpg`;
         link.href = dataUrl;
         link.click();
     });
 
-    downloadSheetBtn.addEventListener('click', () => {
-        const dataUrl = generate4x6Sheet();
+    downloadSheetBtn.addEventListener('click', async () => {
+        const dataUrl = await generate4x6Sheet();
         if (!dataUrl) return;
         
         const link = document.createElement('a');
