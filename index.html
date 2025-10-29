@@ -2062,9 +2062,24 @@
         const rightEye = getPoint(42);
         const eyeCenterY = (leftEye.y + rightEye.y) / 2;
 
+        console.log('=== DEBUG COMPLIANCE CALCULATIONS ===');
+        console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
+        console.log('Image dimensions:', state.image.naturalWidth, 'x', state.image.naturalHeight);
+        console.log('finalScale:', finalScale);
+        console.log('baseScale:', state.baseScale);
+        console.log('scaleMultiplier:', state.transform.scaleMultiplier);
+        console.log('offsetX:', state.transform.offsetX, 'offsetY:', state.transform.offsetY);
+        console.log('Chin position (canvas):', chin);
+        console.log('Eye center Y (canvas):', eyeCenterY);
+        console.log('Chin to eye height (px):', chin.y - eyeCenterY);
+
         const chinToEyeHeight = chin.y - eyeCenterY;
         const headHeightPx = chinToEyeHeight * 2;
         const headHeightPercent = (headHeightPx / canvas.height) * 100;
+
+        console.log('headHeightPx:', headHeightPx);
+        console.log('headHeightPercent:', headHeightPercent);
+        console.log('Required range:', req.headHeightMinPercent, '-', req.headHeightMaxPercent);
 
         if (headHeightPercent >= req.headHeightMinPercent && headHeightPercent <= req.headHeightMaxPercent) {
             results.headSize = { pass: true, message: `Head size is ${headHeightPercent.toFixed(0)}% (within ${req.headHeightMinPercent}-${req.headHeightMaxPercent}%)` };
