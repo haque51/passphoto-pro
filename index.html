@@ -1965,10 +1965,27 @@
             console.log('Adjusted image data URL created');
 
             const img = new Image();
-            img.onload = () => {
+            img.onload = async () => {
                 console.log('AI-adjusted image loaded successfully');
                 state.image = img;
                 originalImageData = adjustedImageDataUrl;
+
+                // Re-detect face on the new AI-adjusted image
+                updateProgress(92);
+                loadingSubText.textContent = 'Re-detecting facial features...';
+
+                try {
+                    const detections = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
+
+                    if (detections) {
+                        state.faceData = detections;
+                        console.log('Face re-detected on AI-adjusted image:', detections);
+                    } else {
+                        console.warn('No face detected on AI-adjusted image, keeping old landmarks');
+                    }
+                } catch (error) {
+                    console.error('Face detection error:', error);
+                }
 
                 // Re-initialize canvas with new image
                 console.log('Calling initCanvas after AI adjustment...');
