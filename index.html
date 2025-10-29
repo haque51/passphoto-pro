@@ -1059,26 +1059,77 @@ async function handleAiAdjust() {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     const paymentIntent = urlParams.get('payment_intent');
-    
+
     if (paymentStatus === 'success' && paymentIntent) {
         showLoading('Verifying payment...', 50);
-        
+
         try {
             const response = await fetch(`${API_BASE_URL}/verify-payment`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ paymentIntentId: paymentIntent })
             });
-            
+
             const { verified } = await response.json();
-            
-            hideLoading();
-            
+
             if (verified) {
-                state.paymentVerified = true;
-                window.history.replaceState({}, document.title, window.location.pathname);
-                navigateTo('download');
+                // Restore state from localStorage
+                const savedStateStr = localStorage.getItem('passphoto_state');
+                if (savedStateStr) {
+                    loadingSubText.textContent = 'Restoring your photo...';
+                    updateProgress(60);
+
+                    const savedState = JSON.parse(savedStateStr);
+
+                    // Restore state properties
+                    state.transform = savedState.transform;
+                    state.filters = savedState.filters;
+                    state.currentCountry = savedState.currentCountry;
+                    state.currentDoc = savedState.currentDoc;
+                    state.faceData = savedState.faceData;
+                    state.baseScale = savedState.baseScale;
+                    state.paymentVerified = true;
+
+                    updateProgress(70);
+
+                    // Restore image
+                    const img = new Image();
+                    img.onload = () => {
+                        state.image = img;
+                        updateProgress(90);
+
+                        // Start app and navigate to download
+                        startApp();
+                        setTimeout(() => {
+                            // Set up canvas size without resetting transform values
+                            const wrapperSize = canvasContainer.clientWidth;
+                            canvas.width = wrapperSize;
+                            canvas.height = wrapperSize;
+
+                            // Draw the canvas with restored state
+                            drawCanvas();
+
+                            updateProgress(100);
+                            hideLoading();
+                            navigateTo('download');
+
+                            // Clean up
+                            window.history.replaceState({}, document.title, window.location.pathname);
+                            localStorage.removeItem('passphoto_state');
+                        }, 300);
+                    };
+                    img.onerror = () => {
+                        hideLoading();
+                        alert('Failed to restore your photo. Please try again.');
+                        localStorage.removeItem('passphoto_state');
+                    };
+                    img.src = savedState.imageDataUrl;
+                } else {
+                    hideLoading();
+                    alert('Payment verified but could not restore your photo. Please contact support.');
+                }
             } else {
+                hideLoading();
                 alert('Payment verification failed. Please contact support.');
             }
         } catch (error) {
@@ -1578,8 +1629,21 @@ async function handleAiAdjust() {
 
 payBtn.addEventListener('click', async () => {
         showLoading('Creating payment session...', 10);
-        
+
         try {
+            // Save state to localStorage before payment redirect
+            const imageDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+            const stateToSave = {
+                imageDataUrl: imageDataUrl,
+                transform: state.transform,
+                filters: state.filters,
+                currentCountry: state.currentCountry,
+                currentDoc: state.currentDoc,
+                faceData: state.faceData,
+                baseScale: state.baseScale
+            };
+            localStorage.setItem('passphoto_state', JSON.stringify(stateToSave));
+
             const response = await fetch(`${API_BASE_URL}/create-payment`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1591,10 +1655,10 @@ payBtn.addEventListener('click', async () => {
             }
 
             const { clientSecret } = await response.json();
-            
+
             loadingSubText.textContent = 'Redirecting to payment...';
             hideLoading();
-            
+
             const { error } = await stripe.confirmPayment({
                 clientSecret,
                 confirmParams: {
@@ -1605,12 +1669,16 @@ payBtn.addEventListener('click', async () => {
             if (error) {
                 console.error('Payment error:', error);
                 alert(`Payment failed: ${error.message}`);
+                // Clear saved state if payment failed
+                localStorage.removeItem('passphoto_state');
             }
-            
+
         } catch (error) {
             hideLoading();
             console.error('Payment error:', error);
             alert('Payment failed. Please try again.');
+            // Clear saved state if payment failed
+            localStorage.removeItem('passphoto_state');
         }
 });
         // Handle payment success redirect
@@ -1669,7 +1737,7 @@ function checkPaymentSuccess() {
                 runComplianceChecks();
             }
         });
-        checkPaymentSuccess();
+        checkPaymentStatus();
     }
 
     init();
