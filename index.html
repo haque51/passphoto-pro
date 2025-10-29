@@ -10,10 +10,32 @@
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        
+
+        /* Design System - Color Palette */
+        :root {
+            --primary: #0E2A47;      /* Deep Navy */
+            --accent: #00B2A9;       /* Teal */
+            --neutral: #F8F9FA;      /* Light Gray */
+            --text: #1C1C1C;         /* Charcoal */
+
+            /* Semantic colors */
+            --success: #10b981;      /* Green for compliance pass */
+            --error: #ef4444;        /* Red for compliance fail */
+            --warning: #f59e0b;      /* Orange for warnings */
+
+            /* Spacing system (8px base) */
+            --spacing-1: 8px;
+            --spacing-2: 16px;
+            --spacing-3: 24px;
+            --spacing-4: 32px;
+            --spacing-5: 40px;
+            --spacing-6: 48px;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
+            background-color: var(--neutral);
+            color: var(--text);
             transition: background-color 0.5s ease;
         }
 
@@ -72,29 +94,29 @@
         
         /* Hero Gradient Text */
         .hero-gradient-text {
-            background: linear-gradient(135deg, #4ade80, #3b82f6, #8b5cf6);
+            background: linear-gradient(135deg, var(--accent), var(--primary), var(--accent));
             background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: gradientShift 3s ease infinite;
         }
-        
+
         @keyframes gradientShift {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
         }
 
-        /* Step Indicator Styless */
+        /* Step Indicator Styles */
         .step-active .step-circle {
-            background-color: #3b82f6;
+            background-color: var(--accent);
             color: white;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0, 178, 169, 0.2);
             transition: all 0.3s ease;
         }
         .step-active .step-text {
-            color: #3b82f6;
+            color: var(--accent);
             font-weight: 600;
         }
         .step-inactive .step-circle {
@@ -116,15 +138,78 @@
 
         /* Compliance Status Styles */
         .compliance-pass {
-            color: #10b981;
+            color: var(--success);
             animation: slideUp 0.3s ease-out;
         }
         .compliance-fail {
-            color: #ef4444;
+            color: var(--error);
             animation: slideUp 0.3s ease-out;
         }
         .compliance-pending {
-            color: #f59e0b;
+            color: var(--warning);
+        }
+
+        /* Button System - Design Spec Compliant */
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 178, 169, 0.2);
+        }
+        .btn-primary:hover {
+            background-color: #009991;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 178, 169, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            padding: calc(var(--spacing-2) - 2px) calc(var(--spacing-4) - 2px);
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: rgba(0, 178, 169, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-tertiary {
+            background-color: transparent;
+            color: var(--accent);
+            border: none;
+            padding: var(--spacing-2) var(--spacing-3);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-tertiary:hover {
+            color: #009991;
+            text-decoration: underline;
+        }
+
+        /* Input Styles - Design Spec Compliant */
+        input[type="text"],
+        input[type="email"],
+        select {
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 178, 169, 0.1);
         }
 
         /* Canvas and Editor Styles */
@@ -178,30 +263,30 @@
             appearance: none;
             width: 20px;
             height: 20px;
-            background: #3b82f6;
+            background: var(--accent);
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 0 4px rgba(0, 178, 169, 0.2);
             transition: all 0.2s ease;
         }
         input[type="range"]::-webkit-slider-thumb:hover {
-            background: #2563eb;
-            box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.3);
+            background: #009991;
+            box-shadow: 0 0 0 6px rgba(0, 178, 169, 0.3);
             transform: scale(1.1);
         }
         input[type="range"]::-moz-range-thumb {
             width: 20px;
             height: 20px;
-            background: #3b82f6;
+            background: var(--accent);
             border-radius: 50%;
             cursor: pointer;
             border: none;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 0 4px rgba(0, 178, 169, 0.2);
             transition: all 0.2s ease;
         }
         input[type="range"]::-moz-range-thumb:hover {
-            background: #2563eb;
-            box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.3);
+            background: #009991;
+            box-shadow: 0 0 0 6px rgba(0, 178, 169, 0.3);
             transform: scale(1.1);
         }
 
@@ -346,9 +431,8 @@
 
         /* Canvas Guides Enhancement */
         .canvas-guide-visible {
-            stroke: rgba(59, 130, 246, 0.9);
-            stroke-width: 1.5;
-            filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.5));
+            /* stroke color is set dynamically by updateGuideColors() */
+            filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.3));
         }
 
         /* Loading Skeleton */
@@ -941,11 +1025,11 @@
                                             <!-- Enhanced Overlay Mask -->
                                             <svg id="overlay-mask" class="overlay-mask" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                                                 <!-- Center vertical line -->
-                                                <line id="center-line" x1="50" y1="15" x2="50" y2="85" stroke="rgba(59, 130, 246, 0.8)" stroke-width="0.8" stroke-dasharray="3 3" class="canvas-guide-visible" />
+                                                <line id="center-line" x1="50" y1="15" x2="50" y2="85" stroke="rgba(255,255,255,0.7)" stroke-width="0.8" stroke-dasharray="3 3" />
                                                 <!-- Eye level horizontal line -->
-                                                <line id="eye-line" x1="20" y1="48" x2="80" y2="48" stroke="rgba(59, 130, 246, 0.9)" stroke-width="1" class="canvas-guide-visible" />
+                                                <line id="eye-line" x1="20" y1="48" x2="80" y2="48" stroke="rgba(255,255,255,0.7)" stroke-width="1" />
                                                 <!-- Head oval guide -->
-                                                <ellipse id="head-oval" cx="50" cy="50" rx="26" ry="36" fill="none" stroke="rgba(59, 130, 246, 0.7)" stroke-width="1" stroke-dasharray="4 3" class="canvas-guide-visible" />
+                                                <ellipse id="head-oval" cx="50" cy="50" rx="26" ry="36" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1" stroke-dasharray="4 3" />
                                             </svg>
                                         </div>
                                         <!-- Guides Toggle Button -->
@@ -992,7 +1076,7 @@
                                             AI Assistant
                                             <span class="ml-auto bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">Beta</span>
                                         </h3>
-                                        <button id="ai-adjust-btn" class="tooltip w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
+                                        <button type="button" id="ai-adjust-btn" class="tooltip w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
                                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>
                                             <span class="text-sm md:text-base">Auto-Adjust Photo</span>
                                             <span class="tooltip-text">AI will automatically enhance background and lighting</span>
@@ -1550,26 +1634,30 @@
     zoomSlider.addEventListener('input', (e) => {
         state.transform.scaleMultiplier = parseFloat(e.target.value);
         zoomValue.textContent = `${Math.round(state.transform.scaleMultiplier * 100)}%`;
-        renderCanvas();
+        drawCanvas();
     });
+    zoomSlider.addEventListener('change', runComplianceChecks);
 
     brightnessSlider.addEventListener('input', (e) => {
         state.filters.brightness = parseInt(e.target.value);
         brightnessValue.textContent = `${state.filters.brightness}%`;
-        renderCanvas();
+        drawCanvas();
     });
+    brightnessSlider.addEventListener('change', runComplianceChecks);
 
     contrastSlider.addEventListener('input', (e) => {
         state.filters.contrast = parseInt(e.target.value);
         contrastValue.textContent = `${state.filters.contrast}%`;
-        renderCanvas();
+        drawCanvas();
     });
+    contrastSlider.addEventListener('change', runComplianceChecks);
 
     rotationSlider.addEventListener('input', (e) => {
         state.transform.rotation = parseInt(e.target.value);
         rotationValue.textContent = `${state.transform.rotation}°`;
-        renderCanvas();
+        drawCanvas();
     });
+    rotationSlider.addEventListener('change', runComplianceChecks);
 
     resetBtn.addEventListener('click', () => {
         state.transform.scaleMultiplier = 1;
@@ -1588,59 +1676,66 @@
         rotationSlider.value = 0;
         rotationValue.textContent = '0°';
         
-        renderCanvas();
+        drawCanvas();
     });
 
     // ========== IMAGE UPLOAD ==========
     function handleImageUpload(file) {
         if (!file || !file.type.startsWith('image/')) return;
-        
+
+        console.log('Starting image upload for:', file.name);
+
         showLoading('Reading image...', 5);
         loadingSubText.textContent = 'Processing your photo...';
-        
+
         const reader = new FileReader();
         reader.onload = (e) => {
             updateProgress(20);
             loadingSubText.textContent = 'Validating image size...';
-            
+
             originalImageData = e.target.result;
             console.log('✅ Original image saved');
-            
+
             const img = new Image();
             img.onload = async () => {
+                console.log('Image loaded:', img.width, 'x', img.height);
+
                 if (img.width < 600 || img.height < 600) {
                     hideLoading();
                     alert('Image too small. Please upload an image with minimum dimensions of 600x600 pixels.');
                     return;
                 }
-                
+
                 updateProgress(40);
                 loadingSubText.textContent = 'Preparing editor...';
-                
+
                 state.image = img;
-                
+
                 updateProgress(60);
                 loadingSubText.textContent = 'Detecting face...';
-                
+
                 const detections = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
-                
+
                 if (detections) {
                     state.faceData = detections;
                     console.log('Face detected:', detections);
                 } else {
                     console.warn('No face detected, proceeding anyway');
                 }
-                
+
                 updateProgress(80);
                 loadingSubText.textContent = 'Setting up editor...';
-                
+
+                console.log('Calling initCanvas...');
                 initCanvas();
+                console.log('Navigating to editor...');
                 navigateTo('editor');
-                
+
                 updateProgress(100);
                 setTimeout(() => {
                     hideLoading();
-                    renderCanvas();
+                    console.log('About to call renderCanvas...');
+                    drawCanvas();
                     runComplianceChecks();
                 }, 300);
             };
@@ -1677,50 +1772,72 @@
     function initCanvas() {
         const container = canvasContainer;
         const size = Math.min(container.clientWidth, container.clientHeight);
+
+        console.log('initCanvas: container size =', size);
+
+        // If container size is 0, the element is not visible yet - retry
+        if (size === 0) {
+            console.warn('Container not visible yet, retrying initCanvas...');
+            setTimeout(initCanvas, 50);
+            return;
+        }
+
         canvas.width = size;
         canvas.height = size;
-        
+
+        console.log('Canvas dimensions set to:', canvas.width, 'x', canvas.height);
+
         const imgRatio = state.image.width / state.image.height;
         const canvasRatio = canvas.width / canvas.height;
-        
+
         if (imgRatio > canvasRatio) {
             state.baseScale = canvas.height / state.image.height;
         } else {
             state.baseScale = canvas.width / state.image.width;
         }
-        
+
         state.transform.offsetX = 0;
         state.transform.offsetY = 0;
+
+        console.log('Canvas initialized, baseScale:', state.baseScale);
     }
 
     // ========== CANVAS RENDERING ==========
-    function renderCanvas() {
+    function drawCanvas() {
         if (!state.image) return;
-        
-        const totalScale = state.baseScale * state.transform.scaleMultiplier;
-        const scaledWidth = state.image.width * totalScale;
-        const scaledHeight = state.image.height * totalScale;
-        
-        ctx.save();
+        const imageIsReady = (state.image instanceof HTMLImageElement && state.image.complete && state.image.naturalHeight !== 0) || (state.image instanceof ImageBitmap);
+        if(!imageIsReady){
+            console.error("drawCanvas called with invalid image");
+            return;
+        }
+
+        const finalScale = state.baseScale * state.transform.scaleMultiplier;
+        const imageWidth = state.image.naturalWidth || state.image.width;
+        const imageHeight = state.image.naturalHeight || state.image.height;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate((state.transform.rotation * Math.PI) / 180);
-        
         ctx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%)`;
-        
-        ctx.drawImage(
-            state.image,
-            state.transform.offsetX - scaledWidth / 2,
-            state.transform.offsetY - scaledHeight / 2,
-            scaledWidth,
-            scaledHeight
-        );
-        
+
+        ctx.save();
+
+        const imgCenterX = state.transform.offsetX + (imageWidth * finalScale) / 2;
+        const imgCenterY = state.transform.offsetY + (imageHeight * finalScale) / 2;
+
+        ctx.translate(imgCenterX, imgCenterY);
+        ctx.rotate(state.transform.rotation * Math.PI / 180);
+        ctx.translate(-imgCenterX, -imgCenterY);
+
+        ctx.translate(state.transform.offsetX, state.transform.offsetY);
+        ctx.scale(finalScale, finalScale);
+        ctx.drawImage(state.image, 0, 0);
+
         ctx.restore();
-        
+        ctx.filter = 'none';
+        setTimeout(captureCanvasState, 50);
+    }
+
+    function captureCanvasState() {
         lastCanvasState = canvas.toDataURL('image/jpeg', 1.0);
-        runComplianceChecks();
     }
 
     // ========== CANVAS DRAG ==========
@@ -1748,11 +1865,12 @@
         const pos = getEventPos(e);
         state.transform.offsetX = pos.x - state.dragStart.x;
         state.transform.offsetY = pos.y - state.dragStart.y;
-        renderCanvas();
+        drawCanvas();
     }
 
     function endDrag() {
         state.isDragging = false;
+        runComplianceChecks();
     }
 
     function getEventPos(e) {
@@ -1766,59 +1884,122 @@
     }
 
     // ========== AI ADJUSTMENT ==========
-    aiAdjustBtn.addEventListener('click', async () => {
+    aiAdjustBtn.addEventListener('click', async (event) => {
+        event.preventDefault(); // Prevent any default button behavior
+        console.log('AI Adjust button clicked');
+        console.log('originalImageData exists:', !!originalImageData);
+        console.log('state.image exists:', !!state.image);
+
         if (!originalImageData) {
+            console.error('originalImageData is null or undefined');
             alert('Please upload an image first');
             return;
         }
-        
+
         aiAdjustBtn.disabled = true;
         aiAdjustBtn.innerHTML = '<div class="loader mr-2"></div> Processing...';
-        
+
         showLoading('AI is enhancing your photo...', 20);
         loadingSubText.textContent = 'Removing background and adjusting lighting...';
-        
+
         try {
+            console.log('Sending request to AI service...');
+            console.log('API_BASE_URL:', API_BASE_URL);
+
+            // Extract base64 data without the data:image/jpeg;base64, prefix
+            const base64Data = originalImageData.split(',')[1] || originalImageData;
+            console.log('Base64 data length:', base64Data.length);
+
+            // Get current country selection for background color
+            const selectedCountry = countrySelect.value;
+            const selectedDocType = docTypeSelect.value;
+
             updateProgress(40);
             const response = await fetch(`${API_BASE_URL}/ai-adjust-photo`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imageData: originalImageData })
+                body: JSON.stringify({
+                    imageBase64: base64Data,
+                    country: selectedCountry,
+                    docType: selectedDocType
+                })
             });
             
             updateProgress(70);
-            
+
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             const contentType = response.headers.get('content-type');
+            console.log('Response content-type:', contentType);
+
             if (!contentType || !contentType.includes('application/json')) {
+                console.error('Invalid content type received');
                 throw new Error('The AI service is currently unavailable. Please try manual adjustments or try again later.');
             }
-            
+
             const data = await response.json();
-            
+            console.log('Response data received:', data ? 'yes' : 'no');
+
             if (!response.ok) {
+                console.error('Response not ok, status:', response.status);
                 if (response.status === 429) {
                     throw new Error('AI service quota exceeded. Please use manual adjustments or try again later.');
                 }
                 throw new Error(data.error || 'AI adjustment failed. Please try manual adjustments.');
             }
-            
+
+            console.log('AI adjustment successful, applying image...');
+
+            // Check if we got the adjusted image
+            if (!data.adjustedImageBase64) {
+                console.error('No adjusted image in response');
+                throw new Error(data.message || 'No adjusted image returned. Please try manual adjustments.');
+            }
+
             updateProgress(90);
             loadingSubText.textContent = 'Applying changes...';
-            
+
+            // Convert base64 back to data URL
+            const adjustedImageDataUrl = `data:image/jpeg;base64,${data.adjustedImageBase64}`;
+            console.log('Adjusted image data URL created');
+
             const img = new Image();
             img.onload = () => {
+                console.log('AI-adjusted image loaded successfully');
                 state.image = img;
-                originalImageData = data.adjustedImage;
-                renderCanvas();
-                updateProgress(100);
-                hideLoading();
+                originalImageData = adjustedImageDataUrl;
+
+                // Re-initialize canvas with new image
+                console.log('Calling initCanvas after AI adjustment...');
+                initCanvas();
+
+                // Wait a bit for initCanvas to complete, then render
+                setTimeout(() => {
+                    console.log('Calling renderCanvas after AI adjustment...');
+                    drawCanvas();
+                    runComplianceChecks();
+
+                    updateProgress(100);
+                    setTimeout(hideLoading, 300);
+                }, 150);
+
                 aiAdjustBtn.innerHTML = '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg><span>AI Adjusted!</span>';
                 setTimeout(() => {
                     aiAdjustBtn.innerHTML = '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg><span>Auto-Adjust Photo</span>';
                     aiAdjustBtn.disabled = false;
                 }, 2000);
             };
-            img.src = data.adjustedImage;
+
+            img.onerror = (error) => {
+                console.error('Failed to load AI-adjusted image:', error);
+                hideLoading();
+                aiAdjustBtn.disabled = false;
+                aiAdjustBtn.innerHTML = '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg><span>Auto-Adjust Photo</span>';
+                alert('Failed to load adjusted image. Please try again.');
+            };
+
+            img.src = adjustedImageDataUrl;
         } catch (error) {
             console.error('AI adjustment error:', error);
             hideLoading();
@@ -1830,141 +2011,180 @@
 
     // ========== COMPLIANCE CHECKS ==========
     function runComplianceChecks() {
-        if (!state.image || !state.faceData) {
-            renderComplianceChecklist({});
+        const req = getCurrentRequirements();
+
+        if (!req) {
+            console.error('Compliance check called with invalid state:', state.currentCountry, state.currentDoc);
+            complianceChecklist.innerHTML = `<li class="text-center text-red-500">An error occurred. Please re-select your document.</li>`;
             return;
         }
-        
-        const requirements = getCurrentRequirements();
-        if (!requirements) {
-            renderComplianceChecklist({});
+
+        if (!state.faceData || !state.faceData.landmarks) {
+            state.complianceResults = { 'face': { pass: false, message: 'Could not detect facial features. Try a clearer, front-facing photo.' } };
+            updateComplianceUI();
+            updateGuideColors();
             return;
         }
-        
+
         const results = {};
-        
-        // Face detected
-        results.faceDetected = { pass: true, message: 'Face detected successfully' };
-        
-        // Face size check
-        const faceBox = state.faceData.detection.box;
-        const faceHeightRatio = faceBox.height / state.image.height;
-        const minFaceSize = 0.6;
-        const maxFaceSize = 0.85;
-        results.faceSize = {
-            pass: faceHeightRatio >= minFaceSize && faceHeightRatio <= maxFaceSize,
-            message: faceHeightRatio < minFaceSize ? 'Face too small - zoom in' : faceHeightRatio > maxFaceSize ? 'Face too large - zoom out' : 'Face size is optimal'
+        const finalScale = state.baseScale * state.transform.scaleMultiplier;
+
+        const landmarks = state.faceData.landmarks;
+        const getPoint = (index) => {
+            const pt = landmarks.positions[index];
+            const scale = finalScale;
+            const rotation = state.transform.rotation * Math.PI / 180;
+
+            let x = pt.x * scale;
+            let y = pt.y * scale;
+
+            if (rotation !== 0) {
+                const centerX = (state.image.naturalWidth * scale) / 2;
+                const centerY = (state.image.naturalHeight * scale) / 2;
+                const cosR = Math.cos(rotation);
+                const sinR = Math.sin(rotation);
+
+                const rotatedX = centerX + (x - centerX) * cosR - (y - centerY) * sinR;
+                const rotatedY = centerY + (x - centerX) * sinR + (y - centerY) * cosR;
+                x = rotatedX;
+                y = rotatedY;
+            }
+
+            return {
+                x: x + state.transform.offsetX,
+                y: y + state.transform.offsetY
+            };
         };
-        
-        // Brightness check
-        results.brightness = {
-            pass: state.filters.brightness >= 90 && state.filters.brightness <= 110,
-            message: state.filters.brightness < 90 ? 'Photo too dark' : state.filters.brightness > 110 ? 'Photo too bright' : 'Brightness is good'
-        };
-        
-        // Alignment check (simplified)
-        results.alignment = {
-            pass: Math.abs(state.transform.rotation) < 5,
-            message: Math.abs(state.transform.rotation) >= 5 ? 'Head not straight - adjust rotation' : 'Head alignment looks good'
-        };
-        
+
+        const chin = getPoint(8);
+        const nose = getPoint(30);
+        const leftEye = getPoint(39);
+        const rightEye = getPoint(42);
+        const eyeCenterY = (leftEye.y + rightEye.y) / 2;
+
+        const chinToEyeHeight = chin.y - eyeCenterY;
+        const headHeightPx = chinToEyeHeight * 2;
+        const headHeightPercent = (headHeightPx / canvas.height) * 100;
+
+        if (headHeightPercent >= req.headHeightMinPercent && headHeightPercent <= req.headHeightMaxPercent) {
+            results.headSize = { pass: true, message: `Head size is ${headHeightPercent.toFixed(0)}% (within ${req.headHeightMinPercent}-${req.headHeightMaxPercent}%)` };
+        } else {
+            results.headSize = { pass: false, message: `Head size is ${headHeightPercent.toFixed(0)}%. Should be ${req.headHeightMinPercent}-${req.headHeightMaxPercent}%. Use zoom.` };
+        }
+
+        if (req.eyeToBottomMinPercent) {
+             const eyeLevelPercent = ((canvas.height - eyeCenterY) / canvas.height) * 100;
+
+             if (eyeLevelPercent >= req.eyeToBottomMinPercent && eyeLevelPercent <= req.eyeToBottomMaxPercent) {
+                results.eyePosition = { pass: true, message: `Eye-level is correct.` };
+             } else {
+                results.eyePosition = { pass: false, message: `Eye-level is incorrect. Drag photo to align eyes with the guide.` };
+             }
+        }
+
+        const faceCenterX = nose.x;
+        const canvasCenterX = canvas.width / 2;
+        const deviation = Math.abs(faceCenterX - canvasCenterX) / canvas.width * 100;
+        if(deviation < 10) {
+            results.centering = { pass: true, message: 'Face is well-centered.' };
+        } else {
+            results.centering = { pass: false, message: 'Face is off-center. Drag photo to center it.' };
+        }
+
+        results.background = { pass: true, message: `Background will be replaced with ${req.backgroundName}.` };
+
+        const mouthOpen = (getPoint(66).y - getPoint(62).y) > 5;
+        if (!mouthOpen) {
+            results.expression = { pass: true, message: 'Neutral expression, mouth closed.' };
+        } else {
+            results.expression = { pass: false, message: 'Mouth appears to be open. A neutral expression is required.' };
+        }
+
         state.complianceResults = results;
-        renderComplianceChecklist(results);
+        updateComplianceUI();
+        updateGuideColors();
     }
 
-    function renderComplianceChecklist(results) {
-        const checks = [
-            { key: 'faceDetected', label: 'Face Detection', icon: '👤' },
-            { key: 'faceSize', label: 'Face Size', icon: '📏' },
-            { key: 'brightness', label: 'Brightness', icon: '💡' },
-            { key: 'alignment', label: 'Alignment', icon: '📐' },
-        ];
-        
-        let passCount = 0;
-        let totalCount = checks.length;
-        
-        complianceChecklist.innerHTML = checks.map(check => {
-            const result = results[check.key];
-            const pass = result?.pass ?? false;
-            if (pass) passCount++;
-            
-            const statusClass = result ? (pass ? 'compliance-pass' : 'compliance-fail') : 'compliance-pending';
-            const statusIcon = result ? (pass ? '✓' : '✗') : '○';
-            const message = result?.message || 'Checking...';
-            
-            return `
-                <div class="flex items-start justify-between p-3 bg-gray-700/30 rounded-lg transition-all hover:bg-gray-700/50">
-                    <div class="flex items-start flex-1">
-                        <span class="text-lg mr-3">${check.icon}</span>
-                        <div class="flex-1">
-                            <div class="font-semibold text-white text-sm">${check.label}</div>
-                            <div class="text-xs ${statusClass} mt-0.5">${message}</div>
-                        </div>
-                    </div>
-                    <span class="text-xl ml-2 ${statusClass}">${statusIcon}</span>
+    function updateComplianceUI() {
+        complianceChecklist.innerHTML = '';
+        let allPass = true;
+
+        if (Object.keys(state.complianceResults).length === 0) {
+             complianceChecklist.innerHTML = `<li class="text-center text-gray-500">Analyzing...</li>`;
+             nextToPaymentBtn.disabled = true;
+             return;
+        }
+
+        for (const [key, result] of Object.entries(state.complianceResults)) {
+            const li = document.createElement('li');
+            li.className = 'flex items-start space-x-2 md:space-x-3';
+            const iconClass = result.pass ? 'compliance-pass' : 'compliance-fail';
+            const iconPath = result.pass
+                ? 'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
+                : 'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z';
+
+            const titles = {
+                face: 'Face Detection', headSize: 'Head Size', eyePosition: 'Eye Position', centering: 'Centering', background: 'Background', expression: 'Expression'
+            };
+            const title = titles[key] || 'Check';
+
+            li.innerHTML = `
+                <div class="w-5 h-5 pt-1 flex-shrink-0"><svg class="w-full h-full ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="${iconPath}" clip-rule="evenodd"></path></svg></div>
+                <div>
+                    <h4 class="font-medium text-gray-200 text-sm md:text-base">${title}</h4>
+                    <p class="text-xs md:text-sm text-gray-400">${result.message}</p>
                 </div>
             `;
-        }).join('');
-        
-        // Update progress bar
-        const percentage = Math.round((passCount / totalCount) * 100);
-        complianceProgress.style.width = `${percentage}%`;
-        compliancePercentage.textContent = `${percentage}%`;
-        
-        // Enable/disable next button
-        const allPassed = passCount === totalCount;
-        nextToPaymentBtn.disabled = !allPassed;
-        
-        if (allPassed) {
-            nextToPaymentBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            nextToPaymentBtn.classList.add('pulse-animation');
-        } else {
-            nextToPaymentBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            nextToPaymentBtn.classList.remove('pulse-animation');
+            complianceChecklist.appendChild(li);
+
+            if (!result.pass) allPass = false;
         }
+
+        nextToPaymentBtn.disabled = !allPass;
     }
 
     // ========== COUNTRY/DOCUMENT SELECTION ==========
     function populateDropdowns() {
         requirementsData = {
             'US': {
-                'passport': { width: 2, height: 2, unit: 'inches', bgColor: 'white', faceHeightMin: 50, faceHeightMax: 69 },
-                'visa': { width: 2, height: 2, unit: 'inches', bgColor: 'white', faceHeightMin: 50, faceHeightMax: 69 }
+                'passport': { name: 'U.S. Passport Photo', widthPx: 600, heightPx: 600, headHeightMinPercent: 50, headHeightMaxPercent: 69, eyeToBottomMinPercent: 56, eyeToBottomMaxPercent: 69, background: '#FFFFFF', backgroundName: 'white' },
+                'visa': { name: 'U.S. Visa Photo', widthPx: 600, heightPx: 600, headHeightMinPercent: 50, headHeightMaxPercent: 69, eyeToBottomMinPercent: 56, eyeToBottomMaxPercent: 69, background: '#FFFFFF', backgroundName: 'white' }
             },
             'UK': {
-                'passport': { width: 35, height: 45, unit: 'mm', bgColor: 'light grey', faceHeightMin: 29, faceHeightMax: 34 },
-                'visa': { width: 35, height: 45, unit: 'mm', bgColor: 'light grey', faceHeightMin: 29, faceHeightMax: 34 }
+                'passport': { name: 'United Kingdom Passport Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 62, headHeightMaxPercent: 75, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 66, background: '#F0F0F0', backgroundName: 'light grey' }
             },
             'Canada': {
-                'passport': { width: 50, height: 70, unit: 'mm', bgColor: 'white', faceHeightMin: 31, faceHeightMax: 36 },
-                'visa': { width: 35, height: 45, unit: 'mm', bgColor: 'white', faceHeightMin: 31, faceHeightMax: 36 }
+                'passport': { name: 'Canadian Passport Photo', widthPx: 590, heightPx: 827, headHeightMinPercent: 50, headHeightMaxPercent: 70, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 70, background: '#FFFFFF', backgroundName: 'white' },
+                'visa': { name: 'Canadian Visa Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 62, headHeightMaxPercent: 75, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 66, background: '#FFFFFF', backgroundName: 'white' }
             },
             'Germany': {
-                'passport': { width: 35, height: 45, unit: 'mm', bgColor: 'white', faceHeightMin: 32, faceHeightMax: 36 },
-                'visa': { width: 35, height: 45, unit: 'mm', bgColor: 'white', faceHeightMin: 32, faceHeightMax: 36 }
+                'passport': { name: 'German Passport Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 70, headHeightMaxPercent: 80, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 68, background: '#E8E8E8', backgroundName: 'light grey' }
             },
             'France': {
-                'passport': { width: 35, height: 45, unit: 'mm', bgColor: 'light grey', faceHeightMin: 32, faceHeightMax: 36 },
-                'visa': { width: 35, height: 45, unit: 'mm', bgColor: 'light grey', faceHeightMin: 32, faceHeightMax: 36 }
+                'passport': { name: 'French Passport Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 70, headHeightMaxPercent: 80, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 68, background: '#E8E8E8', backgroundName: 'light grey' }
             },
             'India': {
-                'passport': { width: 35, height: 35, unit: 'mm', bgColor: 'white', faceHeightMin: 25, faceHeightMax: 35 },
-                'visa': { width: 51, height: 51, unit: 'mm', bgColor: 'white', faceHeightMin: 25, faceHeightMax: 35 }
+                'passport': { name: 'Indian Passport Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 70, headHeightMaxPercent: 80, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 68, background: '#FFFFFF', backgroundName: 'white' },
+                'visa': { name: 'Indian Visa Photo', widthPx: 413, heightPx: 531, headHeightMinPercent: 70, headHeightMaxPercent: 80, eyeToBottomMinPercent: 55, eyeToBottomMaxPercent: 68, background: '#FFFFFF', backgroundName: 'white' }
             }
         };
-        
-        countrySelect.innerHTML = Object.keys(requirementsData).map(country => 
+
+        countrySelect.innerHTML = Object.keys(requirementsData).map(country =>
             `<option value="${country}">${country}</option>`
         ).join('');
-        
+
         updateDocTypes();
     }
 
     function updateDocTypes() {
         const country = countrySelect.value;
-        docTypeSelect.innerHTML = Object.keys(requirementsData[country] || {}).map(doc => 
-            `<option value="${doc}">${doc.charAt(0).toUpperCase() + doc.slice(1)}</option>`
-        ).join('');
+        const docs = requirementsData[country] || {};
+
+        docTypeSelect.innerHTML = Object.keys(docs).map(docCode => {
+            const docData = docs[docCode];
+            return `<option value="${docCode}">${docData.name || docCode.charAt(0).toUpperCase() + docCode.slice(1)}</option>`;
+        }).join('');
+
         state.currentCountry = country;
         state.currentDoc = docTypeSelect.value;
         updateOverlayMask();
@@ -1978,8 +2198,51 @@
         runComplianceChecks();
     });
 
+    function updateGuideColors() {
+        const headSizeResult = state.complianceResults.headSize;
+        const eyePositionResult = state.complianceResults.eyePosition;
+        const centeringResult = state.complianceResults.centering;
+
+        const passColor = '#10b981';
+        const failColor = '#ef4444';
+        const defaultColor = 'rgba(255, 255, 255, 0.7)';
+
+        const headOval = document.getElementById('head-oval');
+        const eyeLine = document.getElementById('eye-line');
+        const centerLine = document.getElementById('center-line');
+
+        headOval.style.stroke = headSizeResult ? (headSizeResult.pass ? passColor : failColor) : defaultColor;
+        eyeLine.style.stroke = eyePositionResult ? (eyePositionResult.pass ? passColor : failColor) : defaultColor;
+        centerLine.style.stroke = centeringResult ? (centeringResult.pass ? passColor : failColor) : defaultColor;
+    }
+
     function updateOverlayMask() {
-        // This function can be enhanced based on requirements
+        const req = getCurrentRequirements();
+        if (!req) return;
+
+        const eyeLineEl = document.getElementById('eye-line');
+        const headOvalEl = document.getElementById('head-oval');
+        const centerLineEl = document.getElementById('center-line');
+
+        const headHeightIdeal = (req.headHeightMinPercent + req.headHeightMaxPercent) / 2;
+        const eyeToBottomIdeal = req.eyeToBottomMinPercent ? (req.eyeToBottomMinPercent + req.eyeToBottomMaxPercent) / 2 : 50;
+
+        const eyeLineY = 100 - eyeToBottomIdeal;
+        const headCenterY = eyeLineY + (headHeightIdeal * 0.05);
+
+        const ovalRy = headHeightIdeal / 2;
+        const ovalRx = ovalRy * 0.75;
+
+        eyeLineEl.setAttribute('y1', eyeLineY);
+        eyeLineEl.setAttribute('y2', eyeLineY);
+        headOvalEl.setAttribute('cy', headCenterY);
+        headOvalEl.setAttribute('ry', ovalRy);
+        headOvalEl.setAttribute('rx', ovalRx);
+
+        const defaultColor = 'rgba(255, 255, 255, 0.7)';
+        centerLineEl.style.stroke = defaultColor;
+        eyeLineEl.style.stroke = defaultColor;
+        headOvalEl.style.stroke = defaultColor;
     }
 
     // ========== PAYMENT ==========
@@ -2003,7 +2266,7 @@
         payBtn.textContent = 'Processing...';
         
         try {
-            const response = await fetch(`${API_BASE_URL}/create-checkout`, {
+            const response = await fetch(`${API_BASE_URL}/create-payment`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -2045,7 +2308,7 @@
                     state.currentDoc = parsed.currentDoc;
                     
                     initCanvas();
-                    renderCanvas();
+                    drawCanvas();
                     navigateTo('download');
                 };
                 img.src = originalImageData;

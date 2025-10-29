@@ -172,15 +172,18 @@ Generate a professional passport-compliant photo.`;
 
         if (!base64Data) {
             console.error('No image in response. Full response:', JSON.stringify(result).substring(0, 500));
-            
+            console.error('⚠️  Gemini Flash Image is a vision model and cannot generate images.');
+            console.error('⚠️  You need an image generation/editing service for this feature.');
+
             // Return helpful error
             return {
                 statusCode: 500,
                 headers: { 'Access-Control-Allow-Origin': '*' },
-                body: JSON.stringify({ 
-                    error: 'Image generation not available',
-                    message: 'The AI model did not generate an image. This feature may not be available with your current API configuration. You can still use manual adjustments.',
-                    modelUsed: 'gemini-2.5-flash-image'
+                body: JSON.stringify({
+                    error: 'AI image generation not supported',
+                    message: 'The Gemini Flash Image model can analyze images but cannot generate or transform them. This feature requires an image generation service like Stability AI or DALL-E. Please use manual adjustments for now.',
+                    modelUsed: 'gemini-2.5-flash-image',
+                    suggestion: 'Consider using Stability AI, Remove.bg, or manual adjustment tools'
                 })
             };
         }
