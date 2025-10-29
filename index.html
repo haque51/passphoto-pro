@@ -2348,18 +2348,25 @@
 
     // Check for payment success
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('success') === 'true') {
+    const paymentSuccess = urlParams.get('payment') === 'success' || urlParams.get('success') === 'true';
+    const sessionId = urlParams.get('session_id');
+
+    if (paymentSuccess && sessionId) {
+        console.log('Payment successful, session ID:', sessionId);
         state.paymentVerified = true;
         startApp();
         setTimeout(() => {
             // Restore state from localStorage if available
             const savedState = localStorage.getItem('photoState');
+            console.log('Saved state found:', !!savedState);
             if (savedState) {
                 const parsed = JSON.parse(savedState);
                 originalImageData = parsed.originalImageData;
+                console.log('Restoring image and state...');
 
                 const img = new Image();
                 img.onload = () => {
+                    console.log('Image loaded successfully');
                     state.image = img;
 
                     // Set canvas size without resetting transform
@@ -2367,6 +2374,7 @@
                     const size = Math.min(container.clientWidth, container.clientHeight);
                     canvas.width = size;
                     canvas.height = size;
+                    console.log('Canvas size set to:', size);
 
                     // Restore all saved state including baseScale
                     state.transform = parsed.transform;
@@ -2374,6 +2382,7 @@
                     state.currentCountry = parsed.currentCountry;
                     state.currentDoc = parsed.currentDoc;
                     state.baseScale = parsed.baseScale;
+                    console.log('State restored:', state);
 
                     // Update UI sliders to match restored state
                     zoomSlider.value = state.transform.scaleMultiplier;
@@ -2386,11 +2395,23 @@
                     rotationValue.textContent = `${state.transform.rotation.toFixed(1)}°`;
 
                     drawCanvas();
+                    console.log('Navigating to download screen');
                     navigateTo('download');
+
+                    // Clean up URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                };
+                img.onerror = (error) => {
+                    console.error('Failed to load image:', error);
+                    alert('Failed to restore your photo. Please try again.');
+                    localStorage.removeItem('photoState');
                 };
                 img.src = originalImageData;
 
                 localStorage.removeItem('photoState');
+            } else {
+                console.error('No saved state found in localStorage');
+                alert('Payment verified but could not restore your photo. Please contact support.');
             }
         }, 1000);
     }
