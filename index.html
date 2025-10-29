@@ -2294,26 +2294,49 @@
     });
 
     payBtn.addEventListener('click', async () => {
+        console.log('=== PAYMENT BUTTON CLICKED ===');
+        console.log('API_BASE_URL:', API_BASE_URL);
+        console.log('STRIPE_PUBLISHABLE_KEY exists:', !!STRIPE_PUBLISHABLE_KEY);
+        console.log('stripe object exists:', !!stripe);
+
         payBtn.disabled = true;
         payBtn.textContent = 'Processing...';
-        
+
         try {
+            console.log('Fetching payment session from:', `${API_BASE_URL}/create-payment`);
             const response = await fetch(`${API_BASE_URL}/create-payment`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
-            
-            const { sessionId } = await response.json();
-            const { error } = await stripe.redirectToCheckout({ sessionId });
-            
+
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Payment API error:', errorText);
+                throw new Error(`Payment API returned ${response.status}: ${errorText}`);
+            }
+
+            const data = await response.json();
+            console.log('Payment session data:', data);
+
+            if (!data.sessionId) {
+                throw new Error('No session ID received from payment API');
+            }
+
+            console.log('Redirecting to Stripe checkout with sessionId:', data.sessionId);
+            const { error } = await stripe.redirectToCheckout({ sessionId: data.sessionId });
+
             if (error) {
+                console.error('Stripe redirect error:', error);
                 alert('Payment failed: ' + error.message);
                 payBtn.disabled = false;
                 payBtn.textContent = 'Pay $4.99 & Get Photos →';
             }
         } catch (error) {
-            console.error('Payment error:', error);
-            alert('Payment system error. Please try again.');
+            console.error('Payment error (full details):', error);
+            alert('Payment system error: ' + error.message + '\n\nPlease check the console for details.');
             payBtn.disabled = false;
             payBtn.textContent = 'Pay $4.99 & Get Photos →';
         }
